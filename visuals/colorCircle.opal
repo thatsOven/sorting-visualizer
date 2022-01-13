@@ -3,15 +3,15 @@ colorCircle = Visual("Color Circle", (255, 255, 255), RefreshMode.NOREFRESH, Tru
 
 @colorCircle.render;
 new function colorCircleDraw(sv, array, indices, color) {
-    new dynamic drew = {}, pos, posEnd, angle, colorConstant = 1 / sv.arrayMax;
+    new dynamic drawn = {}, pos, posEnd, angle, colorConstant = 1 / sv.arrayMax;
 
     for idx in indices {
         angle = Utils.translate(idx, 0, len(array), sv.visualSizes.circleStart, sv.visualSizes.circleEnd);
 
-        if angle in drew {
+        if angle in drawn {
             continue;
         } else {
-            drew[angle] = None;
+            drawn[angle] = None;
         }
 
         pos = Vector().fromAngle(angle);
@@ -44,7 +44,7 @@ new function colorCircleDraw(sv, array, indices, color) {
         }
     }
 
-    del drew;
+    del drawn;
 }
 
 @colorCircle.aux;
@@ -52,7 +52,7 @@ new function colorCircleAux(sv, array, indices, color) {
     sv.getAuxMax();
     new dynamic length        = len(array),
                 resolution    = sv.graphics.resolution.copy(), lineSize,
-                drew          = {},
+                drawn          = {},
                 colorConstant = 1 / sv.auxMax, angleStep, circleCenter, circleRadius, 
                                                pos, posEnd, angle;
 
@@ -74,10 +74,10 @@ new function colorCircleAux(sv, array, indices, color) {
     for idx in range(len(array)) {
         angle = Utils.translate(idx, 0, len(array), sv.visualSizes.circleStart, sv.visualSizes.circleEnd);
 
-        if angle in drew {
+        if angle in drawn {
             continue;
         } else {
-            drew[angle] = None;
+            drawn[angle] = None;
         }
 
         pos = Vector().fromAngle(angle);
@@ -110,7 +110,7 @@ new function colorCircleAux(sv, array, indices, color) {
         }
     }
 
-    del drew;
+    del drawn;
 }
 
 colorCircle.add();

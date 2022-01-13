@@ -7,17 +7,17 @@ new function whiteBarGraphDraw(sv, array, indices, color) {
         color = (255, 255, 255);
     }
 
-    new dynamic drew = {};
+    new dynamic drawn = {};
 
     for idx in indices {
         new dynamic pos = sv.graphics.resolution.copy(), lineEnd;
 
         pos.x = Utils.translate(idx, 0, len(array), 0, sv.graphics.resolution.x // sv.visualSizes.lineSize) * sv.visualSizes.lineSize + (sv.visualSizes.lineSize // 2);
 
-        if pos.x in drew {
+        if pos.x in drawn {
             continue;
         } else {
-            drew[pos.x] = None;
+            drawn[pos.x] = None;
         }
 
         lineEnd = pos - Vector(0, int(array[idx].value * sv.visualSizes.lineLengthConst));
@@ -26,7 +26,7 @@ new function whiteBarGraphDraw(sv, array, indices, color) {
         sv.graphics.line(lineEnd, Vector(pos.x, 0), (0, 0, 0), sv.visualSizes.lineSize);
     }
 
-    del drew;
+    del drawn;
 }
 
 @whiteBarGraph.aux;
@@ -34,7 +34,7 @@ new function whiteBarGraphAux(sv, array, indices, color) {
     sv.getAuxMax();
     new dynamic length     = len(array),
                 resolution = sv.graphics.resolution.copy(), lineSize,
-                drew       = {};
+                drawn       = {};
 
     resolution.y //= 4;
 
@@ -55,10 +55,10 @@ new function whiteBarGraphAux(sv, array, indices, color) {
 
         pos.x = Utils.translate(idx, 0, len(array), 0, resolution.x // lineSize) * lineSize + (lineSize // 2);
 
-        if pos.x in drew {
+        if pos.x in drawn {
             continue;
         } else {
-            drew[pos.x] = None;
+            drawn[pos.x] = None;
         }
 
         lineEnd = pos - Vector(0, int(array[idx].value * lineLengthConst));
@@ -71,7 +71,7 @@ new function whiteBarGraphAux(sv, array, indices, color) {
         sv.graphics.line(lineEnd, Vector(pos.x, 0), (0, 0, 0), lineSize);
     }
 
-    del drew;
+    del drawn;
 
     sv.graphics.line(Vector(0, resolution.y), resolution, (0, 0, 255), 2);
 }

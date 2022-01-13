@@ -3,17 +3,17 @@ rainbowBarGraph = Visual("Rainbow Bar Graph", (255, 255, 255));
 
 @rainbowBarGraph.render;
 new function rainbowBarGraphDraw(sv, array, indices, color) {
-    new dynamic colorConstant = 1 / sv.arrayMax, drew = {};
+    new dynamic colorConstant = 1 / sv.arrayMax, drawn = {};
 
     for idx in indices {
         new dynamic pos = sv.graphics.resolution.copy(), lineEnd;
 
         pos.x = Utils.translate(idx, 0, len(array), 0, sv.graphics.resolution.x // sv.visualSizes.lineSize) * sv.visualSizes.lineSize + (sv.visualSizes.lineSize // 2);
 
-        if pos.x in drew {
+        if pos.x in drawn {
             continue;
         } else {
-            drew[pos.x] = None;
+            drawn[pos.x] = None;
         }
 
         lineEnd = pos - Vector(0, int(array[idx].value * sv.visualSizes.lineLengthConst));
@@ -30,7 +30,7 @@ new function rainbowBarGraphDraw(sv, array, indices, color) {
         sv.graphics.line(lineEnd, Vector(pos.x, 0), (0, 0, 0), sv.visualSizes.lineSize);
     }
 
-    del drew;
+    del drawn;
 }
 
 @rainbowBarGraph.aux;
@@ -38,7 +38,7 @@ new function rainbowBarGraphAux(sv, array, indices, color) {
     sv.getAuxMax();
     new dynamic length        = len(array),
                 resolution    = sv.graphics.resolution.copy(), lineSize,
-                drew          = {},
+                drawn          = {},
                 colorConstant = 1 / sv.auxMax;
 
     resolution.y //= 4;
@@ -60,10 +60,10 @@ new function rainbowBarGraphAux(sv, array, indices, color) {
 
         pos.x = Utils.translate(idx, 0, len(array), 0, resolution.x // lineSize) * lineSize + (lineSize // 2);
 
-        if pos.x in drew {
+        if pos.x in drawn {
             continue;
         } else {
-            drew[pos.x] = None;
+            drawn[pos.x] = None;
         }
 
         lineEnd = pos - Vector(0, int(array[idx].value * lineLengthConst));
@@ -80,7 +80,7 @@ new function rainbowBarGraphAux(sv, array, indices, color) {
         sv.graphics.line(lineEnd, Vector(pos.x, 0), (0, 0, 0), lineSize);
     }
 
-    del drew;
+    del drawn;
 
     sv.graphics.line(Vector(0, resolution.y), resolution, (0, 0, 255), 2);
 }

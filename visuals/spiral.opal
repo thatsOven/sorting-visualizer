@@ -7,15 +7,15 @@ new function spiralDraw(sv, array, indices, color) {
         color = (255, 255, 255);
     }
 
-    new dynamic drew = {}, pos, posEnd, angle, l, end, endStep;
+    new dynamic drawn = {}, pos, posEnd, angle, l, end, endStep;
     
     for idx in indices {
         angle = Utils.translate(idx, 0, len(array), sv.visualSizes.circleStart, sv.visualSizes.circleEnd);
 
-        if angle in drew {
+        if angle in drawn {
             continue;
         } else {
-            drew[angle] = None;
+            drawn[angle] = None;
         }
 
         l = array[idx].value * sv.visualSizes.circularLineLengthConst;
@@ -52,7 +52,7 @@ new function spiralDraw(sv, array, indices, color) {
             ], color);
     }
 
-    del drew;
+    del drawn;
 }
 
 @spiral.aux;
@@ -60,7 +60,7 @@ new function spiralAux(sv, array, indices, color) {
     sv.getAuxMax();
     new dynamic length        = len(array),
                 resolution    = sv.graphics.resolution.copy(), lineSize,
-                drew          = {}, angleStep, circleCenter, circleRadius, 
+                drawn          = {}, angleStep, circleCenter, circleRadius, 
                                     circularLineLengthConst, pos, posEnd, angle, l;
 
     if 360 == length {
@@ -85,10 +85,10 @@ new function spiralAux(sv, array, indices, color) {
     for idx in range(len(array)) {
         angle = Utils.translate(idx, 0, len(array), sv.visualSizes.circleStart, sv.visualSizes.circleEnd);
 
-        if angle in drew {
+        if angle in drawn {
             continue;
         } else {
-            drew[angle] = None;
+            drawn[angle] = None;
         }
 
         l = array[idx].value * circularLineLengthConst;
@@ -115,7 +115,7 @@ new function spiralAux(sv, array, indices, color) {
         }
     }
 
-    del drew;
+    del drawn;
 }
 
 spiral.add();
