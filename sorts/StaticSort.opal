@@ -9,7 +9,7 @@ new function staticSort(array, a, b) {
     new list count  = sortingVisualizer.createValueArray(auxLen + 1),
              offset = sortingVisualizer.createValueArray(auxLen + 1);
 
-    new float CONST = auxLen / (max_ - min_ + 4);
+    new float CONST = auxLen / (max_ - min_ + 1);
 
     for i = a; i < b; i++ {
         count[int((array[i].readInt() - min_) * CONST)]++;
