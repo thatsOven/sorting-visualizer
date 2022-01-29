@@ -94,11 +94,15 @@ new class TUI() {
 
     new method __runAll() {
         new int dist, shuf, vis;
-        dist = selection("Select distribution:", [dist.name for dist in this.__sv.distributions]);
-        shuf = selection("Select shuffle:", [shuf.name for shuf in this.__sv.shuffles]);
-        vis  = selection("Select visual style:", [vis.name for vis in this.__sv.visuals]);
+        new float speed;
+
+        speed = getType("Insert speed multiplier: ", float);
+        dist  = selection("Select distribution:", [dist.name for dist in this.__sv.distributions]);
+        shuf  = selection("Select shuffle:", [shuf.name for shuf in this.__sv.shuffles]);
+        vis   = selection("Select visual style:", [vis.name for vis in this.__sv.visuals]);
 
         return {
+            "speed"       : speed,
             "distribution": dist,
             "shuffle"     : shuf,
             "visual"      : vis 

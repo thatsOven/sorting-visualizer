@@ -96,7 +96,7 @@ enum SVModeIndices {
 }
 
 enum RunAllModeIndices {
-    DIST, SHUF, VIS
+    SPEED, DIST, SHUF, VIS
 }
 
 enum SortSelModeIndices {
@@ -228,6 +228,11 @@ new class TUI() {
         this.__output = [];
 
         this.dialog = Dialog(0, 0, this.termSize.x, this.termSize.y, title = adjustTitle("thatsOven's Sorting Visualizer - Run All Sorts", this.termSize.x));
+
+        this.__speed = WTextEntry(4, "1");
+        this.dialog.add(2, 1, "Speed: ");
+        this.dialog.add(2, 2, this.__speed);
+        this.__output.append(this.__speed);
 
         new <Vector> listSize;
         listSize = Vector(
@@ -377,7 +382,18 @@ new class TUI() {
                 };
             }
             case TUIMode.RUN_ALL {
+                new dynamic speed;
+                speed = this.__output[RunAllModeIndices.SPEED].get();
+
+                if not checkType(speed, float) {
+                    UserWarn("Error", "Invalid speed value. Please retry.", this.termSize).run();
+                    return this.run();
+                } else {
+                    speed = float(speed);
+                }
+
                 return {
+                    "speed"       : speed,
                     "distribution": this.__output[RunAllModeIndices.DIST].get(),
                     "shuffle"     : this.__output[RunAllModeIndices.SHUF].get(),
                     "visual"      : this.__output[RunAllModeIndices.VIS].get()

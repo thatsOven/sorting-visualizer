@@ -698,7 +698,7 @@ new class SortingVisualizer() {
         }
     }
 
-    new method runSortingProcess(distribution, length, shuffle, categoryName, sortName, speed = 1, autoValue = True, stAutoValue = "default", ndAutoValue = 0, killers = {}) {
+    new method runSortingProcess(distribution, length, shuffle, categoryName, sortName, speed = 1, mult = 1, autoValue = True, stAutoValue = "default", ndAutoValue = 0, killers = {}) {
         if stAutoValue == "default" {
             stAutoValue = length;
         }
@@ -716,10 +716,10 @@ new class SortingVisualizer() {
             if shuffle in this.getKillerIds(killers, distribution) {
                 this.__speed = 1000;
             } else {
-                this.setSpeed(speed);
+                this.setSpeed(speed * mult);
             }
         } else {
-            this.setSpeed(speed);
+            this.setSpeed(speed * mult);
         }
 
         this.runSort(categoryName, name = sortName);
