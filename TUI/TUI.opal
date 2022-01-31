@@ -251,11 +251,11 @@ new class TUI() {
     }
 
     new method __userInputDialogUnwrapped() {
-        new <Vector> tmp = this.termSize.copy() // 2;
+        new <Vector> tmp = this.termSize.copy();
 
         this.__output = [];
 
-        this.dialog = Dialog(tmp.x - (tmp.x // 2), tmp.y - (tmp.y // 2), tmp.x, tmp.y, title = adjustTitle("thatsOven's Sorting Visualizer - " + this.userInputData.who, tmp.x));
+        this.dialog = Dialog(0, 0, tmp.x, tmp.y, title = adjustTitle("thatsOven's Sorting Visualizer - " + this.userInputData.who, tmp.x));
 
         multilineText(this.dialog, this.userInputData.message, tmp.x);
         new auto entry = WComboBox(tmp.x - 2, this.userInputData.default, [this.userInputData.default] + this.userInputData.common);
@@ -272,11 +272,11 @@ new class TUI() {
     }
 
     new method __selectionUnwrapped() {
-        new <Vector> tmp = this.termSize.copy() // 2;
+        new <Vector> tmp = this.termSize.copy();
 
         this.__output = [];
 
-        this.dialog = Dialog(tmp.x - (tmp.x // 2), tmp.y - (tmp.y // 2), tmp.x, tmp.y, title = adjustTitle("thatsOven's Sorting Visualizer - " + this.userInputData.who, tmp.x));
+        this.dialog = Dialog(0, 0, tmp.x, tmp.y, title = adjustTitle("thatsOven's Sorting Visualizer - " + this.userInputData.who, tmp.x));
 
         new int p;
         p = multilineText(this.dialog, this.userInputData.message, tmp.x);
