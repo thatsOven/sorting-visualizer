@@ -1,4 +1,4 @@
-new class CircleSort() {
+new class CircleSort {
     new classmethod converge(array, a, b) {
         new bool s = False;
         for ; a <= b; a++, b-- {
@@ -21,11 +21,11 @@ new class CircleSort() {
             return False;
         }
 
-        new bool l, r, s; 
+        new bool l, r, s;
         s = this.converge(array, a, b);
 
         new int m = a + ((b - a) // 2);
-        
+
         l = this.sorter(array, a, m);
         r = this.sorter(array, m, b);
 

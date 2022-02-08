@@ -1,6 +1,6 @@
 new dynamic binaryInsertionSort, grailSortGivenAux;
 
-new class SqrtStableQuickSort() {
+new class SqrtStableQuickSort {
     new int SMALL_SORT = 32;
 
     new classmethod buildBlocks(array, a, b, p) {

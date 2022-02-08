@@ -1,4 +1,4 @@
-new class MaxHeapSort() {
+new class MaxHeapSort {
     new classmethod siftDown(array, root, dist, start) {
         while root <= dist // 2 {
             new int leaf = 2 * root;
@@ -16,7 +16,7 @@ new class MaxHeapSort() {
 
     new classmethod heapify(array, a, b) {
         new int length = b - a;
-        
+
         for i = length // 2; i >= 1; i-- {
             this.siftDown(array, i, length, a);
         }

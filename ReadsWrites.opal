@@ -1,4 +1,4 @@
-new class Writes() {
+new class Writes {
     new method __init__() {
         this.writes = 0;
         this.swaps  = 0;
@@ -19,7 +19,7 @@ new class Writes() {
     }
 }
 
-new class Reads() {
+new class Reads {
     new method __init__() {
         this.reads       = 0;
         this.comparisons = 0;

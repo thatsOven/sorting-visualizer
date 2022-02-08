@@ -1,6 +1,6 @@
 new dynamic binaryInsertionSort;
 
-new class TimSort() {
+new class TimSort {
     new int MIN_MERGE  = 32,
             MIN_GALLOP = 7,
             INITIAL_TMP_STORAGE_LENGTH = 256;
@@ -9,16 +9,16 @@ new class TimSort() {
         this.a = a;
         this.len = length;
 
-        this.tmp = sortingVisualizer.createValueArray((this.len >> 1) 
-                                                   if (this.len < 2 * TimSort.INITIAL_TMP_STORAGE_LENGTH) 
+        this.tmp = sortingVisualizer.createValueArray((this.len >> 1)
+                                                   if (this.len < 2 * TimSort.INITIAL_TMP_STORAGE_LENGTH)
                                                    else TimSort.INITIAL_TMP_STORAGE_LENGTH);
 
         sortingVisualizer.setAux(this.tmp);
-            
+
         this.minGallop = TimSort.MIN_GALLOP;
         this.stackSize = 0;
 
-        new int stackLen = 5 if (this.len < 120) 
+        new int stackLen = 5 if (this.len < 120)
                              else (10 if (this.len < 1542)
                              else (19 if (this.len < 119151)
                              else 40));
@@ -107,7 +107,7 @@ new class TimSort() {
 
             if (n >= 1 and this.runLen[n - 1] <= this.runLen[n] + this.runLen[n + 1]) or
                (n >= 2 and this.runLen[n - 2] <= this.runLen[n] + this.runLen[n - 1]) {
-                
+
                 if this.runLen[n - 1] < this.runLen[n + 1] {
                     n--;
                 }
@@ -167,7 +167,7 @@ new class TimSort() {
     new method gallopLeft(key, a, base, len, hint) {
         new int lastOfs = 0,
                 ofs     = 1;
-        
+
         if key > a[base + hint] {
             new int maxOfs = len - hint;
 
@@ -221,7 +221,7 @@ new class TimSort() {
     new method gallopRight(key, a, base, len, hint) {
         new int ofs     = 1,
                 lastOfs = 0;
-        
+
         if key < a[base + hint] {
             new int maxOfs = hint + 1;
 
@@ -413,7 +413,7 @@ new class TimSort() {
 
         a[dest].write(a[cursor1]);
         dest--;
-        cursor1--; 
+        cursor1--;
         len1--;
         if len1 == 0 {
             reverseArrayCopy(tmp, 0, a, dest - (len2 - 1), len2);

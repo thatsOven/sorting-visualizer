@@ -1,4 +1,4 @@
-new class MergeSort() {
+new class MergeSort {
     new method __init__(length) {
         this.aux = sortingVisualizer.createValueArray(length);
         sortingVisualizer.setAux(this.aux);

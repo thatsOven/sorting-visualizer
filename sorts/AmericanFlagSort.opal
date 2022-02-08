@@ -1,8 +1,8 @@
-new class AmericanFlagSort() {
+new class AmericanFlagSort {
     new method __init__(buckets = None) {
         if buckets is None {
             this.buckets = sortingVisualizer.getUserInput(
-                "Insert bucket count: ", 
+                "Insert bucket count: ",
                 "128", ["2", "4", "10", "16", "256"], int);
         } else {
             this.buckets = buckets;

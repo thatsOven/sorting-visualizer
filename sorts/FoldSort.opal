@@ -1,4 +1,4 @@
-new class FoldSort() {
+new class FoldSort {
     new method compSwap(array, a, b) {
         if b < this.end and array[a] > array[b] {
             array[a].swap(array[b]);
@@ -13,7 +13,7 @@ new class FoldSort() {
 
     new method sort(array, a, b) {
         this.end = b;
-        
+
         for ceilLog = 1; (1 << ceilLog) < (b - a); ceilLog++ {}
 
         new int size = 1 << ceilLog;

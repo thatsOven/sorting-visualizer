@@ -1,4 +1,4 @@
-new class WikiRange() {
+new class WikiRange {
     new method __init__(start = 0, end = 0) {
         this.start = start;
         this.end   = end;
@@ -14,7 +14,7 @@ new class WikiRange() {
     }
 }
 
-new class WikiPull() {
+new class WikiPull {
     new method __init__() {
         this.range = WikiRange(0, 0);
 
@@ -32,7 +32,7 @@ new class WikiPull() {
     }
 }
 
-new class WikiIterator() {
+new class WikiIterator {
     new classmethod floorPowerOfTwo(value) {
         new int x = value;
 
@@ -67,7 +67,7 @@ new class WikiIterator() {
         if this.numerator >= this.denominator {
             this.numerator -= this.denominator;
             this.decimal++;
-        } 
+        }
 
         return WikiRange(start, this.decimal);
     }
@@ -93,17 +93,17 @@ new class WikiIterator() {
     }
 }
 
-new class WikiSort() {
+new class WikiSort {
     new method __init__(cacheSize, cache = None) {
         this.cache_size = cacheSize;
-        
+
         if this.cache_size != 0 {
             if cache is None {
                 this.cache = sortingVisualizer.createValueArray(this.cache_size);
             } else {
                 this.cache = cache;
             }
-            
+
             sortingVisualizer.setAux(this.cache);
         } else {
             this.cache = None;
@@ -405,7 +405,7 @@ new class WikiSort() {
                     }
                     if array[2] < array[1] {
                         array[1].swap(array[2]);
-                        
+
                         if array[1] < array[0] {
                             array[0].swap(array[1]);
                         }
@@ -476,9 +476,9 @@ new class WikiSort() {
             return;
         }
 
-        new <WikiRange> buffer1, buffer2, 
+        new <WikiRange> buffer1, buffer2,
                          blockA,  blockB,
-                          lastA,   lastB, 
+                          lastA,   lastB,
                          firstA, A, B;
 
         buffer1 = WikiRange();
@@ -702,7 +702,7 @@ new class WikiSort() {
                             new <WikiRange> range;
                             range = WikiRange(pull[pull_index].from_, index - 1);
                             this.rotate(array, count, range, True);
-                            pull[pull_index].from_ = index - 1 - count;                
+                            pull[pull_index].from_ = index - 1 - count;
                         }
                     }
                 }
@@ -734,7 +734,7 @@ new class WikiSort() {
                     if start == pull[1].range.start {
                         if pull[1].from_ > pull[1].to {
                             A.start += pull[1].count;
-                            
+
                             if A.length() == 0 {
                                 continue;
                             }
@@ -819,7 +819,7 @@ new class WikiSort() {
                                     }
                                 } elif blockB.length() < block_size {
                                     this.rotate(array, -blockB.length(), WikiRange(blockA.start, blockB.end), False);
-                                
+
                                     lastB.set(blockA.start, blockA.start + blockB.length());
                                     blockA.start += blockB.length();
                                     blockA.end += blockB.length();

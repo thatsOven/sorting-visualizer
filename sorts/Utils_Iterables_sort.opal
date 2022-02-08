@@ -1,6 +1,6 @@
 new dynamic MaxHeapSort, uncheckedInsertionSort, ShellSort;
 
-new class MedianOfSixteenAdaptiveQuickSort() {
+new class MedianOfSixteenAdaptiveQuickSort {
     new classmethod compNSwap(array, a, b, gap, start) {
         if array[start + (a * gap)] > array[start + (b * gap)] {
             array[start + (a * gap)].swap(array[start + (b * gap)]);
@@ -16,7 +16,7 @@ new class MedianOfSixteenAdaptiveQuickSort() {
         6, 11, 7, 10, 4, 13, 14, 15, 8, 12, 2, 3, 5, 9,
         2, 5, 8, 14, 3, 9, 12, 15, 6, 7, 10, 11,
         3, 5, 12, 14, 4, 9, 8, 13,
-        7, 9, 11, 13, 4, 6, 8, 10, 
+        7, 9, 11, 13, 4, 6, 8, 10,
         4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
         7, 8, 9, 10
     ];
@@ -24,7 +24,7 @@ new class MedianOfSixteenAdaptiveQuickSort() {
     new classmethod sortSixteen(array, a, b, gap) {
         for i = 0; i < len(this.medianOfSixteenSwaps); i += 2 {
             this.compNSwap(
-                array, this.medianOfSixteenSwaps[i], 
+                array, this.medianOfSixteenSwaps[i],
                 this.medianOfSixteenSwaps[i+1], gap, a
             );
         }

@@ -1,19 +1,19 @@
  #
  # MIT License
- # 
+ #
  # Copyright (c) 2013 Andrey Astrelin
  # Copyright (c) 2020 The Holy Grail Sort Project
- # 
+ #
  # Permission is hereby granted, free of charge, to any person obtaining a copy
  # of this software and associated documentation files (the "Software"), to deal
  # in the Software without restriction, including without limitation the rights
  # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  # copies of the Software, and to permit persons to whom the Software is
  # furnished to do so, subject to the following conditions:
- # 
+ #
  # The above copyright notice and this permission notice shall be included in all
  # copies or substantial portions of the Software.
- # 
+ #
  # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -41,9 +41,9 @@
  #                       Spex_guy
  #                       thatsOven
  #                       _fluffyy
- #                       
- #                       
- #                       
+ #
+ #
+ #
  # Special thanks to "The Studio" Discord community!
 
 # REWRITTEN GRAILSORT FOR OPAL - A heavily refactored C/C++-to-Python version of
@@ -56,7 +56,7 @@
 #
 # Current status: Working (Passing all tests) + Stable
 
-new class GrailSort() {
+new class GrailSort {
     new int GRAIL_STATIC_EXT_BUF_LEN = 512;
 
     new dynamic extBuffer    = None;
@@ -168,7 +168,7 @@ new class GrailSort() {
         for index = 1; index < length; index += 2 {
             new int  left = start + index - 1,
                     right = start + index;
-                
+
             if array[left] > array[right] {
                 this.grailSwap(array,  left - 2, right);
                 this.grailSwap(array, right - 2,  left);
@@ -188,7 +188,7 @@ new class GrailSort() {
         for index = 1; index < length; index += 2 {
             new int  left = start + index - 1,
                     right = start + index;
-                
+
             if array[left] > array[right] {
                 array[left - 2].write(array[right]);
                 array[right - 2].write(array[left]);
@@ -372,8 +372,8 @@ new class GrailSort() {
 
                 this.grailSwap(array, firstKey + firstBlock, firstKey + selectBlock);
 
-                if     medianKey == firstBlock  { medianKey = selectBlock;}  
-                else { 
+                if     medianKey == firstBlock  { medianKey = selectBlock;}
+                else {
                     if medianKey == selectBlock { medianKey = firstBlock;}}
             }
         }

@@ -1,11 +1,11 @@
-new class HighlightPair() {
+new class HighlightPair {
     new method __init__(idx, aux) {
         this.idx = idx;
         this.aux = aux;
     }
 }
 
-new class Value() {
+new class Value {
     new method __init__(value) {
         this.value   = value;
         this.idx     = None;
@@ -25,7 +25,7 @@ new class Value() {
     new method noMark() {
         new <Value> val = Value(this.value);
         val.stabIdx = this.stabIdx;
-        
+
         return val;
     }
 
@@ -311,7 +311,7 @@ new class Value() {
                         temp  = this.value + other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -325,7 +325,7 @@ new class Value() {
                         temp  = this.value - other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -339,7 +339,7 @@ new class Value() {
                         temp  = this.value * other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -353,7 +353,7 @@ new class Value() {
                         temp  = this.value / other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -367,7 +367,7 @@ new class Value() {
                         temp  = this.value // other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -381,7 +381,7 @@ new class Value() {
                         temp  = this.value & other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -395,7 +395,7 @@ new class Value() {
                         temp  = this.value ** other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -409,7 +409,7 @@ new class Value() {
                         temp  = this.value << other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -423,7 +423,7 @@ new class Value() {
                         temp  = this.value >> other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -437,7 +437,7 @@ new class Value() {
                         temp  = this.value & other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -451,7 +451,7 @@ new class Value() {
                         temp  = this.value ^ other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -465,7 +465,7 @@ new class Value() {
                         temp  = this.value | other;
             sortingVisualizer.timer(sTime);
         }
-        
+
         return temp;
     }
 
@@ -551,7 +551,7 @@ new class Value() {
 
     new method __ifloordiv__(other) {
         sortingVisualizer.writes.addWrite();
-        
+
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
             this.value //= other.value;
@@ -571,7 +571,7 @@ new class Value() {
 
     new method __imod__(other) {
         sortingVisualizer.writes.addWrite();
-        
+
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
             this.value %= other.value;
@@ -591,7 +591,7 @@ new class Value() {
 
     new method __ipow__(other) {
         sortingVisualizer.writes.addWrite();
-        
+
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
             this.value **= other.value;
@@ -611,7 +611,7 @@ new class Value() {
 
     new method __ilshift__(other) {
         sortingVisualizer.writes.addWrite();
-        
+
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
             this.value <<= other.value;
@@ -631,7 +631,7 @@ new class Value() {
 
     new method __irshift__(other) {
         sortingVisualizer.writes.addWrite();
-        
+
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
             this.value >>= other.value;
@@ -651,7 +651,7 @@ new class Value() {
 
     new method __iand__(other) {
         sortingVisualizer.writes.addWrite();
-        
+
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
             this.value &= other.value;
@@ -671,7 +671,7 @@ new class Value() {
 
     new method __ixor__(other) {
         sortingVisualizer.writes.addWrite();
-        
+
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
             this.value ^= other.value;
@@ -691,7 +691,7 @@ new class Value() {
 
     new method __ior__(other) {
         sortingVisualizer.writes.addWrite();
-        
+
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
             this.value |= other.value;

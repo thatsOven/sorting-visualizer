@@ -1,8 +1,8 @@
 new dynamic binaryInsertionSort;
 
-new class BottomUpMergeSort() {
+new class BottomUpMergeSort {
     new classmethod merge(c, d, lt, md, rt) {
-        new int i = lt, 
+        new int i = lt,
                 j = md + 1,
                 k = lt;
 

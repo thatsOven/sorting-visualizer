@@ -1,4 +1,4 @@
-new class ShellSort() {
+new class ShellSort {
     new list seq;
     seq = [8861, 3938, 1750, 701, 301, 132, 57, 23, 10, 4, 1];
 

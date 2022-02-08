@@ -1,4 +1,4 @@
-new class BoseNelsonSort() {
+new class BoseNelsonSort {
     new classmethod merge(array, a1, l1, a2, l2) {
         if l1 == 1 and l2 == 1 {
             compSwap(array, a1, a2);

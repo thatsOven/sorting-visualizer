@@ -1,4 +1,4 @@
-new class CombSort() {
+new class CombSort {
     new method __init__(shrink = None) {
         if shrink is None {
             new float tmp;
@@ -22,7 +22,7 @@ new class CombSort() {
     new method sort(array, a, b) {
         new bool swapped = False;
         new dynamic  gap = b - a;
-        
+
         while (gap > 1) or swapped {
             if gap > 1 {
                 gap /= this.shrink;

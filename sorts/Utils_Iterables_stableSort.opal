@@ -1,4 +1,4 @@
-new class UtilsIterablesStableSortMerge() {
+new class UtilsIterablesStableSortMerge {
     new method __init__(size, aux = None) {
         if aux is None {
             this.aux = sortingVisualizer.createValueArray(size);
@@ -162,7 +162,7 @@ new class UtilsIterablesStableSortMerge() {
 
 new dynamic binaryInsertionSort;
 
-new class UtilsIterablesStableSort() {
+new class UtilsIterablesStableSort {
     new method __init__(size, aux = None) {
         this.__merge = UtilsIterablesStableSortMerge(size, aux);
     }

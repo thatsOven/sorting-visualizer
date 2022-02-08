@@ -1,7 +1,7 @@
-new class VisualSizes() {
+new class VisualSizes {
     new method __init__(sv) {
         this.sv = sv;
-        
+
         this.lineSize                 = None;
         this.dotSize                  = None;
         this.lineLengthConst          = None;
@@ -44,7 +44,7 @@ new class VisualSizes() {
         this.angleStep = math.radians(this.angleStep);
 
         this.circleRadius = (this.sv.graphics.resolution.y // 2) - 20;
-        
+
         this.circleCenter = this.sv.graphics.resolution.copy();
         this.circleCenter.y //= 2;
         this.circleCenter.x = this.sv.graphics.resolution.x - this.circleRadius - 20;

@@ -1,6 +1,6 @@
 new dynamic binaryInsertionSort;
 
-new class LibrarySort() {
+new class LibrarySort {
     new int R = 4;
 
     new classmethod getMinLevel(n) {

@@ -1,4 +1,4 @@
-new class QuickSort() {
+new class QuickSort {
     new method __init__(pSel = None) {
         if pSel is None {
             this.pSel = sortingVisualizer.getPivotSelection(

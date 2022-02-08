@@ -2,7 +2,7 @@ package itertools: import chain;
 
 new dynamic UtilsIterablesStableSort;
 
-new class FeatureSort() {
+new class FeatureSort {
     new classmethod sortSubarray(subarray, mainArray) {
         new int l = len(subarray);
         if l <= 1 {

@@ -1,4 +1,4 @@
-new class BitonicSort() {
+new class BitonicSort {
     new classmethod greaterPowerOfTwoLessThan(n) {
         for k = 1; k < n; k <<= 1 {}
         return k >> 1;

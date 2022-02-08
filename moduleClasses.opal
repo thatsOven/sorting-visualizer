@@ -1,7 +1,7 @@
 package copy: import deepcopy;
 
 @total_ordering;
-new class Sort() {
+new class Sort {
     new method __init__(category, name, listName) {
         this.category = category;
         this.name     = name;
@@ -32,7 +32,7 @@ new class Sort() {
 }
 
 @total_ordering;
-new class Shuffle() {
+new class Shuffle {
     new method __init__(name) {
         this.name     = name;
         this.func     = None;
@@ -61,7 +61,7 @@ new class Shuffle() {
 }
 
 @total_ordering;
-new class Distribution() {
+new class Distribution {
     new method __init__(name) {
         this.name     = name;
         this.func     = None;
@@ -90,7 +90,7 @@ new class Distribution() {
 }
 
 @total_ordering;
-new class Visual() {
+new class Visual {
     new method __init__(name, highlightColor = (255, 0, 0), refreshMode = RefreshMode.STANDARD, outOfText = False) {
         this.name           = name;
         this.highlightColor = highlightColor;
@@ -135,7 +135,7 @@ new class Visual() {
 }
 
 @total_ordering;
-new class PivotSelection() {
+new class PivotSelection {
     new method __init__(name) {
         this.name = name;
         this.func = None;

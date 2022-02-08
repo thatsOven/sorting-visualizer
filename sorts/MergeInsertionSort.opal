@@ -1,9 +1,9 @@
-new class MergeInsertionSort() {
+new class MergeInsertionSort {
     new classmethod blockSwap(array, a, b, s) {
         for ; s > 0; a--, b-- {
             s--;
             array[a].swap(array[b]);
-        } 
+        }
     }
 
     new classmethod blockInsert(array, a, b, s) {

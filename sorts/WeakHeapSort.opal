@@ -1,4 +1,4 @@
-new class WeakHeapSort() {
+new class WeakHeapSort {
     new method __init__(array, length) {
         this.array  = array;
         this.length = length;

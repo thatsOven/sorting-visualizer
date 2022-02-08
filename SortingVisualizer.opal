@@ -38,7 +38,7 @@ enum ArrayState {
     UNSORTED, SORTED, STABLY_SORTED
 }
 
-new class SortingVisualizer() {
+new class SortingVisualizer {
     new method __init__() {
         this.array = [];
         this.aux   = None;
@@ -78,7 +78,7 @@ new class SortingVisualizer() {
         this.__currentCategory  = "";
 
         this.__checking = False;
-        
+
         this.__autoUserValue = None;
         this.__shufThread    = None;
 
@@ -214,7 +214,7 @@ new class SortingVisualizer() {
             this.array[i].stabIdx = i;
             this.array[i].idx     = i;
         }
-        
+
         this.visualSizes.compute();
         this.drawFullArray();
     }
@@ -229,7 +229,7 @@ new class SortingVisualizer() {
         this.__currentCategory  = "Shuffles";
 
         this.__getSizes();
-        
+
         new float speed = len(this.array) / 256;
 
         if speed < 1 {
@@ -237,7 +237,7 @@ new class SortingVisualizer() {
         } else {
             this.setSpeed(round(speed));
         }
-        
+
         this.shuffles[id].func(this.array);
 
         for i in range(len(this.array)) {
@@ -249,7 +249,7 @@ new class SortingVisualizer() {
         this.drawFullArray();
         this.renderStats();
         this.noRedrawUpdate();
-    }   
+    }
 
     new method runShuffle(id = None, name = None) {
         this.__runSDModule("shuffle", this.__runShuffleById, this.shuffles, id, name, Shuffle);
@@ -338,7 +338,7 @@ new class SortingVisualizer() {
         for i = 0; i < len(array) - 1; i++ {
             if getVal(array[i]) > getVal(array[i + 1]) {
                 return i;
-            } 
+            }
         }
         return len(array) - 1;
     }
@@ -350,7 +350,7 @@ new class SortingVisualizer() {
 
         if sUntil == len(this.array) - 1 {
             this.sweep(0, len(this.array), (0, 255, 0));
-            
+
             new dict stabilityCheck = {};
 
             for i = 0; i < len(this.array); i++ {
@@ -506,7 +506,7 @@ new class SortingVisualizer() {
             tmp = 400 * signal.sawtooth(2 * numpy.pi  * int(((400 + (this.__adaptAux(this.aux)[i.idx].value * (500 / this.auxMax)))) + 50) * this.__soundSample);
         } else {
             tmp = 400 * signal.sawtooth(2 * numpy.pi  * int(((400 + (this.array[i.idx].value * (500 / this.arrayMax)))) + 50) * this.__soundSample);
-        } 
+        }
 
         if this.__audioChs > 1 {
             return numpy.repeat(tmp.reshape(tmp.size, 1), this.__audioChs, axis = 1);
@@ -616,7 +616,7 @@ new class SortingVisualizer() {
                         this.renderStats();
                     }
                 }
-                
+
                 this.noRedrawUpdate();
             }
             this.__speedCounter++;
@@ -632,7 +632,7 @@ new class SortingVisualizer() {
     new method resetAutoValue() {
         this.__autoUserValue = None;
     }
-    
+
     new method setSpeed(value) {
         match this.__visual.refresh {
             case RefreshMode.FULL {
@@ -779,7 +779,7 @@ new class SortingVisualizer() {
         if initGraph {
             this.initGraphics();
         }
-        
+
         try {
             exec(threadCode);
         } catch Exception as e {
@@ -797,7 +797,7 @@ new class SortingVisualizer() {
         if mode != modeI {
             this.__tui.selection("Warning", "This thread was not intended to be used as a " + modeI + ". Run anyway?", ["No", "Yes"]);
             return this.__tui.run() == 1;
-        }       
+        }
 
         return True;
     }
@@ -816,14 +816,14 @@ new class SortingVisualizer() {
         while True {
             this.__tui.selection(title, "Select thread: ", threads);
             new int sel = this.__tui.run();
-            
+
             new str path = os.path.join("HOME_DIR", "threads", threads[sel]);
-            
+
             if this.__threadTypeChecker(path, title) {
                 break;
             }
         }
-        
+
         if run {
             this.__loadThreadAndRun(path, initGraph);
         } else {
@@ -842,7 +842,7 @@ new class SortingVisualizer() {
 
     new method __threadShuf(array) {
         if this.__shufThread is None {
-            this.__shufThread = this.__selectThread("Shuffle", False);  
+            this.__shufThread = this.__selectThread("Shuffle", False);
         }
         this.__loadThreadAndRun(this.__shufThread);
     }
@@ -889,7 +889,7 @@ new class SortingVisualizer() {
                         this.initGraphics();
                         graphicsInit = False;
                     }
-                    
+
                     this.__visual = this.visuals[runOpts["visual"]];
 
                     this.generateArray(runOpts["distribution"], runOpts["shuffle"], runOpts["array-size"]);
@@ -946,7 +946,7 @@ new class SortingVisualizer() {
                     case 2 {
                         $include os.path.join("HOME_DIR", "threadBuilder", "ThreadBuilder.opal")
                     }
-                } 
+                }
             }
         }
     }

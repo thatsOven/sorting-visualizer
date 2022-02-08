@@ -1,6 +1,6 @@
 new dynamic binaryInsertionSort;
 
-new class StacklessQuickSort() {
+new class StacklessQuickSort {
     new method __init__(pSel = None) {
         if pSel is None {
             this.pSel = sortingVisualizer.getPivotSelection(

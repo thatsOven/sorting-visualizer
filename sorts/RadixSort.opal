@@ -1,8 +1,8 @@
-new class RadixSort() {
+new class RadixSort {
     new method __init__(base = None) {
         if base is None {
             this.base = sortingVisualizer.getUserInput(
-                "Insert base: ", 
+                "Insert base: ",
                 "4", ["2", "10", "16"], int);
         } else {
             this.base = base;
@@ -12,7 +12,7 @@ new class RadixSort() {
 
     new method getHighestPower(array, a, b) {
         return findHighestPower(array, a, b, this.base);
-    } 
+    }
 
     new method adaptAux(array) {
         new list result = list(chain.from_iterable(array));
@@ -60,10 +60,10 @@ new class RadixSort() {
         new int hPow = this.getHighestPower(array, a, b);
 
         new list aux = [[] for _ in range(this.base)];
-        
+
         sortingVisualizer.setAdaptAux(this.adaptAux);
         sortingVisualizer.setAux(aux);
-        
+
         for p in range(hPow + 2) {
             for i = a; i < b; i++ {
                 new int dig = array[i].readDigit(p, this.base);
@@ -77,7 +77,7 @@ new class RadixSort() {
     new method MSD(array, a, b, p = None) {
         this.arrayLen = b - a;
 
-        if p is None {    
+        if p is None {
             p = this.getHighestPower(array, a, b);
             sortingVisualizer.setAdaptAux(this.adaptAux);
         }

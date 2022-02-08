@@ -1,6 +1,6 @@
 new dynamic MaxHeapSort;
 
-new class PDQSort() {
+new class PDQSort {
     new int insertSortThreshold    = 24,
             nintherThreshold       = 128,
             partialInsertSortLimit = 8,
@@ -17,11 +17,11 @@ new class PDQSort() {
         if begin == end {
             return;
         }
-        
+
         for i = begin + 1; i < end; i++ {
             new <Value> key;
             new int     idx;
-            
+
             if array[i] < array[i - 1] {
                 dynamic: key, idx = array[i].readNoMark();
 
@@ -41,7 +41,7 @@ new class PDQSort() {
         for i = begin + 1; i < end; i++ {
             new <Value> key;
             new int     idx;
-            
+
             if array[i] < array[i - 1] {
                 dynamic: key, idx = array[i].readNoMark();
 
@@ -64,7 +64,7 @@ new class PDQSort() {
             }
             new <Value> key;
             new int     idx;
-            
+
             if array[i] < array[i - 1] {
                 dynamic: key, idx = array[i].readNoMark();
 
@@ -97,7 +97,7 @@ new class PDQSort() {
         do array[first] < pivot {
             first++;
         }
-        
+
         if first - 1 == begin {
             do not array[last] < pivot {
                 if not (first < last) {
