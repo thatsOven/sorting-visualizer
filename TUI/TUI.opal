@@ -25,7 +25,7 @@ new function multilineText(dialog, text, sizeX) {
     return pos + 1;
 }
 
-new class UserWarn() {
+new class UserWarn {
     new method __init__(title, message, termSize = None) {
         this.title = title;
         this.message = message;
@@ -103,7 +103,7 @@ enum SortSelModeIndices {
     CAT, SORT
 }
 
-new class TUI() {
+new class TUI {
     new method __init__() {
         new auto tmp = os.get_terminal_size();
 
