@@ -1,4 +1,4 @@
-new class UserWarn() {
+new class UserWarn {
     new method __init__(stPlaceHolder, message, ndPlaceHolder = None) {
         this.message = message;
     }
@@ -43,7 +43,7 @@ new function selection(message, content) {
     }
 }
 
-new class TUI() {
+new class TUI {
     new method __init__() {
         this.__sv = None;
 

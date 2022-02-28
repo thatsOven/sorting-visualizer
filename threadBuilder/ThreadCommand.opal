@@ -1,4 +1,4 @@
-new class ThreadCommand() {
+new class ThreadCommand {
     new method __init__(mode, id, lengthC = None) {
         this.__mode    = mode;
         this.__id      = id;
