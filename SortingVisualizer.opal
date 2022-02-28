@@ -139,9 +139,9 @@ new class SortingVisualizer {
         this.__tmpSleep     = dTime / 1000;
     }
 
-    new method noRedrawUpdate() {
+    $macro update
         this.graphics.forceDraw(drawBackground = False);
-    }
+    $end
 
     new method resetStats() {
         this.writes.reset();
@@ -248,7 +248,7 @@ new class SortingVisualizer {
         this.resetAdaptAux();
         this.drawFullArray();
         this.renderStats();
-        this.noRedrawUpdate();
+        $call update
     }
 
     new method runShuffle(id = None, name = None) {
@@ -393,17 +393,14 @@ new class SortingVisualizer {
         new tuple color;
         match state {
             case ArrayState.UNSORTED {
-                color = (255, 0, 0);
                 this.setCurrentlyRunning("", "The list was not sorted");
                 IO.out(sortName, " has failed\n");
             }
             case ArrayState.SORTED {
-                color = (255, 255, 0);
                 this.setCurrentlyRunning("", "The list was sorted");
                 IO.out(sortName, " sorted the list unstably\n");
             }
             case ArrayState.STABLY_SORTED {
-                color = (0, 0, 255);
                 this.setCurrentlyRunning("", "The list was sorted stably");
                 IO.out(sortName, " sorted the list stably\n");
             }
@@ -411,7 +408,7 @@ new class SortingVisualizer {
 
         this.drawFullArray();
         this.renderStats();
-        this.noRedrawUpdate();
+        $call update
 
         time.sleep(1.25);
     }
@@ -515,9 +512,9 @@ new class SortingVisualizer {
         }
     }
 
-    new method playSound(indices) {
-        this.graphics.stopPlay([this.__getWaveformFromIdx(i) for i in indices]);
-    }
+    $macro playSound(hList)
+        this.graphics.stopPlay([this.__getWaveformFromIdx(i) for i in hList]);
+    $end
 
     new method __partitionIndices(hList) {
         new dynamic internal = [],
@@ -542,7 +539,7 @@ new class SortingVisualizer {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
 
-                this.playSound(hList);
+                $call playSound(hList)
 
                 if this.__showAux and this.aux is not None {
                     new dynamic auxList;
@@ -560,7 +557,8 @@ new class SortingVisualizer {
 
                 this.renderStats();
 
-                this.noRedrawUpdate();
+                $call update
+
                 this.__visual.func(this, this.array, set(hList + this.__forceLoadedIndices), "default");
 
                 time.sleep(this.__sleep + this.__tmpSleep);
@@ -609,7 +607,7 @@ new class SortingVisualizer {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
 
-                this.playSound([HighlightPair(i, False)]);
+                $call playSound([HighlightPair(i, False)])
 
                 if len(this.__forceLoadedIndices) != 0 {
                     if i <= this.__forceLoadedIndices[-1] {
@@ -617,7 +615,7 @@ new class SortingVisualizer {
                     }
                 }
 
-                this.noRedrawUpdate();
+                $call update
             }
             this.__speedCounter++;
         }
