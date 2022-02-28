@@ -69,6 +69,6 @@ new function findKeys(array, a, b, q, t) {
             return n;
         }
 
-        return this.findKeysUnsorted(array, p - n, p, b, q, a);
+        return findKeysUnsorted(array, p - n, p, b, q, a);
     }
 }
