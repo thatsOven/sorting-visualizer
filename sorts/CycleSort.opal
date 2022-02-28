@@ -11,7 +11,6 @@ new function cycleSort(array, a, b) {
         }
 
         if pos == cycleStart {
-            cycleStart++;
             continue;
         }
 
