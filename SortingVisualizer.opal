@@ -19,7 +19,7 @@ enum RefreshMode {
 new function checkType(value, type_) {
     try {
         new dynamic tmp = type_(value);
-    } catch {
+    } catch ValueError {
         return False;
     }
     return True;
