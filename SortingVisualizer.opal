@@ -1,4 +1,3 @@
-$define HOME_DIR PROJECT_DIRECTORY
 package opal: import *;
 
 new <Vector> RESOLUTION = Vector(1280, 720);
