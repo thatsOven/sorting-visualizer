@@ -499,9 +499,9 @@ new class SortingVisualizer {
         new dynamic tmp;
 
         if i.aux and this.aux is not None {
-            tmp = 400 * signal.sawtooth(2 * numpy.pi  * int(((400 + (this.__adaptAux(this.aux)[i.idx].value * (500 / this.auxMax)))) + 50) * this.__soundSample);
+            tmp = 200 * signal.square(2 * numpy.pi  * int(((400 + (this.__adaptAux(this.aux)[i.idx].value * (500 / this.auxMax)))) + 50) * this.__soundSample);
         } else {
-            tmp = 400 * signal.sawtooth(2 * numpy.pi  * int(((400 + (this.array[i.idx].value * (500 / this.arrayMax)))) + 50) * this.__soundSample);
+            tmp = 200 * signal.square(2 * numpy.pi  * int(((400 + (this.array[i.idx].value * (500 / this.arrayMax)))) + 50) * this.__soundSample);
         }
 
         if this.__audioChs > 1 {
