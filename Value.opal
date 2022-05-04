@@ -1,9 +1,4 @@
-new class HighlightPair {
-    new method __init__(idx, aux) {
-        this.idx = idx;
-        this.aux = aux;
-    }
-}
+new record HighlightPair(idx, aux);
 
 new class Value {
     new method __init__(value) {

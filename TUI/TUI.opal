@@ -77,15 +77,7 @@ new class UserWarn {
     }
 }
 
-new class userInputData() {
-    new method __init__(who, message, type_ = None, default = None, common = None) {
-        this.who     = who;
-        this.message = message;
-        this.type_   = type_;
-        this.default = default;
-        this.common  = common;
-    }
-}
+new record userInputData(who, message, type_ = None, default = None, common = None);
 
 enum TUIMode {
     SV, RUN_ALL, DIALOG, SELECTION, SORTSEL
