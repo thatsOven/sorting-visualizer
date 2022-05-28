@@ -111,7 +111,7 @@ new class RadixSort {
     "Distribution Sorts",
     "Least Significant Digit Radix Sort",
     "LSD Radix Sort"
-).run;
+);
 new function LSDRadixSortRun(array) {
     RadixSort().LSD(array, 0, len(array));
 }

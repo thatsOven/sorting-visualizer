@@ -150,7 +150,7 @@ new class SortingVisualizer {
 
     new method drawFullArray() {
         this.graphics.fill((0, 0, 0));
-        this.__visual.func(this, this.array, [i for i in range(len(this.array))], "default");
+        this.__visual.draw(this.array, [i for i in range(len(this.array))], None);
     }
 
     new method __getSizes() {
@@ -548,23 +548,23 @@ new class SortingVisualizer {
                     hList = [x.idx for x in hList];
                 }
 
-                this.__visual.func(this, this.array, hList, this.__visual.highlightColor);
+                this.__visual.draw(this.array, hList, this.__visual.highlightColor);
 
                 if this.__showAux and this.aux is not None {
-                    this.__visual.auxFunc(this, this.__adaptAux(this.aux), auxList, this.__visual.highlightColor);
+                    this.__visual.drawAux(this.__adaptAux(this.aux), auxList, this.__visual.highlightColor);
                 }
 
                 this.renderStats();
 
                 $call update
 
-                this.__visual.func(this, this.array, set(hList + this.__forceLoadedIndices), "default");
+                this.__visual.draw(this.array, set(hList + this.__forceLoadedIndices), None);
 
                 time.sleep(this.__sleep + this.__tmpSleep);
 
                 this.__tmpSleep = 0;
             } else {
-                this.__visual.func(this, this.array, this.__partitionIndices(hList)[0], "default");
+                this.__visual.draw(this.array, this.__partitionIndices(hList)[0], None);
             }
         } elif this.__speedCounter >= this.__speed {
             this.__speedCounter = 0;
@@ -601,7 +601,7 @@ new class SortingVisualizer {
         for i = a; i < b; i++ {
             time.sleep(this.__sleep);
 
-            this.__visual.func(this, this.array, [i], color);
+            this.__visual.draw(this.array, [i], color);
 
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
@@ -695,8 +695,8 @@ new class SortingVisualizer {
         }
     }
 
-    new method runSortingProcess(distribution, length, shuffle, categoryName, sortName, speed = 1, mult = 1, autoValue = True, stAutoValue = "default", ndAutoValue = 0, killers = {}) {
-        if stAutoValue == "default" {
+    new method runSortingProcess(distribution, length, shuffle, categoryName, sortName, speed = 1, mult = 1, autoValue = True, stAutoValue = None, ndAutoValue = 0, killers = {}) {
+        if stAutoValue is None {
             stAutoValue = length;
         }
 

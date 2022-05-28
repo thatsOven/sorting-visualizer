@@ -46,7 +46,7 @@ new function doubleSelectionSort(array, a, b) {
     "Selection Sorts",
     "Selection Sort",
     "Selection Sort"
-).run;
+);
 new function selectionSortRun(array) {
     selectionSort(array, 0, len(array));
 }

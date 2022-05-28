@@ -43,7 +43,7 @@ new class QuickSort {
     "Quick Sorts",
     "Quick Sort - Left/Right Pointers",
     "LR Quick Sort"
-).run;
+);
 new function LRQuickSortRun(array) {
     QuickSort().LRQuickSort(array, 0, len(array));
 }

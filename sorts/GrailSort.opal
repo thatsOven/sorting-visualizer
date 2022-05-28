@@ -986,7 +986,7 @@ new function grailSortGivenAux(array, start, length, aux, set = True) {
     "Block Merge Sorts",
     "Grail Sort",
     "Grail Sort"
-).run;
+);
 new function grailSortRun(array) {
     new int mode;
     mode = sortingVisualizer.getUserInput("Insert buffer size (0 for in-place, -1 for dynamic)", "0", ["-1", "512"]);

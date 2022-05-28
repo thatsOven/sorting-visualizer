@@ -90,34 +90,18 @@ new class Distribution {
 }
 
 @total_ordering;
-new class Visual {
+abstract: new class Visual {
     new method __init__(name, highlightColor = (255, 0, 0), refreshMode = RefreshMode.STANDARD, outOfText = False) {
         this.name           = name;
         this.highlightColor = highlightColor;
         this.refresh        = refreshMode;
         this.out            = outOfText;
-        this.func           = None;
-        this.auxFunc        = this.__noAuxFunc;
+
+        sortingVisualizer.addVisual(this);
     }
 
-    new method __noAuxFunc() {}
-
-    new method render(func) {
-        this.func = deepcopy(func);
-        del func;
-    }
-
-    new method aux(func) {
-        this.auxFunc = deepcopy(func);
-        del func;
-    }
-
-    new method add() {
-        new <Visual> visual = Visual(this.name, this.highlightColor, this.refresh, this.out);
-        visual.func    = this.func;
-        visual.auxFunc = this.auxFunc;
-        sortingVisualizer.addVisual(visual);
-    }
+    abstract: new method draw(array, indices, color);
+    abstract: new method drawAux(array, indices, color);
 
     new method __eq__(other) {
         if this.name == other.name {
