@@ -69,7 +69,7 @@ new class AmericanFlagSort {
     "Distribution Sorts",
     "American Flag Sort",
     "American Flag Sort"
-).run;
+);
 new function americanFlagSortRun(array) {
     AmericanFlagSort().sort(array, 0, len(array));
 }

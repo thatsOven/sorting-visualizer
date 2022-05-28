@@ -49,7 +49,7 @@ new class MergeSort {
     "Merge Sorts",
     "Merge Sort",
     "Merge Sort"
-).run;
+);
 new function mergeSortRun(array) {
     MergeSort(len(array)).mergeSort(array, 0, len(array));
 }

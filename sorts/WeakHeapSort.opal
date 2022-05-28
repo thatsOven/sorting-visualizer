@@ -61,7 +61,7 @@ new class WeakHeapSort {
     "Selection Sorts",
     "Weak Heap Sort",
     "Weak Heap Sort"
-).run;
+);
 new function weakHeapSortRun(array) {
     WeakHeapSort(array, len(array)).sort();
 }

@@ -20,7 +20,7 @@ new function uncheckedInsertionSort(array, a, b) {
     "Insertion Sorts",
     "Unstable Insertion Sort",
     "Unstable Insertion"
-).run;
+);
 new function uncheckedInsertionSortRun(array) {
     uncheckedInsertionSort(array, 0, len(array));
 }

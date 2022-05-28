@@ -16,7 +16,7 @@ new function insertionSort(array, a, b) {
     "Insertion Sorts",
     "Insertion Sort",
     "Insertion Sort"
-).run;
+);
 new function runInsertionSort(array) {
     insertionSort(array, 0, len(array));
 }

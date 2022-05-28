@@ -202,7 +202,7 @@ new class UtilsIterablesStableSort {
     "Merge Sorts",
     "thatsOven's Adaptive MergeSort [Utils.Iterables.stableSort]",
     "thatsOven's Adaptive Merge"
-).run;
+);
 new function utilsIterablesStableSortRun(array) {
     new int mode;
     mode = sortingVisualizer.getUserInput("Insert buffer size (default = " + str(len(array) // 2) + ")", str(len(array) // 2), ["64", "512"]);

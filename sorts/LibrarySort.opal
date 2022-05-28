@@ -85,7 +85,7 @@ new class LibrarySort {
     "Insertion Sorts",
     "Library Sort",
     "Library Sort"
-).run;
+);
 new function librarySortRun(array) {
     LibrarySort.sort(array, len(array));
 }

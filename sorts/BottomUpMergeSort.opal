@@ -68,7 +68,7 @@ new class BottomUpMergeSort {
     "Merge Sorts",
     "Bottom Up Merge Sort",
     "Bottom Up Merge"
-).run;
+);
 new function bottomUpMergeSortRun(array) {
     BottomUpMergeSort.sort(array, len(array));
 }

@@ -1,4 +1,4 @@
-@Distribution("Sine Wave").run;
+@Distribution("Sine Wave");
 new function sineWaveDist(array, length) {
     new int n   = length - 1;
     new float c = 2 * math.pi / n;

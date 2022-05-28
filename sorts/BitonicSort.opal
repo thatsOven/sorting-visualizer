@@ -44,7 +44,7 @@ new class BitonicSort {
     "Concurrent Sorts",
     "Bitonic Sort",
     "Bitonic Sort"
-).run;
+);
 new function bitonicSortRun(array) {
     BitonicSort.sort(array, 0, len(array), True);
 }

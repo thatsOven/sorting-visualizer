@@ -16,7 +16,7 @@ new function gnomeSort(array, a, b) {
     "Exchange Sorts",
     "Gnome Sort",
     "Gnome Sort"
-).run;
+);
 new function gnomeSortRun(array) {
     gnomeSort(array, 0, len(array));
 }

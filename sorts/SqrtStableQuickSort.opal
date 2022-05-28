@@ -230,7 +230,7 @@ new class SqrtStableQuickSort {
     "Quick Sorts",
     "Sqrt Stable QuickSort",
     "Sqrt Stable Quick"
-).run;
+);
 new function sqrtStableQuickSortRun(array) {
     SqrtStableQuickSort.sort(array, 0, len(array));
 }

@@ -60,7 +60,7 @@ new function staticSort(array, a, b) {
     "Distribution Sorts",
     "staticSort [Utils.Iterables.fastSort]",
     "staticSort"
-).run;
+);
 new function staticSortRun(array) {
     staticSort(array, 0, len(array));
 }

@@ -155,7 +155,7 @@ new class PoplarHeapSort {
     "Selection Sorts",
     "Poplar Heap Sort",
     "Poplar Heap"
-).run;
+);
 new function poplarHeapSortRun(array) {
     PoplarHeapSort.sort(array, 0, len(array));
 }

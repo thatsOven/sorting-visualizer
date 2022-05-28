@@ -33,7 +33,7 @@ new function pairwiseSort(array, f, l, g = 1) {
     "Concurrent Sorts",
     "Pairwise Sorting Network",
     "Pairwise"
-).run;
+);
 new function pairwiseSortRun(array) {
     pairwiseSort(array, 0, len(array));
 }

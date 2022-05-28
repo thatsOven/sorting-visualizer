@@ -18,7 +18,7 @@ new function oddEvenMergeSort(array, length) {
     "Concurrent Sorts",
     "Odd Even Merge Sort",
     "Odd Even Merge"
-).run;
+);
 new function oddEvenMergeSortRun(array) {
     oddEvenMergeSort(array, len(array));
 }

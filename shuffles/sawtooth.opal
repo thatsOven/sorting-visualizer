@@ -15,12 +15,12 @@ new function sawtooth(array) {
     }
 }
 
-@Shuffle("Sawtooth").run;
+@Shuffle("Sawtooth");
 new function sawtoothRun(array) {
     sawtooth(array);
 }
 
-@Shuffle("Reversed Sawtooth").run;
+@Shuffle("Reversed Sawtooth");
 new function revSawtoothRun(array) {
     sawtooth(array);
     reverse(array, 0, len(array));

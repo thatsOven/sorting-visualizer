@@ -1,6 +1,6 @@
 package perlin_noise: import PerlinNoise;
 
-@Distribution("Perlin Noise").run;
+@Distribution("Perlin Noise");
 new function perlinNoiseDist(array, length) {
     new int seed, OCTAVES = 5;
 

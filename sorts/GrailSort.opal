@@ -1010,7 +1010,7 @@ new function grailSortRun(array) {
     "Merge Sorts",
     "Lazy Stable Sort",
     "Lazy Stable"
-).run;
+);
 new function lazyStableSortRun(array) {
     GrailSort.grailLazyStableSort(array, 0, len(array));
 }

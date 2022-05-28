@@ -116,7 +116,7 @@ new class MedianOfSixteenAdaptiveQuickSort {
     "Quick Sorts",
     "Median-Of-Sixteen Adaptive QuickSort [Utils.Iterables.sort]",
     "Median-Of-16 A. Quick"
-).run;
+);
 new function medianOfSixteenAdaptiveQuickSortRun(array) {
     MedianOfSixteenAdaptiveQuickSort.sort(array, 0, len(array));
 }

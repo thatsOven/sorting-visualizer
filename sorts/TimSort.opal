@@ -562,7 +562,7 @@ new class TimSort {
     "Merge Sorts",
     "Tim Sort",
     "Tim Sort"
-).run;
+);
 new function timSortRun(array) {
     TimSort(array, len(array)).sort(array, 0, len(array));
 }

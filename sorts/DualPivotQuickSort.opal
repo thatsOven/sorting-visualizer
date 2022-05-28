@@ -22,7 +22,7 @@ new function dualPivotQuickSort(array, a, b) {
     "Quick Sorts",
     "Dual Pivot QuickSort",
     "Dual Pivot Quick"
-).run;
+);
 new function dualPivotQuickSortRun(array) {
     dualPivotQuickSort(array, 0, len(array) - 1);
 }

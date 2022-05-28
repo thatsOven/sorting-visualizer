@@ -2,7 +2,7 @@
     "Exchange Sorts",
     "Bubble Sort",
     "Bubble Sort"
-    ).run;
+);
 new function bubbleSort(array) {
     for i in range(len(array)) {
         new bool sorted = True;

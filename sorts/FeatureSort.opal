@@ -64,7 +64,7 @@ new class FeatureSort {
     "Distribution Sorts",
     "featureSort",
     "featureSort",
-).run;
+);
 new function featureSortRun(array) {
     FeatureSort.sort(array, 0, len(array));
 }

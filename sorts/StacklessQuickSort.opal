@@ -89,7 +89,7 @@ new class StacklessQuickSort {
     "Quick Sorts",
     "Stackless Quick Sort",
     "Stackless Quick"
-).run;
+);
 new function stacklessQuickSortRun(array) {
     StacklessQuickSort().sort(array, 0, len(array));
 }

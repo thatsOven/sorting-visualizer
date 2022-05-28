@@ -8,7 +8,7 @@ new function bogoSort(array, a, b) {
     "Impractical Sorts",
     "Bogo Sort",
     "Bogo Sort"
-).run;
+);
 new function bogoSortRun(array) {
     if len(array) >= 6 {
         new int sel;

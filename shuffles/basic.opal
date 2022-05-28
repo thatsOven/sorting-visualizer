@@ -1,7 +1,7 @@
-@Shuffle("No shuffle").run;
+@Shuffle("No shuffle");
 new function noShuffle(array) {}
 
-@Shuffle("Reversed").run;
+@Shuffle("Reversed");
 new function reversedShuffle(array) {
     reverse(array, 0, len(array));
 }
@@ -12,7 +12,7 @@ new function shuffleRandom(array, a, b) {
     }
 }
 
-@Shuffle("Random").run;
+@Shuffle("Random");
 new function randomShuffle(array) {
     shuffleRandom(array, 0, len(array));
 }

@@ -41,7 +41,7 @@ new class CircleSort {
     "Exchange Sorts",
     "Circle Sort",
     "Circle Sort"
-).run;
+);
 new function circleSortRun(array) {
     CircleSort.sort(array, 0, len(array));
 }

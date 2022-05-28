@@ -56,7 +56,7 @@ new class BinaryDoubleInsertionSort {
     "Insertion Sorts",
     "Binary Double Insertion Sort",
     "Bin. Double Insert"
-).run;
+);
 new function binaryDoubleInsertionSortRun(array) {
     BinaryDoubleInsertionSort.sort(array, 0, len(array));
 }

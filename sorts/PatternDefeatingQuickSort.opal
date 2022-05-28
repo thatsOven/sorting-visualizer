@@ -274,7 +274,7 @@ new class PDQSort {
     "Quick Sorts",
     "Pattern-Defeating QuickSort",
     "PDQ Sort"
-).run;
+);
 new function pdqSortRun(array) {
     PDQSort.loop(array, 0, len(array), PDQSort.log(len(array)));
 }

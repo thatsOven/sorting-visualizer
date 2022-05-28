@@ -27,7 +27,7 @@ new class ShellSort {
     "Insertion Sorts",
     "Shell Sort",
     "Shell Sort"
-).run;
+);
 new function shellSortRun(array) {
     ShellSort.sort(array, 0, len(array));
 }

@@ -120,7 +120,7 @@ new function LSDRadixSortRun(array) {
     "Distribution Sorts",
     "Most Significant Digit Radix Sort",
     "MSD Radix Sort",
-).run;
+);
 new function MSDRadixSortRun(array) {
     RadixSort().MSD(array, 0, len(array));
 }

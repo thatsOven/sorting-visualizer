@@ -55,7 +55,7 @@ new function selectionSortRun(array) {
     "Selection Sorts",
     "Double Selection Sort",
     "Double Selection"
-).run;
+);
 new function doubleSelectionSortRun(array) {
     doubleSelectionSort(array, 0, len(array));
 }

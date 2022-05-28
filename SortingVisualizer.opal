@@ -88,7 +88,7 @@ new class SortingVisualizer {
 
         this.__soundSample = None;
 
-        new auto f = open(os.path.join("HOME_DIR", "config.json"), "r");
+        new auto f = open(os.path.join(HOME_DIR, "config.json"), "r");
         new dict settings = loads(f.read());
         f.close();
 
@@ -802,7 +802,7 @@ new class SortingVisualizer {
     new method __selectThread(title, run, initGraph = False) {
         new list threads = [];
         new dynamic ldir;
-        ldir = os.listdir(os.path.join("HOME_DIR", "threads"));
+        ldir = os.listdir(os.path.join(HOME_DIR, "threads"));
 
         for file in ldir {
             if file.endswith(".py") {
@@ -814,7 +814,7 @@ new class SortingVisualizer {
             this.__tui.selection(title, "Select thread: ", threads);
             new int sel = this.__tui.run();
 
-            new str path = os.path.join("HOME_DIR", "threads", threads[sel]);
+            new str path = os.path.join(HOME_DIR, "threads", threads[sel]);
 
             if this.__threadTypeChecker(path, title) {
                 break;

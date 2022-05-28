@@ -52,7 +52,7 @@ new function LRQuickSortRun(array) {
     "Quick Sorts",
     "Quick Sort - Left/Left Pointers",
     "LL Quick Sort"
-).run;
+);
 new function LLQuickSortRun(array) {
     QuickSort().LLQuickSort(array, 0, len(array));
 }

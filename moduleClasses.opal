@@ -9,7 +9,7 @@ new class Sort {
         this.func     = None;
     }
 
-    new method run(func) {
+    new method __call__(func) {
         new <Sort> sort = Sort(this.category, this.name, this.listName);
         sort.func = deepcopy(func);
         del func;
@@ -38,7 +38,7 @@ new class Shuffle {
         this.func     = None;
     }
 
-    new method run(func) {
+    new method __call__(func) {
         new <Shuffle> shuffle = Shuffle(this.name);
         shuffle.func = deepcopy(func);
         del func;
@@ -67,7 +67,7 @@ new class Distribution {
         this.func     = None;
     }
 
-    new method run(func) {
+    new method __call__(func) {
         new <Distribution> distribution = Distribution(this.name);
         distribution.func = deepcopy(func);
         del func;
@@ -141,7 +141,7 @@ new class PivotSelection {
         this.func = None;
     }
 
-    new method run(func) {
+    new method __call__(func) {
         new <PivotSelection> pSel = PivotSelection(this.name);
         pSel.func = deepcopy(func);
         del func;

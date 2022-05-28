@@ -37,7 +37,7 @@ new class MaxHeapSort {
     "Selection Sorts",
     "Max Heap Sort",
     "Max Heap Sort"
-).run;
+);
 new function maxHeapSortRun(array) {
     MaxHeapSort.sort(array, 0, len(array));
 }

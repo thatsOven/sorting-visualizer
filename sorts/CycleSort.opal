@@ -47,7 +47,7 @@ new function cycleSort(array, a, b) {
     "Selection Sorts",
     "Cycle Sort",
     "Cycle Sort"
-).run;
+);
 new function cycleSortRun(array) {
     cycleSort(array, 0, len(array));
 }

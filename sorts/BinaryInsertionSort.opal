@@ -10,7 +10,7 @@ new function binaryInsertionSort(array, a, b) {
     "Insertion Sorts",
     "Binary Insertion Sort",
     "Binary Insertion"
-).run;
+);
 new function binaryInsertionSortRun(array) {
     binaryInsertionSort(array, 0, len(array));
 }

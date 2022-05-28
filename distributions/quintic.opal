@@ -1,4 +1,4 @@
-@Distribution("Quintic").run;
+@Distribution("Quintic");
 new function quinticDist(array, length) {
     new float mid = (length - 1) / 2;
 

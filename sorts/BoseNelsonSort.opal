@@ -32,7 +32,7 @@ new class BoseNelsonSort {
     "Concurrent Sorts",
     "Bose Nelson Sort",
     "Bose Nelson"
-).run;
+);
 new function boseNelsonSortRun(array) {
     BoseNelsonSort.sort(array, 0, len(array));
 }

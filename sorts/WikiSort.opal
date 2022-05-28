@@ -894,7 +894,7 @@ new class WikiSort {
     "Block Merge Sorts",
     "Wiki Sort",
     "Wiki Sort"
-).run;
+);
 new function wikiSortRun(array) {
     new int mode;
     mode = sortingVisualizer.getUserInput("Insert buffer size (0 for in-place)", "0", ["512", "64"]);

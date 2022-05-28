@@ -32,7 +32,7 @@ new class FoldSort {
     "Concurrent Sorts",
     "Fold Sorting Network",
     "Fold Sort"
-).run;
+);
 new function foldSortRun(array) {
     FoldSort().sort(array, 0, len(array));
 }

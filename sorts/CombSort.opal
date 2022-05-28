@@ -45,7 +45,7 @@ new class CombSort {
     "Exchange Sorts",
     "Comb Sort",
     "Comb Sort"
-).run;
+);
 new function combSortRun(array) {
     CombSort().sort(array, 0, len(array));
 }

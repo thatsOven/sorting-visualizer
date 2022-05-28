@@ -84,7 +84,7 @@ new class MergeInsertionSort {
     "Insertion Sorts",
     "Merge Insertion Sort [Ford-Johnson Algorithm]",
     "Merge Insert"
-).run;
+);
 new function mergeInsertionSortRun(array) {
     MergeInsertionSort.sort(array, len(array));
 }

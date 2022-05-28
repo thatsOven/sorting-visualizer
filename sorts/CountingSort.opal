@@ -29,7 +29,7 @@ new function countingSort(array, a, b) {
     "Distribution Sorts",
     "Counting Sort",
     "Counting Sort"
-).run;
+);
 new function countingSortRun(array) {
     countingSort(array, 0, len(array));
 }
