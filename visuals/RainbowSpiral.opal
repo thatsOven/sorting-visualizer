@@ -147,5 +147,3 @@ new class RainbowSpiral : Visual {
         del drawn;
     }
 }
-
-RainbowSpiral();

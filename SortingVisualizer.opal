@@ -8,6 +8,7 @@ package functools: import total_ordering;
 package scipy:     import signal;
 package json:      import loads;
 use exec as exec;
+use getattr as getattr;
 
 sys.setrecursionlimit(65536);
 
@@ -953,7 +954,16 @@ main {
     new <SortingVisualizer> sortingVisualizer = SortingVisualizer();
 
     $includeDirectory os.path.join("HOME_DIR", "utils")
-    $includeDirectory os.path.join("HOME_DIR", "visuals")
+
+    namespace Visuals {
+        $includeDirectory os.path.join("HOME_DIR", "visuals")
+    }
+
+    new list visualNames = [x for x in dir(Visuals) if not x.startswith("__")];
+    for visual in visualNames {
+        getattr(Visuals, visual)();
+    }
+
     $includeDirectory os.path.join("HOME_DIR", "distributions")
     $includeDirectory os.path.join("HOME_DIR", "pivotSelections")
     $includeDirectory os.path.join("HOME_DIR", "shuffles")

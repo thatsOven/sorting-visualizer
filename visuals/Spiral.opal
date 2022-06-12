@@ -128,5 +128,3 @@ new class Spiral : Visual {
         del drawn;
     }
 }
-
-Spiral();

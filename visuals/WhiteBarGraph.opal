@@ -83,5 +83,3 @@ new class WhiteBarGraph : Visual {
         sortingVisualizer.graphics.line(Vector(0, resolution.y), resolution, (0, 0, 255), 2);
     }
 }
-
-WhiteBarGraph();

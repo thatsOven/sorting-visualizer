@@ -123,5 +123,3 @@ new class ColorCircle : Visual {
         del drawn;
     }
 }
-
-ColorCircle();
