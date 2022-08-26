@@ -193,14 +193,14 @@ new class SortingVisualizer {
             if id != -1 {
                 return func(id, length);
             } else {
-                IO.out("Invalid ", name, " name!\n");
+                IO.out("Invalid ", mess, " name!\n");
                 return 0;
             }
         } elif name is None {
             if id in range(0, len(array)) {
                 return func(id, length);
             } else {
-                IO.out("Invalid ", name, " ID!\n");
+                IO.out("Invalid ", mess, " ID!\n");
                 return 0;
             }
         }
