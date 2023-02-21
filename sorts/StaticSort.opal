@@ -2,7 +2,7 @@ new dynamic uncheckedInsertionSort, MaxHeapSort;
 
 new function staticSort(array, a, b) {
     new int min_, max_;
-    dynamic: min_, max_ = findMinMax(array, a, b);
+    min_, max_ = findMinMax(array, a, b);
 
     new int auxLen = b - a;
 

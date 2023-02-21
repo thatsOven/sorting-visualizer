@@ -9,7 +9,7 @@ new function dualPivotQuickSort(array, a, b) {
         array[b].swap(array[m + 1]);
 
         new int p1, p2;
-        dynamic: p1, p2 = dualPivotPartition(array, a, b);
+        p1, p2 = dualPivotPartition(array, a, b);
 
         dualPivotQuickSort(array, a, p1);
         dualPivotQuickSort(array, p1, p2);

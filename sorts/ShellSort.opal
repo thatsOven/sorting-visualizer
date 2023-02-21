@@ -12,7 +12,7 @@ new class ShellSort {
                 new <Value> tmp;
                 new int     idx;
 
-                dynamic: tmp, idx = array[i].readNoMark();
+                tmp, idx = array[i].readNoMark();
 
                 for j = i; j >= a + gap and array[j - gap] > tmp; j -= gap {
                     array[j].write(array[j - gap].noMark());

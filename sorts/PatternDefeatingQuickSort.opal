@@ -23,7 +23,7 @@ new class PDQSort {
             new int     idx;
 
             if array[i] < array[i - 1] {
-                dynamic: key, idx = array[i].readNoMark();
+                key, idx = array[i].readNoMark();
 
                 for j = i - 1; array[j] > key and j >= begin; j-- {
                     array[j + 1].write(array[j]);
@@ -43,7 +43,7 @@ new class PDQSort {
             new int     idx;
 
             if array[i] < array[i - 1] {
-                dynamic: key, idx = array[i].readNoMark();
+                key, idx = array[i].readNoMark();
 
                 for j = i - 1; array[j] > key; j-- {
                     array[j + 1].write(array[j]);
@@ -66,7 +66,7 @@ new class PDQSort {
             new int     idx;
 
             if array[i] < array[i - 1] {
-                dynamic: key, idx = array[i].readNoMark();
+                key, idx = array[i].readNoMark();
 
                 for j = i - 1; array[j] > key and j >= begin; j-- {
                     array[j + 1].write(array[j]);
@@ -208,7 +208,7 @@ new class PDQSort {
             new int pivotPos;
             new bool alreadyParted;
 
-            dynamic: pivotPos, alreadyParted = this.partRight(array, begin, end);
+            pivotPos, alreadyParted = this.partRight(array, begin, end);
 
             new int leftSize  = pivotPos - begin,
                     rightSize = end - (pivotPos + 1);

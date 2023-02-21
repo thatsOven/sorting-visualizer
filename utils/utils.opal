@@ -88,7 +88,7 @@ new function insertToLeft(array, _from, to) {
     new <Value> temp;
     new int     idx;
 
-    dynamic: temp, idx = array[_from].readNoMark();
+    temp, idx = array[_from].readNoMark();
 
     for i = _from - 1; i >= to; i-- {
         array[i + 1].write(array[i].noMark());
@@ -100,7 +100,7 @@ new function insertToRight(array, _from, to) {
     new <Value> temp;
     new int     idx;
 
-    dynamic: temp, idx = array[_from].readNoMark();
+    temp, idx = array[_from].readNoMark();
 
     for i = _from; i < to; i++ {
         array[i].write(array[i + 1].noMark());
@@ -217,7 +217,6 @@ new function findMinMaxValue(array, a, b) {
 
 new function findMinMax(array, a, b) {
     new <Value> currMin, currMax;
-    dynamic:
     currMin, currMax = findMinMaxValue(array, a, b);
     return currMin.readInt(), currMax.readInt();
 }

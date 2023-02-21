@@ -140,7 +140,7 @@ new class SqrtStableQuickSort {
         }
 
         new int last, m, k;
-        dynamic: last, m, k = this.buildBlocks(array, a, b, p);
+        last, m, k = this.buildBlocks(array, a, b, p);
 
         this.sortBlocks(array, a, k);
 

@@ -711,7 +711,7 @@ new class SortingVisualizer {
             this.setAutoValue(ndAutoValue);
         }
 
-        if killers != \{} {
+        if (killers != {}) {
             if shuffle in this.getKillerIds(killers, distribution) {
                 this.__speed = 1000;
             } else {

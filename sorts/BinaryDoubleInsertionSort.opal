@@ -34,15 +34,15 @@ new class BinaryDoubleInsertionSort {
         new int lIdx, rIdx, m;
         for ; j < b; i--, j++ {
             if array[i] > array[j] {
-                dynamic: l, lIdx = array[j].readNoMark();
-                dynamic: r, rIdx = array[i].readNoMark();
+                l, lIdx = array[j].readNoMark();
+                r, rIdx = array[i].readNoMark();
 
                 m = lrBinarySearch(array, i + 1, j, l, False);
                 this.insertToRight(array, i, m - 1, l, lIdx);
                 this.insertToLeft(array, j, lrBinarySearch(array, m, j, r), r, rIdx);
             } else {
-                dynamic: l, lIdx = array[i].readNoMark();
-                dynamic: r, rIdx = array[j].readNoMark();
+                l, lIdx = array[i].readNoMark();
+                r, rIdx = array[j].readNoMark();
 
                 m = lrBinarySearch(array, i + 1, j, l);
                 this.insertToRight(array, i, m - 1, l, lIdx);

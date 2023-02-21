@@ -7,7 +7,7 @@ new function uncheckedInsertionSort(array, a, b) {
         new <Value> key;
         new int     idx;
         
-        dynamic: key, idx = array[i].readNoMark();
+        key, idx = array[i].readNoMark();
 
         for j = i - 1; array[j] > key; j-- {
             array[j + 1].write(array[j].noMark());

@@ -28,7 +28,7 @@ new class FeatureSort {
     new classmethod sort(array, a, b) {
         new int min_, max_;
 
-        dynamic: min_, max_ = findMinMax(array, a, b);
+        min_, max_ = findMinMax(array, a, b);
 
         new float CONST = (b - a) / (max_ - min_ + 4);
 
