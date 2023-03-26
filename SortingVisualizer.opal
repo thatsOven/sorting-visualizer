@@ -28,12 +28,12 @@ new function checkType(value, type_) {
 
 new dynamic sortingVisualizer = None;
 
-$include os.path.join("HOME_DIR", "TUI", "TUIManager.opal")
-$include os.path.join("HOME_DIR", "Value.opal")
-$include os.path.join("HOME_DIR", "VisualSizes.opal")
-$include os.path.join("HOME_DIR", "moduleClasses.opal")
-$include os.path.join("HOME_DIR", "ReadsWrites.opal")
-$include os.path.join("HOME_DIR", "threadBuilder", "ThreadCommand.opal")
+$include os.path.join(HOME_DIR, "TUI", "TUIManager.opal")
+$include os.path.join(HOME_DIR, "Value.opal")
+$include os.path.join(HOME_DIR, "VisualSizes.opal")
+$include os.path.join(HOME_DIR, "moduleClasses.opal")
+$include os.path.join(HOME_DIR, "ReadsWrites.opal")
+$include os.path.join(HOME_DIR, "threadBuilder", "ThreadCommand.opal")
 
 enum ArrayState {
     UNSORTED, SORTED, STABLY_SORTED
@@ -850,7 +850,7 @@ new class SortingVisualizer {
         this.__shufThread = None;
     }
 
-    $include os.path.join("HOME_DIR", "threadBuilder", "BuilderEvaluator.opal")
+    $include os.path.join(HOME_DIR, "threadBuilder", "BuilderEvaluator.opal")
 
     new method run() {
         Utils.Iterables.stableSort(this.distributions);
@@ -912,7 +912,7 @@ new class SortingVisualizer {
 
                 this.initGraphics();
 
-                $include os.path.join("HOME_DIR", "threads", "runAllSorts.opal")
+                $include os.path.join(HOME_DIR, "threads", "runAllSorts.opal")
             }
             case 2 {
                 this.__tui.selection("Threads", "Select: ", [
@@ -943,7 +943,7 @@ new class SortingVisualizer {
                         this.__selectThread("Thread", True, True);
                     }
                     case 2 {
-                        $include os.path.join("HOME_DIR", "threadBuilder", "ThreadBuilder.opal")
+                        $include os.path.join(HOME_DIR, "threadBuilder", "ThreadBuilder.opal")
                     }
                 }
             }
@@ -954,10 +954,10 @@ new class SortingVisualizer {
 main {
     new <SortingVisualizer> sortingVisualizer = SortingVisualizer();
 
-    $includeDirectory os.path.join("HOME_DIR", "utils")
+    $includeDirectory os.path.join(HOME_DIR, "utils")
 
     namespace Visuals {
-        $includeDirectory os.path.join("HOME_DIR", "visuals")
+        $includeDirectory os.path.join(HOME_DIR, "visuals")
     }
 
     new list visualNames = [x for x in dir(Visuals) if not x.startswith("__")];
@@ -965,10 +965,10 @@ main {
         getattr(Visuals, visual)();
     }
 
-    $includeDirectory os.path.join("HOME_DIR", "distributions")
-    $includeDirectory os.path.join("HOME_DIR", "pivotSelections")
-    $includeDirectory os.path.join("HOME_DIR", "shuffles")
-    $includeDirectory os.path.join("HOME_DIR", "sorts")
+    $includeDirectory os.path.join(HOME_DIR, "distributions")
+    $includeDirectory os.path.join(HOME_DIR, "pivotSelections")
+    $includeDirectory os.path.join(HOME_DIR, "shuffles")
+    $includeDirectory os.path.join(HOME_DIR, "sorts")
 
     sortingVisualizer.run();
 }

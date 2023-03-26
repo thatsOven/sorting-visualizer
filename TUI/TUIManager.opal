@@ -4,7 +4,7 @@ try {
     package picotui.menu:    import *;
     package picotui.context: import Context;
 } catch {
-    $include os.path.join("HOME_DIR", "TUI", "fallbackTUI.opal")
+    $include os.path.join(HOME_DIR, "TUI", "fallbackTUI.opal")
 } success {
-    $include os.path.join("HOME_DIR", "TUI", "TUI.opal")
+    $include os.path.join(HOME_DIR, "TUI", "TUI.opal")
 }
