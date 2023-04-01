@@ -29,7 +29,7 @@ new class AmericanFlagSort {
             while count[v] > 0 {
                 new int origin = offset[v].readInt(),
                         from_  = origin;
-                new <Value> num = array[from_].copy();
+                new Value num = array[from_].copy();
 
                 array[from_].write(-1);
 
@@ -39,7 +39,7 @@ new class AmericanFlagSort {
                     offset[digit]++;
                     count[digit]--;
 
-                    new <Value> temp = array[to].copy();
+                    new Value temp = array[to].copy();
                     array[to].write(num);
                     num = temp.copy();
                     from_ = to;

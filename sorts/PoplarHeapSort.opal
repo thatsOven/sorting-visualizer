@@ -9,7 +9,7 @@ new class PoplarHeapSort {
                     sift1 = i - 1;
 
             if array[sift] < array[sift1] {
-                new <Value> tmp = array[sift].copy();
+                new Value tmp = array[sift].copy();
 
                 do sift != a and tmp < array[sift1] {
                     array[sift].write(array[sift1].noMark());

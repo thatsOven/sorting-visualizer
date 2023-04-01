@@ -1,7 +1,7 @@
 new function insertionSort(array, a, b) {
     for i = a + 1; i < b; i++ {
-        new <Value> key;
-        new int     idx;
+        new Value key;
+        new int   idx;
         
         key, idx = array[i].readNoMark();
 

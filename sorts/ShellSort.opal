@@ -9,8 +9,8 @@ new class ShellSort {
             }
 
             for i = a + gap; i < b; i++ {
-                new <Value> tmp;
-                new int     idx;
+                new Value tmp;
+                new int   idx;
 
                 tmp, idx = array[i].readNoMark();
 

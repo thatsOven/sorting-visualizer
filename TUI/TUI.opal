@@ -41,7 +41,7 @@ new class UserWarn {
     }
 
     new method __build() {
-        new <Vector> tmp = this.termSize.copy() // 2;
+        new Vector tmp = this.termSize.copy() // 2;
 
         this.dialog = Dialog(tmp.x - (tmp.x // 2), tmp.y - (tmp.y // 2), tmp.x, tmp.y, title = adjustTitle("thatsOven's Sorting Visualizer - " + this.title, tmp.x));
 
@@ -193,7 +193,7 @@ new class TUI {
         this.dialog.add(this.termSize.x - 8, 2, this.__speed);
         this.__output.append(this.__speed);
 
-        new <Vector> listSize;
+        new Vector listSize;
         listSize = Vector(
             this.termSize.x // 5 - 5,
             this.termSize.y - 7
@@ -226,7 +226,7 @@ new class TUI {
         this.dialog.add(2, 2, this.__speed);
         this.__output.append(this.__speed);
 
-        new <Vector> listSize;
+        new Vector listSize;
         listSize = Vector(
             this.termSize.x // 3 - 3,
             this.termSize.y - 7
@@ -243,7 +243,7 @@ new class TUI {
     }
 
     new method __userInputDialogUnwrapped() {
-        new <Vector> tmp = this.termSize.copy();
+        new Vector tmp = this.termSize.copy();
 
         this.__output = [];
 
@@ -264,7 +264,7 @@ new class TUI {
     }
 
     new method __selectionUnwrapped() {
-        new <Vector> tmp = this.termSize.copy();
+        new Vector tmp = this.termSize.copy();
 
         this.__output = [];
 
@@ -295,7 +295,7 @@ new class TUI {
 
         this.dialog.add(1, 2, "Select sort:");
 
-        new <Vector> listSize;
+        new Vector listSize;
         listSize = Vector(this.termSize.x // 2 - 2, this.termSize.y - 8);
 
         this.__buildCategoryList(1, listSize);

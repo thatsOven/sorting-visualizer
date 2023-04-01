@@ -85,8 +85,8 @@ new function compareIntToValue(a, value) {
 }
 
 new function insertToLeft(array, _from, to) {
-    new <Value> temp;
-    new int     idx;
+    new Value temp;
+    new int   idx;
 
     temp, idx = array[_from].readNoMark();
 
@@ -97,8 +97,8 @@ new function insertToLeft(array, _from, to) {
 }
 
 new function insertToRight(array, _from, to) {
-    new <Value> temp;
-    new int     idx;
+    new Value temp;
+    new int   idx;
 
     temp, idx = array[_from].readNoMark();
 
@@ -189,7 +189,7 @@ new function dualPivotPartition(array, a, b) {
 new function LLPartition(array, a, b) {
     b--;
 
-    new <Value> pivot = array[b].copy();
+    new Value pivot = array[b].copy();
 
     for i = a, j = a; j <= b; j++ {
         if array[j] < pivot {
@@ -202,8 +202,8 @@ new function LLPartition(array, a, b) {
 }
 
 new function findMinMaxValue(array, a, b) {
-    new <Value> currMin = array[a].copy(),
-                currMax = currMin;
+    new Value currMin = array[a].copy(),
+              currMax = currMin;
 
     for i = a + 1; i < b; i++ {
         if array[i] < currMin {
@@ -216,13 +216,13 @@ new function findMinMaxValue(array, a, b) {
 }
 
 new function findMinMax(array, a, b) {
-    new <Value> currMin, currMax;
+    new Value currMin, currMax;
     currMin, currMax = findMinMaxValue(array, a, b);
     return currMin.readInt(), currMax.readInt();
 }
 
 new function findMaxValue(array, a, b) {
-    new <Value> currMax = array[a].copy();
+    new Value currMax = array[a].copy();
 
     for i = a + 1; i < b; i++ {
         if array[i] > currMax {
@@ -237,7 +237,7 @@ new function findMax(array, a, b) {
 }
 
 new function findMinValue(array, a, b) {
-    new <Value> currMin = array[a].copy();
+    new Value currMin = array[a].copy();
 
     for i = a + 1; i < b; i++ {
         if array[i] < currMin {

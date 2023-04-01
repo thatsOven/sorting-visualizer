@@ -1,5 +1,6 @@
 new record HighlightPair(idx, aux);
 
+@Typing.mode(Typing.check);
 new class Value {
     new method __init__(value) {
         this.value   = value;
@@ -9,7 +10,7 @@ new class Value {
     }
 
     new method copy() {
-        new <Value> val = Value(this.value);
+        new Value val = Value(this.value);
         val.idx     = this.idx;
         val.stabIdx = this.stabIdx;
         val.aux     = this.aux;
@@ -18,7 +19,7 @@ new class Value {
     }
 
     new method noMark() {
-        new <Value> val = Value(this.value);
+        new Value val = Value(this.value);
         val.stabIdx = this.stabIdx;
 
         return val;

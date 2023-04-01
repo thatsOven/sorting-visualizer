@@ -16,7 +16,7 @@ new method __builderEvaluator(title, msg, sel, commands, macros, modes) {
     this.__tui.selection(title + " builder", "Select the type of command you want to " + msg[sel] + ": ", opts);
     new int mode = this.__tui.run();
 
-    new <ThreadCommand> command;
+    new ThreadCommand command;
     match mode {
         case 0 {
             this.__tui.buildSortSelection();

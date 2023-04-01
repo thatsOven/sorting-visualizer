@@ -232,7 +232,7 @@ new class WikiSort {
             split = range.end + amount;
         }
 
-        new <WikiRange> range1, range2;
+        new WikiRange range1, range2;
 
         range1 = WikiRange(range.start, split);
         range2 = WikiRange(      split, range.end);
@@ -420,12 +420,12 @@ new class WikiSort {
             return;
         }
 
-        new <WikiIterator> iterator = WikiIterator(size, 4);
+        new WikiIterator iterator = WikiIterator(size, 4);
 
         while not iterator.finished() {
             new list order;
             order = [0, 1, 2, 3, 4, 5, 6, 7];
-            new <WikiRange> range = iterator.nextRange();
+            new WikiRange range = iterator.nextRange();
 
             match range.length() {
                 case 8 {
@@ -476,10 +476,10 @@ new class WikiSort {
             return;
         }
 
-        new <WikiRange> buffer1, buffer2,
-                         blockA,  blockB,
-                          lastA,   lastB,
-                         firstA, A, B;
+        new WikiRange buffer1, buffer2,
+                       blockA,  blockB,
+                        lastA,   lastB,
+                       firstA, A, B;
 
         buffer1 = WikiRange();
         buffer2 = WikiRange();
@@ -503,7 +503,7 @@ new class WikiSort {
                     iterator.begin();
 
                     while not iterator.finished() {
-                        new <WikiRange> A1, B1,
+                        new WikiRange A1, B1,
                                         A2, B2;
 
                         A1 = iterator.nextRange();
@@ -537,7 +537,7 @@ new class WikiSort {
                         }
                         A2.set(A2.start, B2.end);
 
-                        new <WikiRange> A3, B3;
+                        new WikiRange A3, B3;
 
                         A3 = WikiRange(0, A1.length());
                         B3 = WikiRange(A1.length(), A1.length() + A2.length());
@@ -689,7 +689,7 @@ new class WikiSort {
 
                         for count = 1; count < length; count++ {
                             index = this.findFirstBackward(array, array[index - 1].readInt(), WikiRange(pull[pull_index].to, pull[pull_index].from_ - (count - 1)), length - count);
-                            new <WikiRange> range;
+                            new WikiRange range;
                             range = WikiRange(index + 1, pull[pull_index].from_ + 1);
                             this.rotate(array, range.length() - count, range, True);
                             pull[pull_index].from_ = index + count;
@@ -699,7 +699,7 @@ new class WikiSort {
 
                         for count = 1; count < length; count++ {
                             index = this.findLastForward(array, array[index].readInt(), WikiRange(index, pull[pull_index].to), length - count);
-                            new <WikiRange> range;
+                            new WikiRange range;
                             range = WikiRange(pull[pull_index].from_, index - 1);
                             this.rotate(array, count, range, True);
                             pull[pull_index].from_ = index - 1 - count;
@@ -856,7 +856,7 @@ new class WikiSort {
                     new int unique = pull[pull_index].count * 2;
 
                     if pull[pull_index].from_ > pull[pull_index].to {
-                        new <WikiRange> buffer;
+                        new WikiRange buffer;
                         buffer = WikiRange(pull[pull_index].range.start, pull[pull_index].range.start + pull[pull_index].count);
 
                         while buffer.length() > 0 {
@@ -868,7 +868,7 @@ new class WikiSort {
                             unique -= 2;
                         }
                     } elif pull[pull_index].from_ < pull[pull_index].to {
-                        new <WikiRange> buffer;
+                        new WikiRange buffer;
                         buffer = WikiRange(pull[pull_index].range.end - pull[pull_index].count, pull[pull_index].range.end);
 
                         while buffer.length() > 0 {
@@ -899,6 +899,6 @@ new function wikiSortRun(array) {
     new int mode;
     mode = sortingVisualizer.getUserInput("Insert buffer size (0 for in-place)", "0", ["512", "64"]);
 
-    new <WikiSort> wikiSort = WikiSort(mode);
+    new WikiSort wikiSort = WikiSort(mode);
     wikiSort.sort(array, len(array));
 }

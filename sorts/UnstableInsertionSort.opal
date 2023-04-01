@@ -4,8 +4,8 @@ new function uncheckedInsertionSort(array, a, b) {
             array[i].swap(array[a]);
         }
 
-        new <Value> key;
-        new int     idx;
+        new Value key;
+        new int   idx;
         
         key, idx = array[i].readNoMark();
 

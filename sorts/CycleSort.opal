@@ -1,6 +1,6 @@
 new function cycleSort(array, a, b) {
     for cycleStart = a; cycleStart < b - 1; cycleStart++ {
-        new <Value> val = array[cycleStart].copy();
+        new Value val = array[cycleStart].copy();
         new int pos = cycleStart;
 
         for i = cycleStart + 1; i < b; i++ {
@@ -18,7 +18,7 @@ new function cycleSort(array, a, b) {
             pos++;
         }
 
-        new <Value> tmp = array[pos].copy();
+        new Value tmp = array[pos].copy();
         array[pos].write(val);
         val = tmp.copy();
 

@@ -19,8 +19,8 @@ new class PDQSort {
         }
 
         for i = begin + 1; i < end; i++ {
-            new <Value> key;
-            new int     idx;
+            new Value key;
+            new int   idx;
 
             if array[i] < array[i - 1] {
                 key, idx = array[i].readNoMark();
@@ -39,8 +39,8 @@ new class PDQSort {
         }
 
         for i = begin + 1; i < end; i++ {
-            new <Value> key;
-            new int     idx;
+            new Value key;
+            new int   idx;
 
             if array[i] < array[i - 1] {
                 key, idx = array[i].readNoMark();
@@ -62,8 +62,8 @@ new class PDQSort {
             if limit > this.partialInsertSortLimit {
                 return False;
             }
-            new <Value> key;
-            new int     idx;
+            new Value key;
+            new int   idx;
 
             if array[i] < array[i - 1] {
                 key, idx = array[i].readNoMark();
@@ -90,7 +90,7 @@ new class PDQSort {
     }
 
     new classmethod partRight(array, begin, end) {
-        new <Value> pivot = array[begin].copy();
+        new Value pivot = array[begin].copy();
         new int first = begin,
                 last  = end;
 
@@ -131,7 +131,7 @@ new class PDQSort {
     }
 
     new classmethod partLeft(array, begin, end) {
-        new <Value> pivot = array[begin].copy();
+        new Value pivot = array[begin].copy();
         new int first = begin,
                 last  = end;
 

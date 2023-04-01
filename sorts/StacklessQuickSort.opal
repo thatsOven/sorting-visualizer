@@ -39,7 +39,7 @@ new class StacklessQuickSort {
     }
 
     new method sort(array, a, b) {
-        new <Value> max_ = findMaxValue(array, a, b);
+        new Value max_ = findMaxValue(array, a, b);
 
         for i = b - 1; i >= 0; i-- {
             if array[i] == max_ {

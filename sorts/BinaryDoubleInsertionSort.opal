@@ -30,7 +30,7 @@ new class BinaryDoubleInsertionSort {
         i--;
         j++;
 
-        new <Value> l, r;
+        new Value l, r;
         new int lIdx, rIdx, m;
         for ; j < b; i--, j++ {
             if array[i] > array[j] {

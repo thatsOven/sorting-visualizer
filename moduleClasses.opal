@@ -10,7 +10,7 @@ new class Sort {
     }
 
     new method __call__(func) {
-        new <Sort> sort = Sort(this.category, this.name, this.listName);
+        new Sort sort = Sort(this.category, this.name, this.listName);
         sort.func = deepcopy(func);
         del func;
         sortingVisualizer.addSort(sort);
@@ -39,7 +39,7 @@ new class Shuffle {
     }
 
     new method __call__(func) {
-        new <Shuffle> shuffle = Shuffle(this.name);
+        new Shuffle shuffle = Shuffle(this.name);
         shuffle.func = deepcopy(func);
         del func;
         sortingVisualizer.addShuffle(shuffle);
@@ -68,7 +68,7 @@ new class Distribution {
     }
 
     new method __call__(func) {
-        new <Distribution> distribution = Distribution(this.name);
+        new Distribution distribution = Distribution(this.name);
         distribution.func = deepcopy(func);
         del func;
         sortingVisualizer.addDistribution(distribution);
@@ -126,7 +126,7 @@ new class PivotSelection {
     }
 
     new method __call__(func) {
-        new <PivotSelection> pSel = PivotSelection(this.name);
+        new PivotSelection pSel = PivotSelection(this.name);
         pSel.func = deepcopy(func);
         del func;
         sortingVisualizer.addPivotSelection(pSel);

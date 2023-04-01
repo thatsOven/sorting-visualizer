@@ -1,7 +1,7 @@
 package opal: import *;
 
-new <Vector> RESOLUTION = Vector(1280, 720);
-new int      FREQUENCY_SAMPLE = 48000;
+new Vector RESOLUTION = Vector(1280, 720);
+new int    FREQUENCY_SAMPLE = 48000;
 
 import math, random, time, os, numpy, sys;
 package timeit:    import default_timer;
@@ -86,7 +86,7 @@ new class SortingVisualizer {
         this.__forceLoadedIndices = [];
         this.__audioChs = None;
 
-        this.__fontSize = round(11 * ((RESOLUTION.x / 1280) + (RESOLUTION.y / 720)));
+        this.__fontSize = round(((RESOLUTION.x / 1280) + (RESOLUTION.y / 720)) * 11);
 
         this.__soundSample = None;
 
@@ -100,9 +100,9 @@ new class SortingVisualizer {
         this.__moreInfo = settings["internal-info"];
 
         if this.__moreInfo {
-            this.__movingTextSize = Vector(0, 20 * this.__fontSize);
+            this.__movingTextSize = Vector(0, this.__fontSize * 20);
         } else {
-            this.__movingTextSize = Vector(0, 15 * this.__fontSize);
+            this.__movingTextSize = Vector(0, this.__fontSize * 15);
         }
     }
 
@@ -729,7 +729,7 @@ new class SortingVisualizer {
         new list result = [];
 
         for i in range(length) {
-            new <Value> item = Value(0);
+            new Value item = Value(0);
             item.idx = i;
             item.stabIdx = i;
             item.setAux(True);
@@ -863,7 +863,7 @@ new class SortingVisualizer {
             Utils.Iterables.stableSort(this.sorts[list_]);
         }
 
-        new <Shuffle> threadShuf = Shuffle("Run thread");
+        new Shuffle threadShuf = Shuffle("Run thread");
         threadShuf.func = this.__threadShuf;
         this.addShuffle(threadShuf);
 
@@ -952,7 +952,7 @@ new class SortingVisualizer {
 }
 
 main {
-    new <SortingVisualizer> sortingVisualizer = SortingVisualizer();
+    new SortingVisualizer sortingVisualizer = SortingVisualizer();
 
     $includeDirectory os.path.join(HOME_DIR, "utils")
 

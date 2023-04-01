@@ -98,7 +98,7 @@ while True {
             ]);
             sel = this.__tui.run();
 
-            new <ThreadCommand> labelCommand;
+            new ThreadCommand labelCommand;
             match sel {
                 case 0 {
                     labelCommand = ThreadCommand("DEFINE", "THREAD");
@@ -118,7 +118,7 @@ while True {
                     continue;
                 }
 
-                fileName = os.path.join("HOME_DIR", "threads", name + ".py");
+                fileName = os.path.join(HOME_DIR, "threads", name + ".py");
 
                 if os.path.isfile(fileName) {
                     this.__tui.selection("Thread builder - Warning", "This file already exists. Overwrite it?", ["Yes", "No"]);
