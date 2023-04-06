@@ -7,7 +7,7 @@ new class BWGradientBarGraph : Visual {
     }
 
     new method draw(array, indices, color) {
-        new dynamic colorConstant = 215 / sortingVisualizer.arrayMax, drawn = {};
+        new dynamic colorConstant = 215.0 / sortingVisualizer.arrayMax, drawn = {};
 
         for idx in indices {
             new dynamic pos = sortingVisualizer.graphics.resolution.copy(), lineEnd;
@@ -43,10 +43,10 @@ new class BWGradientBarGraph : Visual {
 
     new method drawAux(array, indices, color) {
         sortingVisualizer.getAuxMax();
-        new dynamic length        = len(array),
+        new dynamic length        = float(len(array)),
                     resolution    = sortingVisualizer.graphics.resolution.copy(), lineSize,
                     drawn          = {},
-                    colorConstant = 215 / sortingVisualizer.auxMax;
+                    colorConstant = 215.0 / sortingVisualizer.auxMax;
 
         resolution.y //= 4;
 

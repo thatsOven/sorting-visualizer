@@ -9,7 +9,7 @@ new class VisualSizes {
         this.angleStep                = None;
         this.circleCenter             = None;
         this.circleRadius             = None;
-        this.circleStart              = -(math.pi) / 2;
+        this.circleStart              = -(math.pi) / 2.0;
         this.circleEnd                = 1.5 * math.pi;
         this.disparityLineLengthConst = None;
         this.top                      = 0;
@@ -27,7 +27,7 @@ new class VisualSizes {
                 this.lineSize = 1;
                 this.dotSize  = 1;
             } else {
-                this.lineSize = math.ceil(this.sv.graphics.resolution.x / length);
+                this.lineSize = math.ceil(this.sv.graphics.resolution.x / float(length));
                 this.dotSize = this.sv.graphics.resolution.x // length;
             }
         } else {
@@ -38,7 +38,7 @@ new class VisualSizes {
         if 360 == length {
             this.angleStep = 1;
         } else {
-            this.angleStep = 360 / length;
+            this.angleStep = 360.0 / length;
         }
 
         this.angleStep = math.radians(this.angleStep);
@@ -53,7 +53,7 @@ new class VisualSizes {
     }
 
     new method adaptLineLengthAux() {
-        this.lineLengthConst = (this.sv.graphics.resolution.y * (3 / 4) - 2) / this.sv.arrayMax;
+        this.lineLengthConst = (this.sv.graphics.resolution.y * (3.0 / 4) - 2) / this.sv.arrayMax;
         this.top             = this.sv.graphics.resolution.y // 4;
     }
 

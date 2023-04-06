@@ -39,7 +39,7 @@ new class WhiteBarGraph : Visual {
 
     new method drawAux(array, indices, color) {
         sortingVisualizer.getAuxMax();
-        new dynamic length     = len(array),
+        new dynamic length     = float(len(array)),
                     resolution = sortingVisualizer.graphics.resolution.copy(), lineSize,
                     drawn       = {};
 

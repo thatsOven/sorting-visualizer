@@ -73,7 +73,7 @@ new class Spiral : Visual {
         if 360 == length {
             angleStep = 1;
         } else {
-            angleStep = 360 / length;
+            angleStep = 360.0 / length;
         }
 
         angleStep = math.radians(angleStep);

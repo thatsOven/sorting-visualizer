@@ -63,12 +63,12 @@ new class PDQSort {
                 return False;
             }
             new Value key;
-            new int   idx;
+            new int j = i - 1, idx;
 
             if array[i] < array[i - 1] {
                 key, idx = array[i].readNoMark();
 
-                for j = i - 1; array[j] > key and j >= begin; j-- {
+                for ; array[j] > key and j >= begin; j-- {
                     array[j + 1].write(array[j]);
                 }
                 array[j + 1].writeRestoreIdx(key, idx);

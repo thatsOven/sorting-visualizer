@@ -7,7 +7,7 @@ new class ScrambledRainbowBarGraph : Visual {
     }
 
     new method draw(array, indices, color) {
-        new dynamic colorConstant = 1 / len(array), drawn = {};
+        new dynamic colorConstant = 1.0 / len(array), drawn = {};
 
         for idx in indices {
             new dynamic pos = sortingVisualizer.graphics.resolution.copy(), lineEnd;
@@ -39,10 +39,10 @@ new class ScrambledRainbowBarGraph : Visual {
 
     new method drawAux(array, indices, color) {
         sortingVisualizer.getAuxMax();
-        new dynamic length        = len(array),
+        new dynamic length        = float(len(array)),
                     resolution    = sortingVisualizer.graphics.resolution.copy(), lineSize,
                     drawn          = {},
-                    colorConstant = 1 / len(array);
+                    colorConstant = 1.0 / len(array);
 
         resolution.y //= 4;
 

@@ -8,7 +8,7 @@ new class RainbowSpiral : Visual {
     }
 
     new method draw(array, indices, color) {
-        new dynamic drawn = {}, pos, posEnd, angle, colorConstant = 1 / sortingVisualizer.arrayMax, l, end, endStep;
+        new dynamic drawn = {}, pos, posEnd, angle, colorConstant = 1.0 / sortingVisualizer.arrayMax, l, end, endStep;
     
         for idx in indices {
             angle = Utils.translate(idx, 0, len(array), 
@@ -78,14 +78,14 @@ new class RainbowSpiral : Visual {
         new dynamic length        = len(array),
                     resolution    = sortingVisualizer.graphics.resolution.copy(), lineSize,
                     drawn          = {},
-                    colorConstant = 1 / sortingVisualizer.auxMax, angleStep, circleCenter, circleRadius, 
+                    colorConstant = 1.0 / sortingVisualizer.auxMax, angleStep, circleCenter, circleRadius, 
                                                 circularLineLengthConst, pos, posEnd, angle,
                                                 l;
 
         if 360 == length {
             angleStep = 1;
         } else {
-            angleStep = 360 / length;
+            angleStep = 360.0 / length;
         }
 
         angleStep = math.radians(angleStep);

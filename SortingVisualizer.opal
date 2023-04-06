@@ -10,6 +10,7 @@ package scipy:     import signal;
 package json:      import loads;
 use exec as exec;
 use getattr as getattr;
+$args ["--nostatic"]
 
 sys.setrecursionlimit(65536);
 
@@ -63,8 +64,8 @@ new class SortingVisualizer {
         this.reads  = Reads();
         this.time   = 0;
 
-        this.arrayMax = 1;
-        this.auxMax   = 1;
+        this.arrayMax = 1.0;
+        this.auxMax   = 1.0;
 
         this.__enteredAuxMode = False;
         this.__adaptAux       = this.__defaultAdaptAux;
@@ -127,7 +128,7 @@ new class SortingVisualizer {
         this.graphics = Graphics(RESOLUTION, caption = "thatsOven's Sorting Visualizer", font = "Times New Roman", fontSize = this.__fontSize, frequencySample = FREQUENCY_SAMPLE);
         this.graphics.fill((0, 0, 0));
 
-        this.__soundSample = numpy.arange(0, 1 / 10, 1 / this.graphics.frequencySample);
+        this.__soundSample = numpy.arange(0, 1.0 / 10.0, 1.0 / float(this.graphics.frequencySample));
         this.__audioChs    = this.graphics.getAudioChs()[2];
     }
 
@@ -231,7 +232,7 @@ new class SortingVisualizer {
 
         this.__getSizes();
 
-        new float speed = len(this.array) / 256;
+        new float speed = len(this.array) / 256.0;
 
         if speed < 1 {
             this.setSpeed(speed);
@@ -328,11 +329,11 @@ new class SortingVisualizer {
     }
 
     new method getMax() {
-        this.arrayMax = this.getMaxViaKey(this.array);
+        this.arrayMax = float(this.getMaxViaKey(this.array));
     }
 
     new method getAuxMax() {
-        this.auxMax = max(this.getMaxViaKey(this.__adaptAux(this.aux)), this.arrayMax);
+        this.auxMax = float(max(this.getMaxViaKey(this.__adaptAux(this.aux)), this.arrayMax));
     }
 
     new method checkSorted(array, getVal = lambda x : x.value) {
@@ -501,9 +502,9 @@ new class SortingVisualizer {
         new dynamic tmp;
 
         if i.aux and this.aux is not None {
-            tmp = 200 * signal.square(2 * numpy.pi  * int(((400 + (this.__adaptAux(this.aux)[i.idx].value * (500 / this.auxMax)))) + 50) * this.__soundSample);
+            tmp = 200.0 * signal.square(2.0 * numpy.pi  * int(((400.0 + (this.__adaptAux(this.aux)[i.idx].value * (500.0 / this.auxMax)))) + 50.0) * this.__soundSample);
         } else {
-            tmp = 200 * signal.square(2 * numpy.pi  * int(((400 + (this.array[i.idx].value * (500 / this.arrayMax)))) + 50) * this.__soundSample);
+            tmp = 200.0 * signal.square(2.0 * numpy.pi  * int(((400.0 + (this.array[i.idx].value * (500.0 / this.arrayMax)))) + 50.0) * this.__soundSample);
         }
 
         if this.__audioChs > 1 {
@@ -514,7 +515,7 @@ new class SortingVisualizer {
     }
 
     $macro playSound(hList)
-        this.graphics.stopPlay([this.__getWaveformFromIdx(i) for i in hList]);
+        this.graphics.stopPlay([this.__getWaveformFromIdx(x) for x in hList]);
     $end
 
     new method __partitionIndices(hList) {
@@ -544,7 +545,6 @@ new class SortingVisualizer {
 
                 if this.__showAux and this.aux is not None {
                     new dynamic auxList;
-                    unchecked:
                     hList, auxList = this.__partitionIndices(hList);
                 } else {
                     hList = [x.idx for x in hList];
@@ -592,7 +592,7 @@ new class SortingVisualizer {
 
         this.renderStats();
 
-        new float speed = len(this.array) / 256;
+        new float speed = len(this.array) / 256.0;
 
         if speed < 1 {
             this.setSpeed(speed);
@@ -635,10 +635,10 @@ new class SortingVisualizer {
     new method setSpeed(value) {
         match this.__visual.refresh {
             case RefreshMode.FULL {
-                value *= 2;
+                value *= 2.0;
             }
             case RefreshMode.NOREFRESH {
-                value /= 2;
+                value /= 2.0;
 
                 if value >= 1 {
                     value = int(value);
@@ -697,7 +697,7 @@ new class SortingVisualizer {
         }
     }
 
-    new method runSortingProcess(distribution, length, shuffle, categoryName, sortName, speed = 1, mult = 1, autoValue = True, stAutoValue = None, ndAutoValue = 0, killers = {}) {
+    new method runSortingProcess(distribution, length, shuffle, categoryName, sortName, speed = 1.0, mult = 1.0, autoValue = True, stAutoValue = None, ndAutoValue = 0, killers = {}) {
         if stAutoValue is None {
             stAutoValue = length;
         }
@@ -750,9 +750,9 @@ new class SortingVisualizer {
 
         if this.__showAux and not this.__enteredAuxMode {
             if this.__sleep != 0 {
-                this.__sleep /= 10;
+                this.__sleep /= 10.0;
             } else {
-                this.__speed *= 5;
+                this.__speed *= 5.0;
             }
             this.__enteredAuxMode = True;
 
