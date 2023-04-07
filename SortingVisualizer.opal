@@ -109,7 +109,6 @@ new class SortingVisualizer {
 
     new method swap(array, a, b) {
         new dynamic sTime = default_timer();
-        unchecked:
         array[a], array[b] = array[b], array[a];
         this.timer(sTime);
 
