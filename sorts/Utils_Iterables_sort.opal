@@ -1,4 +1,6 @@
-new dynamic MaxHeapSort, uncheckedInsertionSort, ShellSort;
+use MaxHeapSort;
+use uncheckedInsertionSort;
+use ShellSort;
 
 new class MedianOfSixteenAdaptiveQuickSort {
     new classmethod compNSwap(array, a, b, gap, start) {

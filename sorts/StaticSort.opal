@@ -1,4 +1,5 @@
-new dynamic uncheckedInsertionSort, MaxHeapSort;
+use uncheckedInsertionSort;
+use MaxHeapSort;
 
 new function staticSort(array, a, b) {
     new int min_, max_;

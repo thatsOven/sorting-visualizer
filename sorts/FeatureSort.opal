@@ -1,6 +1,6 @@
 package itertools: import chain;
 
-new dynamic UtilsIterablesStableSort;
+use UtilsIterablesStableSort;
 
 new class FeatureSort {
     new classmethod sortSubarray(subarray, mainArray) {

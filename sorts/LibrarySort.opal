@@ -1,4 +1,4 @@
-new dynamic binaryInsertionSort;
+use binaryInsertionSort;
 
 new class LibrarySort {
     new int R = 4;

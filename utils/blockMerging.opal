@@ -1,4 +1,6 @@
-new dynamic lrBinarySearch, heliumRotate, insertToLeft;
+use lrBinarySearch;
+use heliumRotate;
+use insertToLeft;
 
 new function pow2Sqrt(n) {
     for s = 1; s ** 2 < n; s *= 2 {}

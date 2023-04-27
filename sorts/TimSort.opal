@@ -1,4 +1,4 @@
-new dynamic binaryInsertionSort;
+use binaryInsertionSort;
 
 new class TimSort {
     new int MIN_MERGE  = 32,

@@ -1,4 +1,4 @@
-new dynamic MaxHeapSort;
+use MaxHeapSort;
 
 new class PDQSort {
     new int insertSortThreshold    = 24,

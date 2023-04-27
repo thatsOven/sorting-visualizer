@@ -8,8 +8,8 @@ package timeit:    import default_timer;
 package functools: import total_ordering;
 package scipy:     import signal;
 package json:      import loads;
-use exec as exec;
-use getattr as getattr;
+use exec;
+use getattr;
 $args ["--nostatic"]
 
 sys.setrecursionlimit(65536);

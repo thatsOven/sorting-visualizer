@@ -1,4 +1,4 @@
-new dynamic uncheckedInsertionSort;
+use uncheckedInsertionSort;
 
 new function dualPivotQuickSort(array, a, b) {
     while b - a > 32 {

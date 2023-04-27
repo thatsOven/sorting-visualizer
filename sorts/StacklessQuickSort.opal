@@ -1,4 +1,4 @@
-new dynamic binaryInsertionSort;
+use binaryInsertionSort;
 
 new class StacklessQuickSort {
     new method __init__(pSel = None) {

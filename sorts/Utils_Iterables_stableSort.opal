@@ -160,7 +160,7 @@ new class UtilsIterablesStableSortMerge {
     }
 }
 
-new dynamic binaryInsertionSort;
+use binaryInsertionSort;
 
 new class UtilsIterablesStableSort {
     new method __init__(size, aux = None) {
