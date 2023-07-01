@@ -127,7 +127,7 @@ new class SortingVisualizer {
         this.graphics = Graphics(RESOLUTION, caption = "thatsOven's Sorting Visualizer", font = "Times New Roman", fontSize = this.__fontSize, frequencySample = FREQUENCY_SAMPLE);
         this.graphics.fill((0, 0, 0));
 
-        this.__soundSample = numpy.arange(0, 1.0 / 10.0, 1.0 / float(this.graphics.frequencySample));
+        this.__soundSample = numpy.arange(0, 1.0 / 30.0, 1.0 / float(this.graphics.frequencySample));
         this.__audioChs    = this.graphics.getAudioChs()[2];
     }
 
@@ -514,7 +514,7 @@ new class SortingVisualizer {
     }
 
     $macro playSound(hList)
-        this.graphics.stopPlay([this.__getWaveformFromIdx(x) for x in hList]);
+        this.graphics.playWaveforms([this.__getWaveformFromIdx(x) for x in hList]);
     $end
 
     new method __partitionIndices(hList) {
