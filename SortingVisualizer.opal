@@ -959,9 +959,10 @@ main {
         $includeDirectory os.path.join(HOME_DIR, "visuals")
     }
 
-    new list visualNames = [x for x in dir(Visuals) if not x.startswith("__")];
-    for visual in visualNames {
-        getattr(Visuals, visual)();
+    for visual in dir(Visuals) {
+        if !x.startswith("__") {
+            getattr(Visuals, visual)();
+        }
     }
 
     $includeDirectory os.path.join(HOME_DIR, "distributions")
