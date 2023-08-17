@@ -1,10 +1,56 @@
-new class Spiral : Visual {
+new class Spiral: BaseCircleVisual {
     new method __init__() {
         super().__init__(
             "Spiral",
             (255, 0, 0), 
             RefreshMode.FULL, True
         );
+    }
+
+    new method prepare() {
+        super.prepare();
+
+        static: new int length = len(sortingVisualizer.array);
+
+        this.lineLengthConst = this.circleRadius / sortingVisualizer.arrayMax;
+
+        this.points = {};
+        for i in range(length) {
+            new dynamic angle = Utils.translate(i, 0, length, this.circleStart, this.circleEnd);
+            new dynamic pos, posEnd, end, endStep;
+            
+            pos = Vector().fromAngle(angle);
+            posEnd = Vector().fromAngle(angle + this.angleStep);
+
+            end = pos.copy();
+            end.magnitude(this.circleRadius);
+            end = end.getIntCoords();
+            end += this.circleCenter;
+
+            endStep = posEnd.copy();
+            endStep.magnitude(this.circleRadius);
+            endStep = endStep.getIntCoords();
+            endStep += this.circleCenter;
+
+            this.points[i] = (pos, posEnd, end, endStep);
+        }
+    }
+
+    new method onAuxOn(length) {
+        super.onAuxOn(length);
+
+        this.auxLineLengthConst = this.circleRadius / sortingVisualizer.auxMax;
+
+        this.auxPoints = {};
+        for i in range(length) {
+            new dynamic angle = Utils.translate(i, 0, length, this.circleStart, this.circleEnd);
+            new dynamic pos, posEnd;
+            
+            pos = Vector().fromAngle(angle);
+            posEnd = Vector().fromAngle(angle + this.auxAngleStep);
+
+            this.points[i] = (pos, posEnd);
+        }
     }
 
     new method draw(array, indices, color) {
@@ -15,85 +61,136 @@ new class Spiral : Visual {
         new dynamic drawn = {}, pos, posEnd, angle, l, end, endStep;
         
         for idx in indices {
-            angle = Utils.translate(idx, 0, len(array), 
-                sortingVisualizer.visualSizes.circleStart, 
-                sortingVisualizer.visualSizes.circleEnd
-            );
-
-            if angle in drawn {
-                continue;
-            } else {
-                drawn[angle] = None;
-            }
-
-            l = array[idx].value * sortingVisualizer.visualSizes.circularLineLengthConst;
-            pos = Vector().fromAngle(angle);
-
-            end = pos.copy();
-            end.magnitude(sortingVisualizer.visualSizes.circleRadius);
-            end = end.getIntCoords();
-            end += sortingVisualizer.visualSizes.circleCenter;
+            l = array[idx].value * this.lineLengthConst;
+            pos, posEnd, end, endStep = this.points[idx];
 
             pos.magnitude(l);
             pos = pos.getIntCoords();
-            pos += sortingVisualizer.visualSizes.circleCenter;
-
-            posEnd = Vector().fromAngle(angle + sortingVisualizer.visualSizes.angleStep);
-
-            endStep = posEnd.copy();
-            endStep.magnitude(sortingVisualizer.visualSizes.circleRadius);
-            endStep = endStep.getIntCoords();
-            endStep += sortingVisualizer.visualSizes.circleCenter;
+            pos += this.circleCenter;
 
             posEnd.magnitude(l);
             posEnd = posEnd.getIntCoords();
-            posEnd += sortingVisualizer.visualSizes.circleCenter;
+            posEnd += this.circleCenter;
 
             sortingVisualizer.graphics.polygon([
-                sortingVisualizer.visualSizes.circleCenter,
-                end, endStep
-                ], (0, 0, 0));
+                this.circleCenter, end, endStep
+            ], (0, 0, 0));
 
             sortingVisualizer.graphics.polygon([
-                sortingVisualizer.visualSizes.circleCenter,
-                pos, posEnd
-                ], color);
+                this.circleCenter, pos, posEnd
+            ], color);
         }
 
         del drawn;
     }
 
     new method drawAux(array, indices, color) {
-        sortingVisualizer.getAuxMax();
-        new dynamic length        = len(array),
-                    resolution    = sortingVisualizer.graphics.resolution.copy(), lineSize,
-                    drawn          = {}, angleStep, circleCenter, circleRadius, 
-                                        circularLineLengthConst, pos, posEnd, angle, l;
+        new dynamic drawn = {}, pos, posEnd, angle, l;
 
-        if 360 == length {
-            angleStep = 1;
-        } else {
-            angleStep = 360.0 / length;
-        }
-
-        angleStep = math.radians(angleStep);
-
-        circleRadius = (resolution.y // 6) - 20;
-            
-        circleCenter = resolution.copy();
-        circleCenter.y //= 4;
-        circleCenter.y *= 3;
-        circleCenter.x = resolution.x // 4;
-
-        circularLineLengthConst = circleRadius / sortingVisualizer.auxMax;
-
-        sortingVisualizer.graphics.fastCircle(circleCenter, circleRadius, (0, 0, 0));
+        sortingVisualizer.graphics.fastCircle(this.auxCircleCenter, this.auxCircleRadius, (0, 0, 0));
 
         for idx in range(len(array)) {
-            angle = Utils.translate(idx, 0, len(array), 
-                sortingVisualizer.visualSizes.circleStart, 
-                sortingVisualizer.visualSizes.circleEnd
-            );
+            l = array[idx].value * this.auxLineLengthConst;
+
+            pos, posEnd = this.auxPoints[i];
+            
+            pos.magnitude(l);
+            pos = pos.getIntCoords();
+            pos += this.auxCircleCenter;
+
+            posEnd.magnitude(l);
+            posEnd = posEnd.getIntCoords();
+            posEnd += this.auxCircleCenter;
+
+            if idx in indices {
+                sortingVisualizer.graphics.polygon([
+                    this.circleCenter, pos, posEnd
+                ], color);
+            } else {
+                sortingVisualizer.graphics.polygon([
+                    this.circleCenter, pos, posEnd
+                ], (255, 255, 255));
+            }
+        }
+
+        del drawn;
+    }
+}
+
+new class RainbowSpiral: Spiral {
+    new method __init__() {
+        BaseCircleVisual.__init__(
+            this,
+            "Rainbow Spiral",
+            (255, 255, 255), 
+            RefreshMode.FULL, True
+        );
+    }
+
+    new method prepare() {
+        super.prepare();
+
+        this.colorConstant = 1.0 / sortingVisualizer.arrayMax;
+    }
+
+    new method onAuxOn(length) {
+        super.onAuxOn(length);
+
+        this.auxColorConstant = 1.0 / sortingVisualizer.auxMax;
+    }
+
+    new method draw(array, indices, color) {
+        if color is None {
+            color = (255, 255, 255);
+        }
+
+        new dynamic drawn = {}, pos, posEnd, angle, l, end, endStep;
+        
+        for idx in indices {
+            angle = this.angles[idx];
+
+            l = array[idx].value * this.lineLengthConst;
+            pos, posEnd, end, endStep = this.points[angle];
+
+            pos.magnitude(l);
+            pos = pos.getIntCoords();
+            pos += this.circleCenter;
+
+            posEnd.magnitude(l);
+            posEnd = posEnd.getIntCoords();
+            posEnd += this.circleCenter;
+
+            sortingVisualizer.graphics.polygon([
+                this.circleCenter, end, endStep
+            ], (0, 0, 0));
+
+            if color is None {
+                if array[idx].value < 0 {
+                    sortingVisualizer.graphics.polygon([
+                        this.circleCenter, pos, posEnd
+                    ], (255, 0, 0));
+                } else {
+                    sortingVisualizer.graphics.polygon([
+                        this.circleCenter, pos, posEnd
+                    ], hsvToRgb(array[idx].value * this.colorConstant));
+                }
+            } else {
+                sortingVisualizer.graphics.polygon([
+                    this.circleCenter, pos, posEnd
+                ], color);
+            }
+        }
+
+        del drawn;
+    }
+
+    new method drawAux(array, indices, color) {
+        new dynamic drawn = {}, pos, posEnd, angle, l;
+
+        sortingVisualizer.graphics.fastCircle(this.auxCircleCenter, this.auxCircleRadius, (0, 0, 0));
+
+        for idx in range(len(array)) {
+            angle = this.auxAngles[idx];
 
             if angle in drawn {
                 continue;
@@ -101,27 +198,32 @@ new class Spiral : Visual {
                 drawn[angle] = None;
             }
 
-            l = array[idx].value * circularLineLengthConst;
-            pos = Vector().fromAngle(angle);
+            l = array[idx].value * this.auxLineLengthConst;
+
+            pos, posEnd = this.auxPoint[angle];
+            
             pos.magnitude(l);
             pos = pos.getIntCoords();
-            pos += circleCenter;
+            pos += this.auxCircleCenter;
 
-            posEnd = Vector().fromAngle(angle + angleStep);
             posEnd.magnitude(l);
             posEnd = posEnd.getIntCoords();
-            posEnd += circleCenter;
+            posEnd += this.auxCircleCenter;
 
             if idx in indices {
                 sortingVisualizer.graphics.polygon([
-                circleCenter,
-                pos, posEnd
+                    this.circleCenter, pos, posEnd
                 ], color);
             } else {
-                sortingVisualizer.graphics.polygon([
-                circleCenter,
-                pos, posEnd
-                ], (255, 255, 255));
+                if array[idx].value < 0 {
+                    sortingVisualizer.graphics.polygon([
+                        this.circleCenter, pos, posEnd
+                    ], (255, 0, 0));
+                } else {
+                    sortingVisualizer.graphics.polygon([
+                        this.circleCenter, pos, posEnd
+                    ], hsvToRgb(array[idx].value * this.colorConstant));
+                }
             }
         }
 

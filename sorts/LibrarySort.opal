@@ -13,20 +13,20 @@ new class LibrarySort {
     new classmethod rebalance(array, temp, cnts, locs, m, b) {
         for i = 0; i < m; i++ {
             cnts[i + 1] += cnts[i] + 1;
-            sortingVisualizer.writes.addWrite();
+            sortingVisualizer.writes++;
             sortingVisualizer.multiHighlight([i, i + 1], True);
         }
 
         for i = m, j = 0; i < b; i++, j++ {
             temp[cnts[locs[j]]].write(array[i]);
             cnts[locs[j]]++;
-            sortingVisualizer.writes.addWrite();
+            sortingVisualizer.writes++;
         }
 
         for i = 0; i < m; i++ {
             temp[cnts[i]].write(array[i]);
             cnts[i]++;
-            sortingVisualizer.writes.addWrite();
+            sortingVisualizer.writes++;
         }
 
         arrayCopy(temp, 0, array, 0, b);
@@ -39,7 +39,7 @@ new class LibrarySort {
 
         for i = 0; i < m + 2; i++ {
             cnts[i] = 0;
-            sortingVisualizer.writes.addWrite();
+            sortingVisualizer.writes++;
         }
     }
 
@@ -70,9 +70,9 @@ new class LibrarySort {
             loc = lrBinarySearch(array, 0, j, array[i], False);
 
             cnts[loc + 1]++;
-            sortingVisualizer.writes.addWrite();
+            sortingVisualizer.writes++;
             locs[k] = loc;
-            sortingVisualizer.writes.addWrite();
+            sortingVisualizer.writes++;
             k++;
         }
 

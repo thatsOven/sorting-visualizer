@@ -1,4 +1,4 @@
-new class WhiteBarGraph : Visual {
+new class WhiteBarGraph: LineVisual {
     new method __init__() {
         super().__init__(
             "Bar Graph",
@@ -16,11 +16,10 @@ new class WhiteBarGraph : Visual {
         for idx in indices {
             new dynamic pos = sortingVisualizer.graphics.resolution.copy(), lineEnd;
 
-            pos.x = Utils.translate(idx, 0, len(array), 0, 
-                sortingVisualizer.graphics.resolution.x // 
-                sortingVisualizer.visualSizes.lineSize
-            ) * sortingVisualizer.visualSizes.lineSize + 
-            (sortingVisualizer.visualSizes.lineSize // 2);
+            pos.x = Utils.translate(
+                idx, 0, len(array), 0, 
+                sortingVisualizer.graphics.resolution.x // this.lineSize
+            ) * this.lineSize + (this.lineSize // 2);
 
             if pos.x in drawn {
                 continue;
@@ -28,39 +27,22 @@ new class WhiteBarGraph : Visual {
                 drawn[pos.x] = None;
             }
 
-            lineEnd = pos - Vector(0, int(array[idx].value * sortingVisualizer.visualSizes.lineLengthConst));
+            lineEnd = pos - Vector(0, int(array[idx].value * this.lineLengthConst));
             
-            sortingVisualizer.graphics.line(    pos,          lineEnd,     color, sortingVisualizer.visualSizes.lineSize);
-            sortingVisualizer.graphics.line(lineEnd, Vector(pos.x, 0), (0, 0, 0), sortingVisualizer.visualSizes.lineSize);
+            sortingVisualizer.graphics.line(    pos,          lineEnd,     color, this.lineSize);
+            sortingVisualizer.graphics.line(lineEnd, Vector(pos.x, 0), (0, 0, 0), this.lineSize);
         }
 
         del drawn;
     }
 
     new method drawAux(array, indices, color) {
-        sortingVisualizer.getAuxMax();
-        new dynamic length     = float(len(array)),
-                    resolution = sortingVisualizer.graphics.resolution.copy(), lineSize,
-                    drawn       = {};
-
-        resolution.y //= 4;
-
-        new dynamic lineLengthConst = resolution.y / sortingVisualizer.auxMax;
-
-        if resolution.x >= length {
-            if resolution.x == length {
-                lineSize = 1;
-            } else {
-                lineSize = math.ceil(resolution.x / length);
-            }
-        } else {
-            lineSize = 1;
-        }
+        new dynamic drawn = {};
 
         for idx in range(len(array)) {
-            new dynamic pos = resolution.copy(), lineEnd;
+            new dynamic pos = this.auxResolution.copy(), lineEnd;
 
-            pos.x = Utils.translate(idx, 0, len(array), 0, resolution.x // lineSize) * lineSize + (lineSize // 2);
+            pos.x = Utils.translate(idx, 0, len(array), 0, this.auxResolution.x // this.auxLineSize) * this.auxLineSize + (this.auxLineSize // 2);
 
             if pos.x in drawn {
                 continue;
@@ -68,18 +50,19 @@ new class WhiteBarGraph : Visual {
                 drawn[pos.x] = None;
             }
 
-            lineEnd = pos - Vector(0, int(array[idx].value * lineLengthConst));
+            lineEnd = pos - Vector(0, int(array[idx].value * this.auxLineLengthConst));
             
             if idx in indices {
-                sortingVisualizer.graphics.line(pos, lineEnd,           color, lineSize);
+                sortingVisualizer.graphics.line(pos, lineEnd,           color, this.auxLineSize);
             } else {
-                sortingVisualizer.graphics.line(pos, lineEnd, (255, 255, 255), lineSize);
+                sortingVisualizer.graphics.line(pos, lineEnd, (255, 255, 255), this.auxLineSize);
             }
-            sortingVisualizer.graphics.line(lineEnd, Vector(pos.x, 0), (0, 0, 0), lineSize);
+
+            sortingVisualizer.graphics.line(lineEnd, Vector(pos.x, 0), (0, 0, 0), this.auxLineSize);
         }
 
         del drawn;
 
-        sortingVisualizer.graphics.line(Vector(0, resolution.y), resolution, (0, 0, 255), 2);
+        sortingVisualizer.graphics.line(Vector(0, this.auxResolution.y), this.auxResolution, (0, 0, 255), 2);
     }
 }

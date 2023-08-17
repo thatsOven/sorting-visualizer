@@ -41,7 +41,7 @@ new class FeatureSort {
             new dynamic sTime = default_timer();
             aux[idx].append(array[i].copy());
             sortingVisualizer.timer(sTime);
-            sortingVisualizer.writes.addWrite();
+            sortingVisualizer.writes++;
             sortingVisualizer.highlight(idx, True);
         }
 

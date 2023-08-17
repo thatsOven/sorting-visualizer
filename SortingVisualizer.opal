@@ -31,9 +31,7 @@ new dynamic sortingVisualizer = None;
 
 $include os.path.join(HOME_DIR, "TUI", "TUIManager.opal")
 $include os.path.join(HOME_DIR, "Value.opal")
-$include os.path.join(HOME_DIR, "VisualSizes.opal")
 $include os.path.join(HOME_DIR, "moduleClasses.opal")
-$include os.path.join(HOME_DIR, "ReadsWrites.opal")
 $include os.path.join(HOME_DIR, "threadBuilder", "ThreadCommand.opal")
 
 enum ArrayState {
@@ -58,17 +56,14 @@ new class SortingVisualizer {
         this.graphics = None;
         this.__tui    = TUI();
 
-        this.visualSizes = VisualSizes(this);
-
-        this.writes = Writes();
-        this.reads  = Reads();
-        this.time   = 0;
+        this.resetStats();
 
         this.arrayMax = 1.0;
         this.auxMax   = 1.0;
 
         this.__enteredAuxMode = False;
         this.__adaptAux       = this.__defaultAdaptAux;
+        this.__oldAuxLen      = 0;
 
         this.__speed        = 1;
         this.__speedCounter = 0;
@@ -104,6 +99,28 @@ new class SortingVisualizer {
             this.__movingTextSize = Vector(0, this.__fontSize * 20);
         } else {
             this.__movingTextSize = Vector(0, this.__fontSize * 15);
+        }
+    }
+
+    property swaps {
+        get {
+            return this.__swaps;
+        }
+
+        set {
+            this.writes += 2 * (value - this.__swaps);
+            this.__swaps = value;
+        }
+    }
+
+    property comparisons {
+        get {
+            return this.__comps;
+        }
+
+        set {
+            this.reads += 2 * (value - this.__comps);
+            this.__comps = value;
         }
     }
 
@@ -145,9 +162,11 @@ new class SortingVisualizer {
     $end
 
     new method resetStats() {
-        this.writes.reset();
-        this.reads.reset();
-        this.time = 0;
+        this.writes  = 0;
+        this.reads   = 0;
+        this.__swaps = 0;
+        this.__comps = 0;
+        this.time    = 0;
     }
 
     new method drawFullArray() {
@@ -156,7 +175,8 @@ new class SortingVisualizer {
     }
 
     new method __getSizes() {
-        this.visualSizes.compute();
+        this.getMax();
+        this.__visual.prepare();
         this.__forceLoadedIndices = [];
 
         new int worstCaseTextWidth;
@@ -216,7 +236,8 @@ new class SortingVisualizer {
             this.array[i].idx     = i;
         }
 
-        this.visualSizes.compute();
+        this.getMax();
+        this.__visual.prepare();
         this.drawFullArray();
     }
 
@@ -331,8 +352,12 @@ new class SortingVisualizer {
         this.arrayMax = float(this.getMaxViaKey(this.array));
     }
 
-    new method getAuxMax() {
-        this.auxMax = float(max(this.getMaxViaKey(this.__adaptAux(this.aux)), this.arrayMax));
+    new method getAuxMax(array = None) {
+        if array is None {
+            this.auxMax = float(max(this.getMaxViaKey(this.__adaptAux(this.aux)), this.arrayMax));
+        } else {
+            this.auxMax = float(max(this.getMaxViaKey(array), this.arrayMax));
+        }
     }
 
     new method checkSorted(array, getVal = lambda x : x.value) {
@@ -461,11 +486,11 @@ new class SortingVisualizer {
                 "Dropped frames: " + this.__dFramesPerc,
                 "Current delay: " + str(this.__sleep + this.__tmpSleep) + " ms",
                 "",
-                "Writes: " + str(this.writes.writes),
-                "Swaps: "  + str(this.writes.swaps),
+                "Writes: " + str(this.writes),
+                "Swaps: "  + str(this.__swaps),
                 "",
-                "Reads: "  + str(this.reads.reads),
-                "Comparisons: " + str(this.reads.comparisons),
+                "Reads: "  + str(this.reads),
+                "Comparisons: " + str(this.__comps),
                 "",
                 ete
             ], pos);
@@ -474,11 +499,11 @@ new class SortingVisualizer {
                 "Array length: " + str(len(this.array)) + " elements",
                 this.__currentCategory + ": " + this.__currentlyRunning,
                 "",
-                "Writes: " + str(this.writes.writes),
-                "Swaps: "  + str(this.writes.swaps),
+                "Writes: " + str(this.writes),
+                "Swaps: "  + str(this.__swaps),
                 "",
-                "Reads: "  + str(this.reads.reads),
-                "Comparisons: " + str(this.reads.comparisons),
+                "Reads: "  + str(this.reads),
+                "Comparisons: " + str(this.__comps),
                 "",
                 ete
             ], pos);
@@ -552,7 +577,20 @@ new class SortingVisualizer {
                 this.__visual.draw(this.array, hList, this.__visual.highlightColor);
 
                 if this.__showAux and this.aux is not None {
-                    this.__visual.drawAux(this.__adaptAux(this.aux), auxList, this.__visual.highlightColor);
+                    new dynamic adapted = this.__adaptAux(this.aux);
+                    static: new int length = len(adapted);
+
+                    if this.__oldAuxLen != length {
+                        this.__visual.onAuxOn(length);
+                    } else {
+                        new dynamic oldMax = this.auxMax;
+                        this.getAuxMax();
+                        if this.auxMax != oldMax {
+                            this.__visual.onAuxOn(length);
+                        }
+                    }       
+
+                    this.__visual.drawAux(adapted, auxList, this.__visual.highlightColor);
                 }
 
                 this.renderStats();
@@ -754,8 +792,10 @@ new class SortingVisualizer {
                 this.__speed *= 5.0;
             }
             this.__enteredAuxMode = True;
-
-            this.visualSizes.adaptLineLengthAux();
+            
+            new dynamic adapted = this.__adaptAux(this.aux);
+            this.getAuxMax(adapted);
+            this.__visual.onAuxOn(len(adapted));
             this.drawFullArray();
         }
     }
@@ -763,7 +803,7 @@ new class SortingVisualizer {
     new method resetAux() {
         this.aux = None;
         this.__enteredAuxMode = False;
-        this.visualSizes.resetLineLength();
+        this.__visual.onAuxOff();
     }
 
     new method __loadThreadAndRun(thread, initGraph = False) {
@@ -960,7 +1000,7 @@ main {
     }
 
     for visual in dir(Visuals) {
-        if !x.startswith("__") {
+        if !visual.startswith("__") {
             getattr(Visuals, visual)();
         }
     }

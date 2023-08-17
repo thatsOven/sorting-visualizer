@@ -100,8 +100,12 @@ abstract: new class Visual {
         sortingVisualizer.addVisual(this);
     }
 
-    abstract: new method draw(array, indices, color);
-    abstract: new method drawAux(array, indices, color);
+    new method prepare()       {} # precomputes data for the visual style based on the array
+    new method onAuxOn(length) {} # gets called when aux is turned on or constants are to recompute. useful to prepare data
+    new method onAuxOff()      {} # gets called when aux mode is turned off. useful to restore old values
+    
+    abstract: new method draw(array, indices, color);    # draws the visual style 
+    abstract: new method drawAux(array, indices, color); # draws the aux array in that visual style
 
     new method __eq__(other) {
         if this.name == other.name {

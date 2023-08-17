@@ -1,4 +1,4 @@
-new class ColorCircle : Visual {
+new class ColorCircle: CircleVisual {
     new method __init__() {
         super().__init__(
             "Color Circle",
@@ -6,15 +6,24 @@ new class ColorCircle : Visual {
             RefreshMode.NOREFRESH, True
         );
     }
+
+    new method prepare() {
+        super.prepare();
+
+        this.colorConstant = 1.0 / sortingVisualizer.arrayMax;
+    }
+
+    new method onAuxOn(length) {
+        super.onAuxOn(length);
+
+        this.auxColorConstant = 1.0 / sortingVisualizer.auxMax;
+    }
     
     new method draw(array, indices, color) {
-        new dynamic drawn = {}, pos, posEnd, angle, colorConstant = 1.0 / sortingVisualizer.arrayMax;
+        new dynamic drawn = {}, angle, pos, posEnd; 
 
         for idx in indices {
-            angle = Utils.translate(idx, 0, len(array), 
-                sortingVisualizer.visualSizes.circleStart, 
-                sortingVisualizer.visualSizes.circleEnd
-            );
+            angle = this.angles[idx];
 
             if angle in drawn {
                 continue;
@@ -22,32 +31,21 @@ new class ColorCircle : Visual {
                 drawn[angle] = None;
             }
 
-            pos = Vector().fromAngle(angle);
-            pos.magnitude(sortingVisualizer.visualSizes.circleRadius);
-            pos = pos.getIntCoords();
-            pos += sortingVisualizer.visualSizes.circleCenter;
-
-            posEnd = Vector().fromAngle(angle + sortingVisualizer.visualSizes.angleStep);
-            posEnd.magnitude(sortingVisualizer.visualSizes.circleRadius);
-            posEnd = posEnd.getIntCoords();
-            posEnd += sortingVisualizer.visualSizes.circleCenter;
+            pos, posEnd = this.points[angle];
 
             if color is None {
                 if array[idx].value < 0 {
                     sortingVisualizer.graphics.polygon([
-                    sortingVisualizer.visualSizes.circleCenter,
-                    pos, posEnd
-                    ], hsvToRgb(0));
+                        this.circleCenter, pos, posEnd
+                    ], (255, 0, 0));
                 } else {
                     sortingVisualizer.graphics.polygon([
-                    sortingVisualizer.visualSizes.circleCenter,
-                    pos, posEnd
-                    ], hsvToRgb(array[idx].value * colorConstant));
+                        this.circleCenter, pos, posEnd
+                    ], hsvToRgb(array[idx].value * this.colorConstant));
                 }
             } else {
                 sortingVisualizer.graphics.polygon([
-                sortingVisualizer.visualSizes.circleCenter,
-                pos, posEnd
+                    this.circleCenter, pos, posEnd
                 ], color);
             }
         }
@@ -56,33 +54,10 @@ new class ColorCircle : Visual {
     }
 
     new method drawAux(array, indices, color) {
-        sortingVisualizer.getAuxMax();
-        new dynamic length        = len(array),
-                    resolution    = sortingVisualizer.graphics.resolution.copy(), lineSize,
-                    drawn          = {},
-                    colorConstant = 1.0 / sortingVisualizer.auxMax, angleStep, circleCenter, circleRadius, 
-                                                pos, posEnd, angle;
-
-        if 360 == length {
-            angleStep = 1;
-        } else {
-            angleStep = 360.0 / length;
-        }
-
-        angleStep = math.radians(angleStep);
-
-        circleRadius = (resolution.y // 6) - 20;
-            
-        circleCenter = resolution.copy();
-        circleCenter.y //= 4;
-        circleCenter.y *= 3;
-        circleCenter.x = resolution.x // 4;
+        new dynamic drawn = {}, pos, posEnd, angle;
 
         for idx in range(len(array)) {
-            angle = Utils.translate(idx, 0, len(array), 
-                sortingVisualizer.visualSizes.circleStart, 
-                sortingVisualizer.visualSizes.circleEnd
-            );
+            angle = this.auxAngles[idx];
 
             if angle in drawn {
                 continue;
@@ -90,32 +65,21 @@ new class ColorCircle : Visual {
                 drawn[angle] = None;
             }
 
-            pos = Vector().fromAngle(angle);
-            pos.magnitude(circleRadius);
-            pos = pos.getIntCoords();
-            pos += circleCenter;
-
-            posEnd = Vector().fromAngle(angle + angleStep);
-            posEnd.magnitude(circleRadius);
-            posEnd = posEnd.getIntCoords();
-            posEnd += circleCenter;
+            pos, posEnd = this.auxPoints[angle];
 
             if idx in indices {
                 sortingVisualizer.graphics.polygon([
-                circleCenter,
-                pos, posEnd
+                    this.auxCircleCenter, pos, posEnd
                 ], color);
             } else {
                 if array[idx].value < 0 {
                     sortingVisualizer.graphics.polygon([
-                    circleCenter,
-                    pos, posEnd
-                    ], hsvToRgb(0));
+                        this.auxCircleCenter, pos, posEnd
+                    ], (255, 0, 0));
                 } else {
                     sortingVisualizer.graphics.polygon([
-                    circleCenter,
-                    pos, posEnd
-                    ], hsvToRgb(array[idx].value * colorConstant));
+                        this.auxCircleCenter, pos, posEnd
+                    ], hsvToRgb(array[idx].value * this.auxColorConstant));
                 }
             }
         }

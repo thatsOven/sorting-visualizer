@@ -40,7 +40,7 @@ new class RadixSort {
                 i++;
             }
             if empty {
-                sortingVisualizer.writes.writes += len(aux[j]);
+                sortingVisualizer.writes += len(aux[j]);
                 aux[j].clear();
             }
         }
@@ -50,7 +50,7 @@ new class RadixSort {
         new dynamic sTime = default_timer();
         aux[dig].append(array[idx].noMark());
         sortingVisualizer.timer(sTime);
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
         sortingVisualizer.highlight(idx);
     }
 
@@ -101,7 +101,7 @@ new class RadixSort {
             this.MSD(array, a + sum_, a + sum_ + len(aux[i]), p - 1);
 
             sum_ += len(aux[i]);
-            sortingVisualizer.writes.writes += len(aux[i]);
+            sortingVisualizer.writes += len(aux[i]);
             aux[i].clear();
         }
     }

@@ -38,7 +38,7 @@ new class Value {
     }
 
     new method readDigit(d, base) {
-        sortingVisualizer.reads.addRead();
+        sortingVisualizer.reads++;
 
         new dynamic sTime = default_timer(),
                     temp  = (this.value // (base ** d)) % base;
@@ -50,7 +50,7 @@ new class Value {
     }
 
     new method readInt() {
-        sortingVisualizer.reads.addRead();
+        sortingVisualizer.reads++;
 
         new dynamic sTime = default_timer(),
                     temp  = this.value;
@@ -62,7 +62,7 @@ new class Value {
     }
 
     new method read() {
-        sortingVisualizer.reads.addRead();
+        sortingVisualizer.reads++;
 
         new dynamic sTime = default_timer(),
                     temp  = this.value, val;
@@ -78,7 +78,7 @@ new class Value {
     }
 
     new method readNoMark() {
-        sortingVisualizer.reads.addRead();
+        sortingVisualizer.reads++;
 
         new dynamic sTime = default_timer(),
                     temp  = this.value, val;
@@ -93,7 +93,7 @@ new class Value {
     }
 
     new method __eq__(other) {
-        sortingVisualizer.reads.addComparison();
+        sortingVisualizer.comparisons++;
 
         new dynamic compResult;
 
@@ -117,7 +117,7 @@ new class Value {
     }
 
     new method __ne__(other) {
-        sortingVisualizer.reads.addComparison();
+        sortingVisualizer.comparisons++;
 
         new dynamic compResult;
 
@@ -141,7 +141,7 @@ new class Value {
     }
 
     new method __lt__(other) {
-        sortingVisualizer.reads.addComparison();
+        sortingVisualizer.comparisons++;
 
         new dynamic compResult;
 
@@ -165,7 +165,7 @@ new class Value {
     }
 
     new method __gt__(other) {
-        sortingVisualizer.reads.addComparison();
+        sortingVisualizer.comparisons++;
 
         new dynamic compResult;
 
@@ -189,7 +189,7 @@ new class Value {
     }
 
     new method __le__(other) {
-        sortingVisualizer.reads.addComparison();
+        sortingVisualizer.comparisons++;
 
         new dynamic compResult;
 
@@ -213,7 +213,7 @@ new class Value {
     }
 
     new method __ge__(other) {
-        sortingVisualizer.reads.addComparison();
+        sortingVisualizer.comparisons++;
 
         new dynamic compResult;
 
@@ -237,7 +237,7 @@ new class Value {
     }
 
     new method write(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -256,7 +256,7 @@ new class Value {
     }
 
     new method writeRestoreIdx(other, idx) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             other.idx = idx;
@@ -279,7 +279,7 @@ new class Value {
     }
 
     new method swap(other) {
-        sortingVisualizer.writes.addSwap();
+        sortingVisualizer.swaps++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -466,7 +466,7 @@ new class Value {
     }
 
     new method __iadd__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -486,7 +486,7 @@ new class Value {
     }
 
     new method __isub__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -506,7 +506,7 @@ new class Value {
     }
 
     new method __imul__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -526,7 +526,7 @@ new class Value {
     }
 
     new method __itruediv__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -546,7 +546,7 @@ new class Value {
     }
 
     new method __ifloordiv__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -566,7 +566,7 @@ new class Value {
     }
 
     new method __imod__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -586,7 +586,7 @@ new class Value {
     }
 
     new method __ipow__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -606,7 +606,7 @@ new class Value {
     }
 
     new method __ilshift__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -626,7 +626,7 @@ new class Value {
     }
 
     new method __irshift__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -646,7 +646,7 @@ new class Value {
     }
 
     new method __iand__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -666,7 +666,7 @@ new class Value {
     }
 
     new method __ixor__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
@@ -686,7 +686,7 @@ new class Value {
     }
 
     new method __ior__(other) {
-        sortingVisualizer.writes.addWrite();
+        sortingVisualizer.writes++;
 
         if type(this) == type(other) {
             new dynamic sTime = default_timer();
