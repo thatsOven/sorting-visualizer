@@ -1,5 +1,13 @@
 this.setVisual(runOpts["visual"]);
 
+new function runAllSort(size, name, speed, ndAutoValue = 0, killers = {}) {
+    this.runSortingProcess(
+        runOpts["distribution"], size, runOpts["shuffle"], 
+        ct, name, speed, stAutoValue = autoValue * size, 
+        ndAutoValue = ndAutoValue, killers = killers
+    );
+}
+
 new int autoValue;
 if runOpts["distribution"] == 1 {
     autoValue = -1;
@@ -11,66 +19,88 @@ if this.__record {
     IO.read("Press enter when ready.");
 }
 
+
 new str ct;
 ct = "Exchange Sorts";
-this.runSortingProcess(runOpts["distribution"], 256, runOpts["shuffle"], ct, "Bubble Sort", 80, runOpts["speed"], stAutoValue = autoValue * 256);
-this.runSortingProcess(runOpts["distribution"], 128, runOpts["shuffle"], ct, "Gnome Sort", 1, runOpts["speed"], stAutoValue = autoValue * 128);
-this.runSortingProcess(runOpts["distribution"], 512, runOpts["shuffle"], ct, "Circle Sort", 5, runOpts["speed"], stAutoValue = autoValue * 512);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Comb Sort", 10, runOpts["speed"], stAutoValue = autoValue * 1024);
+runAllSort(256, "Bubble Sort", 80);
+runAllSort(128,  "Gnome Sort",  1);
+runAllSort(512, "Circle Sort",  5);
+runAllSort(1024,  "Comb Sort", 10);
+
 
 ct = "Insertion Sorts";
-this.runSortingProcess(runOpts["distribution"], 256, runOpts["shuffle"], ct, "Insertion Sort", 5, runOpts["speed"], stAutoValue = autoValue * 256);
-this.runSortingProcess(runOpts["distribution"], 256, runOpts["shuffle"], ct, "Unstable Insertion", 5, runOpts["speed"], stAutoValue = autoValue * 256);
-this.runSortingProcess(runOpts["distribution"], 256, runOpts["shuffle"], ct, "Binary Insertion", 5, runOpts["speed"], stAutoValue = autoValue * 256);
-this.runSortingProcess(runOpts["distribution"], 256, runOpts["shuffle"], ct, "Bin. Double Insert", 5, runOpts["speed"], stAutoValue = autoValue * 256);
-this.runSortingProcess(runOpts["distribution"], 256, runOpts["shuffle"], ct, "Merge Insert", 2, runOpts["speed"], stAutoValue = autoValue * 256);
-this.runSortingProcess(runOpts["distribution"], 512, runOpts["shuffle"], ct, "Shell Sort", 3, runOpts["speed"], stAutoValue = autoValue * 512);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Library Sort", 5, runOpts["speed"], stAutoValue = autoValue * 1024, killers = {"Linear": ["Reversed", "Reversed Sawtooth"], "Quadratic": ["Reversed", "Reversed Sawtooth"], "Quintic": ["Reversed", "Reversed Sawtooth"], "Sine Wave": ["No shuffle", "Reversed", "Sawtooth", "Reversed Sawtooth"]});
+runAllSort(256,  "Insertion Sort",     5);
+runAllSort(256,  "Unstable Insertion", 5);
+runAllSort(256,  "Binary Insertion",   5);
+runAllSort(256,  "Bin. Double Insert", 5);
+runAllSort(256,  "Merge Insert",       2);
+runAllSort(512,  "Shell Sort",         3);
+runAllSort(1024, "Library Sort",       5, killers = {
+    "Linear":    ["Reversed", "Reversed Sawtooth"], 
+    "Quadratic": ["Reversed", "Reversed Sawtooth"], 
+    "Quintic":   ["Reversed", "Reversed Sawtooth"], 
+    "Sine Wave": ["Reversed", "Reversed Sawtooth", "No shuffle", "Sawtooth"]
+});
+
 
 ct = "Selection Sorts";
-this.runSortingProcess(runOpts["distribution"], 128, runOpts["shuffle"], ct, "Selection Sort", 1, runOpts["speed"], stAutoValue = autoValue * 128);
-this.runSortingProcess(runOpts["distribution"], 128, runOpts["shuffle"], ct, "Double Selection", 1, runOpts["speed"], stAutoValue = autoValue * 128);
-this.runSortingProcess(runOpts["distribution"], 64, runOpts["shuffle"], ct, "Cycle Sort", 1, runOpts["speed"], stAutoValue = autoValue * 64);
-this.runSortingProcess(runOpts["distribution"], 2048, runOpts["shuffle"], ct, "Max Heap Sort", 15, runOpts["speed"], stAutoValue = autoValue * 2048);
-this.runSortingProcess(runOpts["distribution"], 2048, runOpts["shuffle"], ct, "Poplar Heap", 10, runOpts["speed"], stAutoValue = autoValue * 2048);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Weak Heap Sort", 2, runOpts["speed"], stAutoValue = autoValue * 1024);
+runAllSort(128,  "Selection Sort",   1);
+runAllSort(128,  "Double Selection", 1);
+runAllSort(64,   "Cycle Sort",       1);
+runAllSort(2048, "Max Heap Sort",   15);
+runAllSort(2048, "Poplar Heap",     10);
+runAllSort(1024, "Weak Heap Sort",   2);
+
 
 ct = "Concurrent Sorts";
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Bose Nelson", 7, runOpts["speed"], stAutoValue = autoValue * 1024);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Fold Sort", 5, runOpts["speed"], stAutoValue = autoValue * 1024);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Bitonic Sort", 5, runOpts["speed"], stAutoValue = autoValue * 1024);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Pairwise", 5, runOpts["speed"], stAutoValue = autoValue * 1024);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Odd Even Merge", 5, runOpts["speed"], stAutoValue = autoValue * 1024);
+runAllSort(1024, "Bose Nelson",    7);
+runAllSort(1024, "Fold Sort",      5);
+runAllSort(1024, "Bitonic Sort",   5);
+runAllSort(1024, "Pairwise",       5);
+runAllSort(1024, "Odd Even Merge", 5);
 
-new dict centerKillers;
-centerKillers = {"Linear": ["Reversed Sawtooth", "Sawtooth"], "Quadratic": ["Reversed Sawtooth", "Sawtooth"], "Quintic": ["Reversed Sawtooth", "Sawtooth"]};
+
 ct = "Quick Sorts";
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "LL Quick Sort", 2, runOpts["speed"], stAutoValue = autoValue * 1024, ndAutoValue = 1, killers = {"Linear": ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"], "Quadratic": ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"], "Quintic": ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"]});
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "LR Quick Sort", 2, runOpts["speed"], stAutoValue = autoValue * 1024, ndAutoValue = 3, killers = centerKillers);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Stackless Quick", 2, runOpts["speed"], stAutoValue = autoValue * 1024, ndAutoValue = 2, killers = centerKillers);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Dual Pivot Quick", 2, runOpts["speed"], stAutoValue = autoValue * 1024, killers = centerKillers);
-this.runSortingProcess(runOpts["distribution"], 2048, runOpts["shuffle"], ct, "Median-Of-16 A. Quick", 10, runOpts["speed"], stAutoValue = autoValue * 2048);
-this.runSortingProcess(runOpts["distribution"], 2048, runOpts["shuffle"], ct, "PDQ Sort", 10, runOpts["speed"], stAutoValue = autoValue * 2048);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Sqrt Stable Quick", 1, runOpts["speed"], stAutoValue = autoValue * 1024);
+
+new dict centerKillers = {
+    "Linear":    ["Reversed Sawtooth", "Sawtooth"], 
+    "Quadratic": ["Reversed Sawtooth", "Sawtooth"], 
+    "Quintic":   ["Reversed Sawtooth", "Sawtooth"]
+};
+
+runAllSort(1024, "LL Quick Sort", 2, 1, {
+    "Linear":    ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"], 
+    "Quadratic": ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"], 
+    "Quintic":   ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"]
+});
+runAllSort(1024, "LR Quick Sort",          2, 3, centerKillers);
+runAllSort(1024, "Stackless Quick",        2, 2, centerKillers);
+runAllSort(1024, "Dual Pivot Quick",       2, killers = centerKillers);
+runAllSort(2048, "Median-Of-16 A. Quick", 10);
+runAllSort(2048, "PDQ Sort",              10);
+runAllSort(1024, "Sqrt Stable Quick",      1);
+
 
 ct = "Merge Sorts";
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Merge Sort", 5, runOpts["speed"], stAutoValue = autoValue * 1024);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Bottom Up Merge", 5, runOpts["speed"], stAutoValue = autoValue * 1024);
-this.runSortingProcess(runOpts["distribution"], 512, runOpts["shuffle"], ct, "Lazy Stable", 2, runOpts["speed"], stAutoValue = autoValue * 512);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "thatsOven's Adaptive Merge", 5, runOpts["speed"], stAutoValue = autoValue * 1024, ndAutoValue = 512);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Tim Sort", 5, runOpts["speed"], stAutoValue = autoValue * 1024);
+runAllSort(1024, "Merge Sort",                 5);
+runAllSort(1024, "Bottom Up Merge",            5);
+runAllSort(256,  "Lazy Stable",                1);
+runAllSort(1024, "thatsOven's Adaptive Merge", 5, 512);
+runAllSort(1024, "Tim Sort",                   5);
+
 
 ct = "Block Merge Sorts";
-this.runSortingProcess(runOpts["distribution"], 2048, runOpts["shuffle"], ct, "Wiki Sort", 7, runOpts["speed"], stAutoValue = autoValue * 2048);
-this.runSortingProcess(runOpts["distribution"], 2048, runOpts["shuffle"], ct, "Grail Sort", 7, runOpts["speed"], stAutoValue = autoValue * 2048);
+runAllSort(2048, "Wiki Sort",  7);
+runAllSort(2048, "Grail Sort", 7);
+
 
 ct = "Distribution Sorts";
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "Counting Sort", 2, runOpts["speed"], stAutoValue = autoValue * 1024);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "LSD Radix Sort", 2, runOpts["speed"], stAutoValue = autoValue * 1024, ndAutoValue = 4);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "MSD Radix Sort", 2, runOpts["speed"], stAutoValue = autoValue * 1024, ndAutoValue = 4);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "American Flag Sort", 2, runOpts["speed"], stAutoValue = autoValue * 1024, ndAutoValue = 128);
-this.runSortingProcess(runOpts["distribution"], 1024, runOpts["shuffle"], ct, "featureSort", 2, runOpts["speed"], stAutoValue = autoValue * 1024);
-this.runSortingProcess(runOpts["distribution"], 2048, runOpts["shuffle"], ct, "staticSort", 5, runOpts["speed"], stAutoValue = autoValue * 2048);
+runAllSort(1024, "Counting Sort",      2);
+runAllSort(1024, "LSD Radix Sort",     2, 4);
+runAllSort(1024, "MSD Radix Sort",     2, 4);
+runAllSort(1024, "American Flag Sort", 2, 128);
+runAllSort(1024, "featureSort",        2);
+runAllSort(2048, "staticSort",         5);
 
 ct = "Impractical Sorts";
-this.runSortingProcess(runOpts["distribution"], 5, runOpts["shuffle"], ct, "Bogo Sort", 1, runOpts["speed"], stAutoValue = autoValue * 5);
+runAllSort(5, "Bogo Sort", 1);
