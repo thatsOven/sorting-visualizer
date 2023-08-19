@@ -62,7 +62,7 @@ new class ScrambledRainbowBarGraph: LineVisual {
                 drawn[pos.x] = None;
             }
 
-            lineEnd = pos - Vector(0, int(array[idx].value * this.lineLengthConst));
+            lineEnd = pos - Vector(0, int(array[idx].value * this.auxLineLengthConst));
             
             if idx in indices {
                 sortingVisualizer.graphics.line(pos, lineEnd, color, this.auxLineSize);
