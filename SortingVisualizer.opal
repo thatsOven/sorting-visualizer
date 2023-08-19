@@ -1000,7 +1000,7 @@ main {
     }
 
     for visual in dir(Visuals) {
-        if !visual.startswith("__") {
+        if !visual.startswith("_") {
             getattr(Visuals, visual)();
         }
     }

@@ -91,7 +91,6 @@ new class Spiral: BaseCircleVisual {
 
         for idx in range(len(array)) {
             l = array[idx].value * this.auxLineLengthConst;
-
             pos, posEnd = this.auxPoints[i];
             
             pos.magnitude(l);
@@ -119,7 +118,7 @@ new class Spiral: BaseCircleVisual {
 
 new class RainbowSpiral: Spiral {
     new method __init__() {
-        BaseCircleVisual.__init__(
+        Visual.__init__(
             this,
             "Rainbow Spiral",
             (255, 255, 255), 
@@ -140,17 +139,11 @@ new class RainbowSpiral: Spiral {
     }
 
     new method draw(array, indices, color) {
-        if color is None {
-            color = (255, 255, 255);
-        }
-
         new dynamic drawn = {}, pos, posEnd, angle, l, end, endStep;
         
         for idx in indices {
-            angle = this.angles[idx];
-
             l = array[idx].value * this.lineLengthConst;
-            pos, posEnd, end, endStep = this.points[angle];
+            pos, posEnd, end, endStep = this.points[idx];
 
             pos.magnitude(l);
             pos = pos.getIntCoords();
@@ -190,17 +183,8 @@ new class RainbowSpiral: Spiral {
         sortingVisualizer.graphics.fastCircle(this.auxCircleCenter, this.auxCircleRadius, (0, 0, 0));
 
         for idx in range(len(array)) {
-            angle = this.auxAngles[idx];
-
-            if angle in drawn {
-                continue;
-            } else {
-                drawn[angle] = None;
-            }
-
             l = array[idx].value * this.auxLineLengthConst;
-
-            pos, posEnd = this.auxPoint[angle];
+            pos, posEnd = this.auxPoint[idx];
             
             pos.magnitude(l);
             pos = pos.getIntCoords();
