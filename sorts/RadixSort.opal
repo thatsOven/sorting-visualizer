@@ -28,6 +28,7 @@ new class RadixSort {
                 result[i].setAux(True);
             }
         }
+
         return result;
     }
 
@@ -47,8 +48,9 @@ new class RadixSort {
     }
 
     new method auxWrite(aux, dig, array, idx) {
+        new dynamic value = array[idx].read();
         new dynamic sTime = default_timer();
-        aux[dig].append(array[idx].noMark());
+        aux[dig].append(value);
         sortingVisualizer.timer(sTime);
         sortingVisualizer.writes++;
         sortingVisualizer.highlight(idx);
@@ -64,7 +66,7 @@ new class RadixSort {
         sortingVisualizer.setAdaptAux(this.adaptAux);
         sortingVisualizer.setAux(aux);
 
-        for p in range(hPow + 2) {
+        for p in range(hPow + 1) {
             for i = a; i < b; i++ {
                 new int dig = array[i].readDigit(p, this.base);
                 this.auxWrite(aux, dig, array, i);
