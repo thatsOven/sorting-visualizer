@@ -129,7 +129,7 @@ new class SortingVisualizer {
         array[a], array[b] = array[b], array[a];
         this.timer(sTime);
 
-        this.writes.addSwap();
+        this.swaps++;
     }
 
     new method write(array, i, val) {
@@ -137,7 +137,7 @@ new class SortingVisualizer {
         array[i] = val;
         this.timer(sTime);
 
-        this.writes.addWrite();
+        this.writes++;
     }
 
     new method initGraphics() {
