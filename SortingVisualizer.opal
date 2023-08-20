@@ -1,7 +1,11 @@
 package opal: import *;
 
 new Vector RESOLUTION = Vector(1280, 720);
-new int    FREQUENCY_SAMPLE = 48000;
+
+static {
+    new int    FREQUENCY_SAMPLE = 48000;
+    new float  SAMPLE_DURATION  = 1.0 / 30.0;
+}
 
 import math, random, time, os, numpy, sys;
 package timeit:    import default_timer;
@@ -144,7 +148,7 @@ new class SortingVisualizer {
         this.graphics = Graphics(RESOLUTION, caption = "thatsOven's Sorting Visualizer", font = "Times New Roman", fontSize = this.__fontSize, frequencySample = FREQUENCY_SAMPLE);
         this.graphics.fill((0, 0, 0));
 
-        this.__soundSample = numpy.arange(0, 1.0 / 30.0, 1.0 / float(this.graphics.frequencySample));
+        this.__soundSample = numpy.arange(0, SAMPLE_DURATION, 1.0 / float(this.graphics.frequencySample));
         this.__audioChs    = this.graphics.getAudioChs()[2];
     }
 

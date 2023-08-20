@@ -3,7 +3,7 @@ this.setVisual(runOpts["visual"]);
 new function runAllSort(size, name, speed, ndAutoValue = 0, killers = {}) {
     this.runSortingProcess(
         runOpts["distribution"], size, runOpts["shuffle"], 
-        ct, name, speed, stAutoValue = autoValue * size, 
+        ct, name, speed, stAutoValue = autoValue * size // 2, 
         ndAutoValue = ndAutoValue, killers = killers
     );
 }
