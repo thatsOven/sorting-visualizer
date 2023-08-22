@@ -1,4 +1,4 @@
-new class PoplarHeapSort {
+namespace PoplarHeapSort {
     new classmethod hyperfloor(n) {
         return 2 ** int(math.log2(n));
     }

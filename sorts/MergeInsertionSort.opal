@@ -1,4 +1,4 @@
-new class MergeInsertionSort {
+namespace MergeInsertionSort {
     new classmethod blockSwap(array, a, b, s) {
         for ; s > 0; a--, b-- {
             s--;

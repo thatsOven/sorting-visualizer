@@ -1,4 +1,4 @@
-new class CircleSort {
+namespace CircleSort {
     new classmethod converge(array, a, b) {
         new bool s = False;
         for ; a <= b; a++, b-- {

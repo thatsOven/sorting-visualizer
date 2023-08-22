@@ -1,4 +1,4 @@
-new class MaxHeapSort {
+namespace MaxHeapSort {
     new classmethod siftDown(array, root, dist, start) {
         while root <= dist // 2 {
             new int leaf = 2 * root;

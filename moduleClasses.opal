@@ -34,8 +34,8 @@ new class Sort {
 @total_ordering;
 new class Shuffle {
     new method __init__(name) {
-        this.name     = name;
-        this.func     = None;
+        this.name = name;
+        this.func = None;
     }
 
     new method __call__(func) {
@@ -63,8 +63,8 @@ new class Shuffle {
 @total_ordering;
 new class Distribution {
     new method __init__(name) {
-        this.name     = name;
-        this.func     = None;
+        this.name = name;
+        this.func = None;
     }
 
     new method __call__(func) {

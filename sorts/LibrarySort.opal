@@ -1,6 +1,6 @@
 use binaryInsertionSort;
 
-new class LibrarySort {
+namespace LibrarySort {
     new int R = 4;
 
     new classmethod getMinLevel(n) {

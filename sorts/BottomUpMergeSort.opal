@@ -1,6 +1,6 @@
 use binaryInsertionSort;
 
-new class BottomUpMergeSort {
+namespace BottomUpMergeSort {
     new classmethod merge(c, d, lt, md, rt) {
         new int i = lt,
                 j = md + 1,

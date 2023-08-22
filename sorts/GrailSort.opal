@@ -56,7 +56,7 @@
 #
 # Current status: Working (Passing all tests) + Stable
 
-new class GrailSort {
+namespace GrailSort {
     new int GRAIL_STATIC_EXT_BUF_LEN = 512;
 
     new dynamic extBuffer    = None;

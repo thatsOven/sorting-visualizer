@@ -1,6 +1,6 @@
 use MaxHeapSort;
 
-new class PDQSort {
+namespace PDQSort {
     new int insertSortThreshold    = 24,
             nintherThreshold       = 128,
             partialInsertSortLimit = 8,

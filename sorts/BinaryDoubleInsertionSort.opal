@@ -1,4 +1,4 @@
-new class BinaryDoubleInsertionSort {
+namespace BinaryDoubleInsertionSort {
     new classmethod insertToLeft(array, a, b, temp, idx) {
         while a > b {
             array[a].write(array[a - 1].noMark());
