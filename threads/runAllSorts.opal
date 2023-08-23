@@ -92,6 +92,7 @@ runAllSort(1024, "Tim Sort",                   5);
 ct = "Block Merge Sorts";
 runAllSort(2048, "Wiki Sort",  7);
 runAllSort(2048, "Grail Sort", 7);
+runAllSort(2048, "Shelf Sort", 3);
 
 
 ct = "Distribution Sorts";
