@@ -82,17 +82,20 @@ runAllSort(1024, "Sqrt Stable Quick",      1);
 
 
 ct = "Merge Sorts";
-runAllSort(1024, "Merge Sort",                 5);
-runAllSort(1024, "Bottom Up Merge",            5);
-runAllSort(256,  "Lazy Stable",                1);
-runAllSort(1024, "thatsOven's Adaptive Merge", 5, 512);
-runAllSort(1024, "Tim Sort",                   5);
+runAllSort(1024, "Merge Sort",            5);
+runAllSort(1024, "Bottom Up Merge",       3);
+runAllSort(256,  "Lazy Stable",           1);
+runAllSort(1024, "Adaptive Rotate Merge", 5, 128);
+runAllSort(1024, "Uranium Sort",          2);
+runAllSort(1024, "Tim Sort",              5);
 
 
 ct = "Block Merge Sorts";
-runAllSort(2048, "Wiki Sort",  7);
-runAllSort(2048, "Grail Sort", 7);
-runAllSort(2048, "Shelf Sort", 3);
+runAllSort(2048, "Wiki Sort",     7);
+runAllSort(2048, "Grail Sort",    7);
+runAllSort(2048, "Helium Sort",   5, 0);
+runAllSort(1024, "Hydrogen Sort", 1);
+runAllSort(1024, "Shelf Sort",    3);
 
 
 ct = "Distribution Sorts";

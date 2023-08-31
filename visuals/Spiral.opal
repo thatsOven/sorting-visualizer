@@ -39,7 +39,7 @@ new class Spiral: BaseCircleVisual {
     new method onAuxOn(length) {
         super.onAuxOn(length);
 
-        this.auxLineLengthConst = this.circleRadius / sortingVisualizer.auxMax;
+        this.auxLineLengthConst = this.circleRadius / max(sortingVisualizer.auxMax, sortingVisualizer.arrayMax);
 
         this.auxPoints = {};
         for i in range(length) {

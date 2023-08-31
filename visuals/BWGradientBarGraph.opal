@@ -15,7 +15,7 @@ new class BWGradientBarGraph: LineVisual {
     new method onAuxOn(length) {
         super.onAuxOn(length);
 
-        this.auxColorConstant = 215.0 / sortingVisualizer.auxMax;
+        this.auxColorConstant = 215.0 / max(sortingVisualizer.auxMax, sortingVisualizer.arrayMax);
     }
 
     new method draw(array, indices, color) {

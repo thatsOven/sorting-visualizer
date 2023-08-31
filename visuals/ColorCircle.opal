@@ -16,7 +16,7 @@ new class ColorCircle: CircleVisual {
     new method onAuxOn(length) {
         super.onAuxOn(length);
 
-        this.auxColorConstant = 1.0 / sortingVisualizer.auxMax;
+        this.auxColorConstant = 1.0 / max(sortingVisualizer.auxMax, sortingVisualizer.arrayMax);
     }
     
     new method draw(array, indices, color) {

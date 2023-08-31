@@ -200,8 +200,8 @@ new class UtilsIterablesStableSort {
 
 @Sort(
     "Merge Sorts",
-    "thatsOven's Adaptive MergeSort [Utils.Iterables.stableSort]",
-    "thatsOven's Adaptive Merge"
+    "Adaptive Rotate MergeSort [Utils.Iterables.stableSort]",
+    "Adaptive Rotate Merge"
 );
 new function utilsIterablesStableSortRun(array) {
     new int mode;

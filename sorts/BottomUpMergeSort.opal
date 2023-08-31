@@ -48,11 +48,15 @@ namespace BottomUpMergeSort {
         new int  s = 16;
         new list b = sortingVisualizer.createValueArray(n);
 
+        new dynamic speed = sortingVisualizer.speed;
+        sortingVisualizer.setSpeed(max(int(10 * (len(array) / 2048)), speed * 2));
+
         for i = 0; i <= n - 16; i += 16 {
             binaryInsertionSort(array, i, i + 16);
         }
         binaryInsertionSort(array, i, n);
 
+        sortingVisualizer.setSpeed(speed);
         sortingVisualizer.setAux(b);
 
         while s < n {

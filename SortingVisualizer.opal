@@ -698,6 +698,16 @@ new class SortingVisualizer {
         }
     }
 
+    property speed {
+        get {
+            if this.__sleep == 0 {
+                return this.__speed;
+            } else {
+                return this.__speed / (this.__sleep * 1000);
+            }
+        }
+    }
+
     new method resetSpeed() {
         this.__speed        = 1;
         this.__sleep        = 0;

@@ -46,8 +46,7 @@ new function medianOfThree(array, a, b) {
 }
 
 new function reverse(array, a, b) {
-    b--;
-    for ; a < b; a++, b-- {
+    for b--; a < b; a++, b-- {
         array[a].swap(array[b]);
     }
 }
@@ -109,19 +108,24 @@ new function insertToRight(array, _from, to) {
 }
 
 new function heliumRotate(array, a, m, b) {
-    while b - m > 1 and m - a > 1 {
-        if b - m < m - a {
-            blockSwap(array, a, m, b - m);
-            a += b - m;
+    static: new int rl = b - m,
+                    ll = m - a;
+
+    while ll > 1 and rl > 1 {
+        if rl < ll {
+            blockSwap(array, a, m, rl);
+            a  += rl;
+            ll -= rl;
         } else {
-            backwardBlockSwap(array, a, b - (m - a), m - a);
-            b -= m - a;
+            b  -= ll;
+            rl -= ll;
+            backwardBlockSwap(array, a, b, ll);
         }
     }
 
-    if b - m == 1 {
+    if rl == 1 {
         insertToLeft(array, m, a);
-    } elif m - a == 1 {
+    } elif ll == 1 {
         insertToRight(array, a, b - 1);
     }
 }
