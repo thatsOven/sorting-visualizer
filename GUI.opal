@@ -494,12 +494,12 @@ new class GUI {
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + listOffs * 2, RESOLUTION.y - GUI.OFFS.y * 2 - 60, listSize, 40),
+            Rect(GUI.OFFS.x + listOffs, GUI.OFFS.y, listSize, 20),
             "Run all sorts", this.__manager, this.__runAllPanel
         );
 
         this.__runAllButton = elements.UIButton(
-           Rect(GUI.OFFS.x + listOffs * 2, GUI.OFFS.y, listSize, 20),
+            Rect(GUI.OFFS.x + listOffs, RESOLUTION.y - GUI.OFFS.y * 2 - 60, listSize, 40),
             "Run", this.__manager, this.__runAllPanel, 
             tool_tip_text = "Runs all sorts with the given settings"
         );
