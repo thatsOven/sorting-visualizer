@@ -105,8 +105,8 @@ runAllSort(1024, "Counting Sort",      2);
 runAllSort(1024, "LSD Radix Sort",     2, 4);
 runAllSort(1024, "MSD Radix Sort",     2, 4);
 runAllSort(1024, "American Flag Sort", 2, 128);
-runAllSort(1024, "featureSort",        2);
-runAllSort(2048, "staticSort",         5);
+runAllSort(1024, "Feature Sort",       2);
+runAllSort(2048, "Static Sort",        5);
 
 ct = "Impractical Sorts";
 runAllSort(64, "Stooge Sort", 4);
