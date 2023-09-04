@@ -13,49 +13,40 @@ new method __builderEvaluator(title, msg, sel, commands, macros, modes) {
         opts.append("Macro call");
     }
 
-    this.__tui.selection(title + " builder", "Select the type of command you want to " + msg[sel] + ": ", opts);
-    new int mode = this.__tui.run();
+    new int mode = this.__gui.selection(title + " builder", "Select the type of command you want to " + msg[sel] + ": ", opts);
 
     new ThreadCommand command;
     match mode {
         case 0 {
-            this.__tui.buildSortSelection();
-            new dict sortSel = this.__tui.run();
+            new dict sortSel = this.__gui.sortSelection();
 
-            command = ThreadCommand(modes[mode], sortSel["sort"], '"' + this.categories[sortSel["category"]] + '"');
+            command = ThreadCommand(modes[mode], sortSel["sort"], sortSel["category"]);
         }
         case 1 {
-            this.__tui.selection(title + " builder", "Select shuffle:", [shuf.name for shuf in this.shuffles]);
-            new int shufSel = this.__tui.run();
+            new int shufSel = this.__gui.selection(title + " builder", "Select shuffle:", [shuf.name for shuf in this.shuffles]);
 
             command = ThreadCommand(modes[mode], shufSel);
         }
         case 2 {
-            this.__tui.selection(title + " builder", "Select distribution:", [dist.name for dist in this.distributions]);
-            new int distSel = this.__tui.run();
-
-            this.__tui.userInputDialog(title + " builder", "Insert array length:", int, "1024", [str(2 ** i) for i in range(2, 15)]);
-            new int length = this.__tui.run();
+            new int distSel = this.__gui.selection(title + " builder", "Select distribution:", [dist.name for dist in this.distributions]);
+            new int length = this.__gui.userInputDialog(title + " builder", "Insert array length:", int, "1024", [str(2 ** i) for i in range(2, 15)]);
 
             command = ThreadCommand(modes[mode], distSel, length);
         }
         case 3 {
-            this.__tui.selection(title + " builder", "Select visual:", [vis.name for vis in this.visuals]);
-            new int visSel = this.__tui.run();
+            new int visSel = this.__gui.selection(title + " builder", "Select visual:", [vis.name for vis in this.visuals]);
 
             command = ThreadCommand(modes[mode], visSel);
         }
         case 4 {
-            this.__tui.selection(title + " builder", "Select type of speed change: ", [
+            new int msel = this.__gui.selection(title + " builder", "Select type of speed change: ", [
                 "Set",
                 "Reset"
             ]);
-            new int msel = this.__tui.run();
 
             match msel {
                 case 0 {
-                    this.__tui.userInputDialog(title + " builder", "Insert speed:", float, "1");
-                    new float speed = this.__tui.run();
+                    new float speed = this.__gui.userInputDialog(title + " builder", "Insert speed:", float, "1");
 
                     command = ThreadCommand(modes[mode], speed);
                 }
@@ -65,16 +56,14 @@ new method __builderEvaluator(title, msg, sel, commands, macros, modes) {
             }
         }
         case 5 {
-            this.__tui.selection(title + " builder", "Select type of autovalue change: ", [
+            new int msel = this.__gui.selection(title + " builder", "Select type of autovalue change: ", [
                 "Set",
                 "Reset"
             ]);
-            new int msel = this.__tui.run();
 
             match msel {
                 case 0 {
-                    this.__tui.userInputDialog(title + " builder", "Insert value:", int, "");
-                    new int value = this.__tui.run();
+                    new int value = this.__gui.userInputDialog(title + " builder", "Insert value:", int, "");
 
                     command = ThreadCommand(modes[mode], value);
                 }
@@ -87,32 +76,32 @@ new method __builderEvaluator(title, msg, sel, commands, macros, modes) {
             new list macrosKeys = [key for key in macros];
 
             if len(macrosKeys) == 0 {
-                UserWarn("Error", "No macros have been defined", this.__tui.termSize).run();
+                this.__gui.userWarn("Error", "No macros have been defined");
                 return;
             }
-            this.__tui.selection(title + " builder", "Select macro to call: ", macrosKeys);
-            new int msel = this.__tui.run();
+        
+            new int msel = this.__gui.selection(title + " builder", "Select macro to call: ", macrosKeys);
 
             match sel {
                 case 0 {
                     commands += macros[macrosKeys[msel]];
                 }
                 case 1 {
-                    this.__tui.selection(title + " builder", "Select position to insert to:", [str(com) for com in commands]);
-                    new int idx = this.__tui.run(), p = len(commands);
+                    
+                    new int idx = this.__gui.selection(title + " builder", "Select position to insert to:", [str(com) for com in commands]), 
+                              p = len(commands);
 
                     commands += macros[macrosKeys[msel]];
                     Utils.Iterables.rotate(commands, idx, p, len(commands));
                 }
                 case 2 {
-                    this.__tui.selection(title + " builder", "Select command to replace:", [str(com) for com in commands]);
-                    new int idx = this.__tui.run();
+                    new int idx = this.__gui.selection(title + " builder", "Select command to replace:", [str(com) for com in commands]);
 
                     commands[idx:idx + 1] = macros[macrosKeys[msel]];
                 }
             }
 
-            UserWarn("Success", "Changes applied", this.__tui.termSize).run();
+            this.__gui.userWarn("Success", "Changes applied");
             return;
         }
     }
@@ -122,18 +111,17 @@ new method __builderEvaluator(title, msg, sel, commands, macros, modes) {
             commands.append(command);
         }
         case 1 {
-            this.__tui.selection(title + " builder", "Select position to insert to:", [str(com) for com in commands]);
-            new int idx = this.__tui.run();
+            
+            new int idx = this.__gui.selection(title + " builder", "Select position to insert to:", [str(com) for com in commands]);
 
             commands.insert(idx, command);
         }
         case 2 {
-            this.__tui.selection(title + " builder", "Select command to replace:", [str(com) for com in commands]);
-            new int idx = this.__tui.run();
+            new int idx = this.__gui.selection(title + " builder", "Select command to replace:", [str(com) for com in commands]);
 
             commands[idx] = command;
         }
     }
 
-    UserWarn("Success", "Changes applied", this.__tui.termSize).run();
+    this.__gui.userWarn("Success", "Changes applied");
 }

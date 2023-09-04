@@ -7,13 +7,15 @@ static {
     new float SAMPLE_DURATION  = 1.0 / 30.0;
 }
 
-import math, random, time, os, numpy, sys;
-package timeit:    import default_timer;
-package functools: import total_ordering;
-package scipy:     import signal;
-package json:      import loads;
-use exec;
-use getattr;
+import math, random, time, os, numpy, sys, pygame_gui;
+package timeit:      import default_timer;
+package functools:   import total_ordering;
+package pygame_gui:  import UIManager, elements;
+package pygame:      import Rect;
+package pygame.time: import Clock;
+package scipy:       import signal;
+package json:        import loads;
+use exec, getattr;
 $args ["--nostatic"]
 
 sys.setrecursionlimit(65536);
@@ -33,7 +35,7 @@ new function checkType(value, type_) {
 
 new dynamic sortingVisualizer = None;
 
-$include os.path.join(HOME_DIR, "TUI", "TUIManager.opal")
+$include os.path.join(HOME_DIR, "GUI.opal")
 $include os.path.join(HOME_DIR, "Value.opal")
 $include os.path.join(HOME_DIR, "moduleClasses.opal")
 $include os.path.join(HOME_DIR, "threadBuilder", "ThreadCommand.opal")
@@ -56,9 +58,16 @@ new class SortingVisualizer {
 
         this.pivotSelections = [];
 
+        this.__fontSize = round(((RESOLUTION.x / 1280) + (RESOLUTION.y / 720)) * 11);
+
         this.__visual = None;
-        this.graphics = None;
-        this.__tui    = TUI();
+        this.graphics = Graphics(
+            RESOLUTION, caption = "thatsOven's Sorting Visualizer", 
+            font = "Times New Roman", fontSize = this.__fontSize, 
+            frequencySample = FREQUENCY_SAMPLE
+        );
+        this.__running = False;
+        this.__gui     = GUI();
 
         this.resetStats();
 
@@ -79,16 +88,15 @@ new class SortingVisualizer {
         this.__currentCategory  = "";
 
         this.__checking = False;
+        this.__prepared = False;
 
         this.__autoUserValue = None;
         this.__shufThread    = None;
 
         this.__forceLoadedIndices = [];
-        this.__audioChs = None;
 
-        this.__fontSize = round(((RESOLUTION.x / 1280) + (RESOLUTION.y / 720)) * 11);
-
-        this.__soundSample = None;
+        this.__soundSample = numpy.arange(0, SAMPLE_DURATION, 1.0 / float(this.graphics.frequencySample));
+        this.__audioChs    = this.graphics.getAudioChs()[2];
 
         new auto f = open(os.path.join(HOME_DIR, "config.json"), "r");
         new dict settings = loads(f.read());
@@ -144,14 +152,6 @@ new class SortingVisualizer {
         this.writes++;
     }
 
-    new method initGraphics() {
-        this.graphics = Graphics(RESOLUTION, caption = "thatsOven's Sorting Visualizer", font = "Times New Roman", fontSize = this.__fontSize, frequencySample = FREQUENCY_SAMPLE);
-        this.graphics.fill((0, 0, 0));
-
-        this.__soundSample = numpy.arange(0, SAMPLE_DURATION, 1.0 / float(this.graphics.frequencySample));
-        this.__audioChs    = this.graphics.getAudioChs()[2];
-    }
-
     new method timer(sTime) {
         this.time += (default_timer() - sTime) * 1000;
     }
@@ -181,6 +181,7 @@ new class SortingVisualizer {
     new method __getSizes() {
         this.getMax();
         this.__visual.prepare();
+        this.__prepared = True;
         this.__forceLoadedIndices = [];
 
         new int worstCaseTextWidth;
@@ -242,6 +243,7 @@ new class SortingVisualizer {
 
         this.getMax();
         this.__visual.prepare();
+        this.__prepared = True;
         this.drawFullArray();
     }
 
@@ -328,6 +330,7 @@ new class SortingVisualizer {
     new method setVisual(id) {
         if id in range(0, len(this.visuals)) {
             this.__visual = this.visuals[id];
+            this.__prepared = False;
         } else {
             IO.out("Invalid visual id!\n");
         }
@@ -720,10 +723,15 @@ new class SortingVisualizer {
         this.__currentCategory  = category;
     }
 
-    new method getUserInput(message = "", default = "", common = [], type_ = int) {
+    new method getUserInput(message = "", default = "", type_ = int) {
         if this.__autoUserValue is None {
-            this.__tui.userInputDialog(this.__currentlyRunning, message, type_, default, common);
-            return this.__tui.run();
+            new dynamic res = this.__gui.userInputDialog(this.__currentlyRunning, message, type_, default);
+            
+            if this.__prepared {
+                this.drawFullArray();
+            }
+
+            return res;
         } else {
             return this.__autoUserValue;
         }
@@ -731,8 +739,13 @@ new class SortingVisualizer {
 
     new method getUserSelection(content, message = "") {
         if this.__autoUserValue is None {
-            this.__tui.selection(this.__currentlyRunning, message, content);
-            return this.__tui.run();
+            new dynamic res = this.__gui.selection(this.__currentlyRunning, message, content);
+            
+            if this.__prepared {
+                this.drawFullArray();
+            }
+            
+            return res;
         } else {
             return this.__autoUserValue;
         }
@@ -847,8 +860,7 @@ new class SortingVisualizer {
         modeI = modeI.upper();
 
         if mode != modeI {
-            this.__tui.selection("Warning", "This thread was not intended to be used as a " + modeI + ". Run anyway?", ["No", "Yes"]);
-            return this.__tui.run() == 1;
+            return this.__gui.selection("Warning", "This thread was not intended to be used as a " + modeI + ". Run anyway?", ["No", "Yes"]) == 1;
         }
 
         return True;
@@ -866,8 +878,7 @@ new class SortingVisualizer {
         }
 
         while True {
-            this.__tui.selection(title, "Select thread: ", threads);
-            new int sel = this.__tui.run();
+            new int sel = this.__gui.selection(title, "Select thread: ", threads);
 
             new str path = os.path.join(HOME_DIR, "threads", threads[sel]);
 
@@ -906,6 +917,8 @@ new class SortingVisualizer {
     $include os.path.join(HOME_DIR, "threadBuilder", "BuilderEvaluator.opal")
 
     new method run() {
+        this.graphics.event(QUIT)(lambda _: quit());
+
         Utils.Iterables.stableSort(this.distributions);
         Utils.Iterables.stableSort(this.shuffles);
         Utils.Iterables.stableSort(this.visuals);
@@ -920,82 +933,47 @@ new class SortingVisualizer {
         threadShuf.func = this.__threadShuf;
         this.addShuffle(threadShuf);
 
-        this.__tui.setSv(this);
+        this.__gui.setSv(this);
 
-        this.__tui.selection("Mode", "Select mode: ", [
+        new int sel = this.__gui.selection("Mode", "Select mode: ", [
             "Run sort",
             "Run all sorts",
             "Threads"
         ]);
-        new int sel = this.__tui.run();
-
-        new bool graphicsInit = True;
 
         match sel {
             case 0 {
                 do opt == 0 {
-                    this.__tui.buildSV();
-                    new dict runOpts = this.__tui.run();
-
-                    if graphicsInit {
-                        this.initGraphics();
-                        graphicsInit = False;
-                    }
+                    new dict runOpts = this.__gui.runSort();
 
                     this.__visual = this.visuals[runOpts["visual"]];
-
+                    this.__prepared = False;
                     this.generateArray(runOpts["distribution"], runOpts["shuffle"], runOpts["array-size"]);
-
                     this.setSpeed(runOpts["speed"]);
-
                     this.runSort(this.categories[runOpts["category"]], id = runOpts["sort"]);
-
                     this.__resetShufThread();
 
-                    this.__tui.selection("Done", "Continue?", [
+                    new int opt = this.__gui.selection("Done", "Continue?", [
                         "Yes",
                         "No"
                     ]);
-                    new int opt = this.__tui.run();
                 }
             }
             case 1 {
-                this.__tui.buildRunAll();
-                new dict runOpts = this.__tui.run();
-
-                this.initGraphics();
-
+                new dict runOpts = this.__gui.runAll();
                 $include os.path.join(HOME_DIR, "threads", "runAllSorts.opal")
             }
             case 2 {
-                this.__tui.selection("Threads", "Select: ", [
-                    "Run thread",
+                sel = this.__gui.selection("Threads", "Select: ", [
                     "Run thread from threads folder",
                     "Thread builder"
                 ]);
-                sel = this.__tui.run();
 
                 match sel {
                     case 0 {
-                        while True {
-                            IO.out("Drag here the thread you want to run\n");
-                            new str thread = IO.read("> ").strip().replace('"', '').replace("'", "");
-
-                            if os.path.isfile(thread) {
-                                if this.__threadTypeChecker(thread, "Thread") {
-                                    break;
-                                }
-                            } else {
-                                UserWarn("Error", "Invalid thread file or input. Please retry.", this.__tui.termSize).run();
-                            }
-                        }
-
-                        this.__loadThreadAndRun(thread, True);
-                    }
-                    case 1 {
                         this.__selectThread("Thread", True, True);
                     }
-                    case 2 {
+                    case 1 {
                         $include os.path.join(HOME_DIR, "threadBuilder", "ThreadBuilder.opal")
                     }
                 }

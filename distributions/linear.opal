@@ -1,7 +1,7 @@
 @Distribution("Linear");
 new function linear(array, length) {
     new int uniqueAmount;
-    uniqueAmount = length // sortingVisualizer.getUserInput("Insert amount of unique items (default = " + str(length) + ")", str(length), [str(2 ** i) for i in range(1, int(math.log2(length)))]);
+    uniqueAmount = length // sortingVisualizer.getUserInput("Insert amount of unique items (default = " + str(length) + ")", str(length));
 
     for i = 1; i + uniqueAmount < length + 1; i += uniqueAmount {
         for j in range(uniqueAmount) {

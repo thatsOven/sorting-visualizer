@@ -205,7 +205,7 @@ new class UtilsIterablesStableSort {
 );
 new function utilsIterablesStableSortRun(array) {
     new int mode;
-    mode = sortingVisualizer.getUserInput("Insert buffer size (default = " + str(len(array) // 2) + ")", str(len(array) // 2), ["64", "512"]);
+    mode = sortingVisualizer.getUserInput("Insert buffer size (default = " + str(len(array) // 2) + ")", str(len(array) // 8));
 
     UtilsIterablesStableSort(mode).sort(array, 0, len(array));
 }

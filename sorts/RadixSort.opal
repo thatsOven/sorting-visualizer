@@ -3,7 +3,7 @@ new class RadixSort {
         if base is None {
             this.base = sortingVisualizer.getUserInput(
                 "Insert base: ",
-                "4", ["2", "10", "16"], int);
+                "4", int);
         } else {
             this.base = base;
         }

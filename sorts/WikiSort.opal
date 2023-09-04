@@ -897,7 +897,7 @@ new class WikiSort {
 );
 new function wikiSortRun(array) {
     new int mode;
-    mode = sortingVisualizer.getUserInput("Insert buffer size (0 for in-place)", "0", ["512", "64"]);
+    mode = sortingVisualizer.getUserInput("Insert buffer size (0 for in-place)", "0");
 
     new WikiSort wikiSort = WikiSort(mode);
     wikiSort.sort(array, len(array));

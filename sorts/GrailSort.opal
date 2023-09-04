@@ -989,7 +989,7 @@ new function grailSortGivenAux(array, start, length, aux, set = True) {
 );
 new function grailSortRun(array) {
     new int mode;
-    mode = sortingVisualizer.getUserInput("Insert buffer size (0 for in-place, -1 for dynamic)", "0", ["-1", "512"]);
+    mode = sortingVisualizer.getUserInput("Insert buffer size (0 for in-place, -1 for dynamic)", "0");
 
     match mode {
         case 0 {

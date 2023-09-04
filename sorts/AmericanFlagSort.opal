@@ -3,7 +3,7 @@ new class AmericanFlagSort {
         if buckets is None {
             this.buckets = sortingVisualizer.getUserInput(
                 "Insert bucket count: ",
-                "128", ["2", "4", "10", "16", "256"], int);
+                "128", int);
         } else {
             this.buckets = buckets;
         }

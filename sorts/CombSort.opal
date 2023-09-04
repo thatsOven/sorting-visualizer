@@ -4,7 +4,6 @@ new class CombSort {
             new float tmp = sortingVisualizer.getUserInput(
                 "Insert shrink factor:",
                 "1.3",
-                ["1.2", "1.5", "2.0"],
                 float
             );
 
