@@ -841,10 +841,6 @@ new class SortingVisualizer {
         }
         f.close();
 
-        if initGraph {
-            this.initGraphics();
-        }
-
         try {
             exec(threadCode);
         } catch Exception as e {
