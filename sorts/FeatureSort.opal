@@ -62,8 +62,8 @@ namespace FeatureSort {
 
 @Sort(
     "Distribution Sorts",
-    "featureSort",
-    "featureSort",
+    "Feature Sort",
+    "Feature Sort",
 );
 new function featureSortRun(array) {
     FeatureSort.sort(array, 0, len(array));

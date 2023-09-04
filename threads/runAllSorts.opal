@@ -22,15 +22,16 @@ if this.__record {
 
 new str ct;
 ct = "Exchange Sorts";
-runAllSort(256, "Bubble Sort", 80);
-runAllSort(128,  "Gnome Sort",  1);
-runAllSort(512, "Circle Sort",  5);
-runAllSort(1024,  "Comb Sort", 10);
+runAllSort(256,    "Bubble Sort", 80);
+runAllSort(256,  "Odd-Even Sort", 20);
+runAllSort(128,     "Gnome Sort",  1);
+runAllSort(128, "Sandpaper Sort",  1);
+runAllSort(512,    "Circle Sort",  5);
+runAllSort(1024,     "Comb Sort", 10);
 
 
 ct = "Insertion Sorts";
 runAllSort(256,  "Insertion Sort",     5);
-runAllSort(256,  "Unstable Insertion", 5);
 runAllSort(256,  "Binary Insertion",   5);
 runAllSort(256,  "Bin. Double Insert", 5);
 runAllSort(256,  "Merge Insert",       2);
@@ -41,6 +42,7 @@ runAllSort(1024, "Library Sort",       5, killers = {
     "Quintic":   ["Reversed", "Reversed Sawtooth"], 
     "Sine Wave": ["Reversed", "Reversed Sawtooth", "No shuffle", "Sawtooth"]
 });
+runAllSort(512,  "Tree Sort",          2);
 
 
 ct = "Selection Sorts";
@@ -107,4 +109,6 @@ runAllSort(1024, "featureSort",        2);
 runAllSort(2048, "staticSort",         5);
 
 ct = "Impractical Sorts";
-runAllSort(5, "Bogo Sort", 1);
+runAllSort(64, "Stooge Sort", 4);
+runAllSort(5,    "Bogo Sort", 1);
+runAllSort(5,    "Bozo Sort", 1);

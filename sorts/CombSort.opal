@@ -1,8 +1,7 @@
 new class CombSort {
     new method __init__(shrink = None) {
         if shrink is None {
-            new float tmp;
-            tmp = sortingVisualizer.getUserInput(
+            new float tmp = sortingVisualizer.getUserInput(
                 "Insert shrink factor:",
                 "1.3",
                 ["1.2", "1.5", "2.0"],
@@ -21,12 +20,11 @@ new class CombSort {
 
     new method sort(array, a, b) {
         new bool swapped = False;
-        new dynamic  gap = b - a;
+        new  int     gap = b - a;
 
         while (gap > 1) or swapped {
             if gap > 1 {
                 gap /= this.shrink;
-                gap = int(gap);
             }
 
             swapped = False;
