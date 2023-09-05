@@ -105,7 +105,6 @@ new class SortingVisualizer {
 
         this.__showText = settings["show-text"];
         this.__showAux  = settings["show-aux"];
-        this.__record   = settings["record"];
         this.__moreInfo = settings["internal-info"];
 
         if this.__moreInfo {

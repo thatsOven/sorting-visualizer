@@ -152,7 +152,7 @@ namespace PoplarHeapSort {
 }
 
 @Sort(
-    "Selection Sorts",
+    "Tree Sorts",
     "Poplar Heap Sort",
     "Poplar Heap"
 );

@@ -242,7 +242,7 @@ new class HeliumSort {
         }
     }
 
-    new method mergeWithBufferFW(array, a, m, b, buf, left = True) {
+    new classmethod mergeWithBufferFW(array, a, m, b, buf, left = True) {
         new int ll = m - a;
         blockSwap(array, a, buf, ll);
 
@@ -267,7 +267,7 @@ new class HeliumSort {
         }
     }
 
-    new method mergeWithBufferBW(array, a, m, b, buf, left = True) {
+    new classmethod mergeWithBufferBW(array, a, m, b, buf, left = True) {
         new int rl = b - m;
         backwardBlockSwap(array, m, buf, rl);
 

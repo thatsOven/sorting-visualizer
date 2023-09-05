@@ -15,10 +15,6 @@ if runOpts["distribution"] == 1 {
     autoValue = 1;
 }
 
-if this.__record {
-    IO.read("Press enter when ready.");
-}
-
 
 new str ct;
 ct = "Exchange Sorts";
@@ -42,13 +38,16 @@ runAllSort(1024, "Library Sort",       5, killers = {
     "Quintic":   ["Reversed", "Reversed Sawtooth"], 
     "Sine Wave": ["Reversed", "Reversed Sawtooth", "No shuffle", "Sawtooth"]
 });
-runAllSort(512,  "Tree Sort",          2);
 
 
 ct = "Selection Sorts";
 runAllSort(128,  "Selection Sort",   1);
 runAllSort(128,  "Double Selection", 1);
 runAllSort(64,   "Cycle Sort",       1);
+
+
+ct = "Tree Sorts";
+runAllSort(512,  "Tree Sort",        2);
 runAllSort(2048, "Max Heap Sort",   15);
 runAllSort(2048, "Poplar Heap",     10);
 runAllSort(1024, "Weak Heap Sort",   2);
@@ -90,6 +89,7 @@ runAllSort(256,  "Lazy Stable",           1);
 runAllSort(1024, "Adaptive Rotate Merge", 5, 128);
 runAllSort(1024, "Uranium Sort",          2);
 runAllSort(1024, "Tim Sort",              5);
+runAllSort(2048, "Andrey's Merge",        5);
 
 
 ct = "Block Merge Sorts";
@@ -97,7 +97,12 @@ runAllSort(2048, "Wiki Sort",     7);
 runAllSort(2048, "Grail Sort",    7);
 runAllSort(2048, "Helium Sort",   5, 0);
 runAllSort(1024, "Hydrogen Sort", 1);
-runAllSort(1024, "Shelf Sort",    3);
+runAllSort(2048, "Kota Sort",     7);
+runAllSort(1024, "Ecta Sort",     1);
+
+
+ct = "Partition Sorts";
+runAllSort(1024, "Pache Sort", 4);
 
 
 ct = "Distribution Sorts";
@@ -107,6 +112,7 @@ runAllSort(1024, "MSD Radix Sort",     2, 4);
 runAllSort(1024, "American Flag Sort", 2, 128);
 runAllSort(1024, "Feature Sort",       2);
 runAllSort(2048, "Static Sort",        5);
+
 
 ct = "Impractical Sorts";
 runAllSort(64, "Stooge Sort", 4);

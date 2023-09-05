@@ -45,6 +45,30 @@ new function medianOfThree(array, a, b) {
     array[a].swap(array[m]);
 }
 
+new function medianOfThreeIdx(array, a, m, b) {
+    if array[m] > array[a] {
+        if array[m] < array[b] {
+            return m;
+        }
+
+        if array[a] > array[b] {
+            return a;
+        }
+
+        return b;
+    }
+
+    if array[m] > array[b] {
+        return m;
+    }
+        
+    if array[a] < array[b] {
+        return a;
+    }
+
+    return b;
+}
+
 new function reverse(array, a, b) {
     for b--; a < b; a++, b-- {
         array[a].swap(array[b]);
@@ -257,4 +281,55 @@ new function findMin(array, a, b) {
 
 new function findHighestPower(array, a, b, base) {
     return math.log(findMax(array, a, b), base);
+}
+
+new function cycleReverseRotate(array, a, m, e) {
+    static: new int lenA = m - a,
+                    lenB = e - m;
+
+    if lenA < 1 || lenB < 1 {
+        return;
+    }
+
+    static: new int b = m - 1,
+                    c = m,
+                    d = e - 1;
+
+    new Value swap;
+
+    while a < b && c < d {
+        swap = array[b].read();
+        array[b].write(array[a]);
+        b--;
+        array[a].write(array[c]);
+        a++;
+        array[c].write(array[d]);
+        c++;
+        array[d].write(swap);
+        d--;
+    }
+
+    while a < b {
+        swap = array[b].read();
+        array[b].write(array[a]);
+        b--;
+        array[a].write(array[d]);
+        a++;
+        array[d].write(swap);
+        d--;
+    }
+
+    while c < d {
+        swap = array[c].read();
+        array[c].write(array[d]);
+        c++;
+        array[d].write(array[a]);
+        d--;
+        array[a].write(swap);
+        a++;
+    }
+
+    if a < d {
+        reverse(array, a, d + 1);
+    }
 }

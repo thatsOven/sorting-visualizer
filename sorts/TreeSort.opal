@@ -50,7 +50,7 @@ new class TreeSort {
 }
 
 @Sort(
-    "Insertion Sorts",
+    "Tree Sorts",
     "Tree Sort",
     "Tree Sort"
 );

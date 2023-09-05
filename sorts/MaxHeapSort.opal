@@ -34,7 +34,7 @@ namespace MaxHeapSort {
 
 
 @Sort(
-    "Selection Sorts",
+    "Tree Sorts",
     "Max Heap Sort",
     "Max Heap Sort"
 );

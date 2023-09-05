@@ -58,7 +58,7 @@ new class WeakHeapSort {
 }
 
 @Sort(
-    "Selection Sorts",
+    "Tree Sorts",
     "Weak Heap Sort",
     "Weak Heap Sort"
 );
