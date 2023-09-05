@@ -1,5 +1,5 @@
 new class GUI {
-    new Vector OFFS      = RESOLUTION // 100,
+    new Vector OFFS      = RESOLUTION // 80,
                WIN_SIZE  = RESOLUTION // 2,
                TEXT_OFFS = Vector(2, 2);
     new int FPS = 60;
@@ -18,9 +18,13 @@ new class GUI {
         this.__buildSV();
         this.__buildRunAll();
         this.__buildSortSel();
+
+        this.__sv.graphics.simpleText(f"thatsOven's Sorting Visualizer v{VERSION}", GUI.TEXT_OFFS);
     }
 
     new method __loop(fn, fn0 = lambda *a: None) {
+        this.__background = this.__sv.graphics.screen.copy();
+
         while True {
             new dynamic delta = this.__clock.tick(GUI.FPS) / 1000.0;
 
@@ -42,7 +46,7 @@ new class GUI {
 
             this.__manager.update(delta);
 
-            this.__sv.graphics.fill((0, 0, 0));
+            this.__sv.graphics.blitSurf(this.__background, Vector());
             this.__manager.draw_ui(this.__sv.graphics.screen);
 
             this.__sv.graphics.rawUpdate();
