@@ -34,7 +34,8 @@ new class GUI {
                 }
 
                 if event.type == pygame_gui.UI_BUTTON_PRESSED {
-                    if (res := fn(event)) is not None {
+                    new dynamic res = fn(event);
+                    if res is not None {
                         return res;
                     }
                 }
@@ -170,7 +171,8 @@ new class GUI {
 
         new function __internal(event) {
             if event.ui_element == button {
-                if (res := lst.get_single_selection()) is not None {
+                new dynamic res = lst.get_single_selection();
+                if res is not None {
                     return content.index(res);
                 }
             }
@@ -226,9 +228,8 @@ new class GUI {
 
     new method __updateSortCat(categories, sorts) {
         new function __fn() {
-            new dynamic cat;
-
-            if cat := categories.get_single_selection() {
+            new dynamic cat = categories.get_single_selection();
+            if cat {
                 cat = this.__sv.categories.index(cat);
 
                 if cat != this.__oldCat {
@@ -250,14 +251,16 @@ new class GUI {
             if event.ui_element == this.__sortSelButton {
                 new dynamic cat, sort;
 
-                if cat := this.__sortSelCategories.get_single_selection() {
+                cat = this.__sortSelCategories.get_single_selection();
+                if cat  {
                     cat = this.__sv.categories.index(cat);
                 } else {
                     this.userWarn("Error", "Select a category first");
                     return;
                 }
-
-                if sort := this.__sortSelSorts.get_single_selection() {
+                
+                sort = this.__sortSelSorts.get_single_selection();
+                if sort {
                     sort = this.__sorts.index(sort);
                 } else {
                     this.userWarn("Error", "Select a sort first");
@@ -394,35 +397,40 @@ new class GUI {
 
                 new dynamic dist, shuf, cat, sort, vis;
 
-                if dist := this.__svDistributions.get_single_selection() {
+                dist = this.__svDistributions.get_single_selection();
+                if dist {
                     dist = this.__distributions.index(dist);
                 } else {
                     this.userWarn("Error", "Select a distribution first");
                     return;
                 }
 
-                if shuf := this.__svShuffles.get_single_selection() {
+                shuf = this.__svShuffles.get_single_selection();
+                if shuf {
                     shuf = this.__shuffles.index(shuf);
                 } else {
                     this.userWarn("Error", "Select a shuffle first");
                     return;
                 }
 
-                if cat := this.__svCategories.get_single_selection() {
+                cat = this.__svCategories.get_single_selection();
+                if cat {
                     cat = this.__sv.categories.index(cat);
                 } else {
                     this.userWarn("Error", "Select a category first");
                     return;
                 }
 
-                if sort := this.__svSorts.get_single_selection() {
+                sort = this.__svSorts.get_single_selection();
+                if sort {
                     sort = this.__sorts.index(sort);
                 } else {
                     this.userWarn("Error", "Select a sort first");
                     return;
                 }
 
-                if vis := this.__svVisuals.get_single_selection() {
+                vis = this.__svVisuals.get_single_selection();
+                if vis {
                     vis = this.__visuals.index(vis);
                 } else {
                     this.userWarn("Error", "Select a visual style first");
@@ -525,21 +533,24 @@ new class GUI {
 
                 new dynamic dist, shuf, vis;
 
-                if dist := this.__runAllDistributions.get_single_selection() {
+                dist = this.__runAllDistributions.get_single_selection();
+                if dist {
                     dist = this.__distributions.index(dist);
                 } else {
                     this.userWarn("Error", "Select a distribution first");
                     return;
                 }
 
-                if shuf := this.__runAllShuffles.get_single_selection() {
+                shuf = this.__runAllShuffles.get_single_selection();
+                if shuf {
                     shuf = this.__shuffles.index(shuf);
                 } else {
                     this.userWarn("Error", "Select a shuffle first");
                     return;
                 }
 
-                if vis := this.__runAllVisuals.get_single_selection() {
+                vis = this.__runAllVisuals.get_single_selection();
+                if vis {
                     vis = this.__visuals.index(vis);
                 } else {
                     this.userWarn("Error", "Select a visual style first");

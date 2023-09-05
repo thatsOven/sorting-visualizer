@@ -266,7 +266,7 @@ new class ShelfSort {
         static: new int logSize = 0,
                               v = size;
 
-        while v := v // 2 {
+        for ; v > 0; v //= 2 {
             logSize++;
         }
 
