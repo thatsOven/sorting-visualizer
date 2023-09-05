@@ -23,7 +23,7 @@ new function middlePivot(array, a, b, p) {
 
 @PivotSelection("Median of three");
 new function medianOfThreePivot(array, a, b, p) {
-    new int p0 = medianOfThreeIdx(array, a, b);
+    new int p0 = medianOfThreeIdx(array, a, a + (b - a) // 2, b - 1);
 
     if p != p0 {
         array[p].swap(array[p0]);
