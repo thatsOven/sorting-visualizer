@@ -64,6 +64,9 @@ The visualizer also provides methods for user input, namely:
 - `sortingVisualizer.getUserInput(message: str = "", default: str = "", type_: int)`: asks the user a text input that gets converted to `type_`. `default` sets the default value;
 - `sortingVisualizer.getUserSelection(content: list[str], message: str = "")`: asks the user to select between a list of items and returns the selection index.
 
+And a method for warnings and errors, often used for invalid inputs:
+- `sortingVisualizer.userWarn(message: str)`.
+
 When the process of asking the user needs to be skipped, like in a custom thread, an "autoValue" can be set through the `sortingVisualizer.setAutoValue(value)` method. The value isn't changed until a new autoValue is set, or `sortingVisualizer.resetAutoValue()` is called.
 ## Adding new shuffles
 Adding a new shuffle is extremely simple! You just need to add your `.opal` or `.py` file inside the `shuffles` folder, and provide a run function, composed like this:

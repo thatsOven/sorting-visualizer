@@ -751,6 +751,10 @@ new class SortingVisualizer {
         }
     }
 
+    new method userWarn(message) {
+        this.__gui.userWarn(this.__currentlyRunning, message);
+    }
+
     new method getKillerIds(killers, distribution) {
         if this.distributions[distribution].name in killers {
             new list tmp;
