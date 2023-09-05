@@ -58,6 +58,8 @@ To create a new array, the visualizer provides  `sortingVisualizer.createValueAr
 ## Other utilities
 The visualization speed can be changed through `sortingVisualizer.setSpeed(value: float)` and reset to 1 via `sortingVisualizer.resetSpeed()`. The speed can be fetched through `sortingVisualizer.speed` for temporary speed editing.
 
+Delays can be set by using `sortingVisualizer.delay(timeMs: float)` before any highlighted operation.
+
 The visualizer also provides methods for user input, namely:
 - `sortingVisualizer.getUserInput(message: str = "", default: str = "", type_: int)`: asks the user a text input that gets converted to `type_`. `default` sets the default value;
 - `sortingVisualizer.getUserSelection(content: list[str], message: str = "")`: asks the user to select between a list of items and returns the selection index.
