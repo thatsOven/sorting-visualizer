@@ -27,8 +27,8 @@ use binaryInsertionSort, arrayCopy;
 
 new class EctaSort {
     new method mergeTo(from_, to, a, m, b, p) {
-        static: new int i = a,
-                        j = m;
+        new int i = a,
+                j = m;
 
         for ; i < m && j < b; p++ {
             if from_[i] <= from_[j] {
@@ -50,9 +50,9 @@ new class EctaSort {
     }
 
     new method pingPongMerge(array, buf, a, m1, m2, m3, b) {
-        static: new int p    = 0,
-                        p1   = p + m2 - a,
-                        pEnd = p + b - a;
+        new int p    = 0,
+                p1   = p + m2 - a,
+                pEnd = p + b - a;
 
         this.mergeTo(array, buf, a, m1, m2, p);
 		this.mergeTo(array, buf, m2, m3, b, p1);
@@ -60,12 +60,12 @@ new class EctaSort {
     }
 
     new method mergeBWExt(array, tmp, a, m, b) {
-        static: new int s = b - m;
+        new int s = b - m;
 
         arrayCopy(array, m, tmp, 0, s);
 
-        static: new int i = s - 1,
-                        j = m - 1;
+        new int i = s - 1,
+                j = m - 1;
 
         while i >= 0 && j >= a {
             b--;
@@ -107,13 +107,13 @@ new class EctaSort {
     }
 
     new method blockMerge(array, buf, tags, a, m, b, bLen) {
-        static: new int c = 0,
-                        t = 2,
-                        i = a,
-                        j = m,
-                        k = 0,
-                        l = 0,
-                        r = 0;
+        new int c = 0,
+                t = 2,
+                i = a,
+                j = m,
+                k = 0,
+                l = 0,
+                r = 0;
 
         for ; c < 2 * bLen; k++, c++ {
             if array[i] <= array[j] {
@@ -156,7 +156,7 @@ new class EctaSort {
             }
         } while i < m || j < b;
 
-        static: new int b1 = b - c;
+        new int b1 = b - c;
 
         arrayCopy(array, k - c, array, b1, c);
         r -= c;
@@ -192,12 +192,12 @@ new class EctaSort {
             return;
         }
 
-        static: new int bLen = 1;
+        new int bLen = 1;
         for ; bLen * bLen < b - a; bLen *= 2 {}
 
-        static: new int tLen   = (b - a) // bLen,
-                        bufLen = 2 * bLen,
-                        j      = 16;
+        new int tLen   = (b - a) // bLen,
+                bufLen = 2 * bLen,
+                j      = 16;
 
         new dynamic speed = sortingVisualizer.speed;
         sortingVisualizer.setSpeed(max(int(10 * (len(array) / 2048)), speed * 2));

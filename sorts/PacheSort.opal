@@ -27,8 +27,8 @@ use lrBinarySearch, blockSwap, BitArray, medianOfThreeIdx, partition,
     binaryInsertionSort;
 
 namespace PacheSort {
-    static: new int MIN_INSERT = 32,
-                    MIN_HEAP   = 255;
+    new int MIN_INSERT = 32,
+            MIN_HEAP   = 255;
 
     new classmethod log2(n) {
         return int(math.log2(n));
@@ -58,7 +58,7 @@ namespace PacheSort {
     }
 
     new classmethod optiHeapSort(array, a, b) {
-        static: new int n = b - a;
+        new int n = b - a;
 
         for i = (n - 1) // 4; i >= 0; i-- {
             this.siftDown(array, array[a + i].read(), i, a, n);
@@ -72,7 +72,6 @@ namespace PacheSort {
     }
 
     new classmethod ninther(array, a) {
-        static:
         new int a1 = medianOfThreeIdx(array,     a, a + 1, a + 2),
                 m1 = medianOfThreeIdx(array, a + 3, a + 4, a + 5),
                 b1 = medianOfThreeIdx(array, a + 6, a + 7, a + 8);
@@ -92,7 +91,6 @@ namespace PacheSort {
                 array[i].swap(array[random.randrange(i, b)]);
             }
 
-            static: 
             new int a1 = this.ninther(array, a),
                     m1 = this.ninther(array, a + 9),
                     b1 = this.ninther(array, a + 18);
@@ -102,8 +100,8 @@ namespace PacheSort {
     }
 
     new classmethod dualQuickSelect(array, a, b, r1, r2) {
-        static: new int a1 = a,
-                        b1 = b;
+        new int a1 = a,
+                b1 = b;
 
         while b - a > PacheSort.MIN_INSERT {
             this.pivotSelect(array, a, b);
@@ -219,11 +217,11 @@ namespace PacheSort {
             return;
         }
 
-        static: new int log    = this.log2(b - a - 1) + 1,
-                        pCnt   = (b - a) // (log ** 2),
-                        bitLen = (pCnt + 1) * log,
-                        a1     = a + bitLen,
-                        b1     = b - bitLen;
+        new int log    = this.log2(b - a - 1) + 1,
+                pCnt   = (b - a) // (log ** 2),
+                bitLen = (pCnt + 1) * log,
+                a1     = a + bitLen,
+                b1     = b - bitLen;
 
         this.dualQuickSelect(array, a, b, a1, b1 - 1);
         this.optiHeapSort(array, b1, b);

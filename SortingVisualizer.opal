@@ -17,7 +17,7 @@ package pygame.time: import Clock;
 package scipy:       import signal;
 package json:        import loads;
 use exec, getattr;
-$args ["--nostatic", "--nocompile"]
+$args ["--nostatic"]
 
 sys.setrecursionlimit(65536);
 

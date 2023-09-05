@@ -23,7 +23,7 @@ new class BitArray {
     }
 
     new method free() {
-        static: new int i1 = this.pa + this.length;
+        new int i1 = this.pa + this.length;
         for i = this.pa, j = this.pb; i < i1; i++, j++ {
             this.setBit(i, j, False);
         }
@@ -32,8 +32,8 @@ new class BitArray {
     new method set(idx, uInt) {
         assert idx >= 0 && idx < this.size;
 
-        static: new int s  = idx * this.w,
-                        i1 = this.pa + s + this.w;
+        new int s  = idx * this.w,
+                i1 = this.pa + s + this.w;
 
         for i = this.pa + s, j = this.pb + s; i < i1; i++, j++, uInt >>= 1 {
             this.setBit(i, j, (uInt & 1) == 1);
@@ -47,8 +47,8 @@ new class BitArray {
     new method get(idx) {
         assert idx >= 0 && idx < this.size;
 
-        static: new int r = 0,
-                        s = idx * this.w;
+        new int r = 0,
+                s = idx * this.w;
 
         for k = 0, i = this.pa + s, j = this.pb + s; k < this.w; k++, i++, j++ {
             r |= int(this.getBit(i, j)) << k;
@@ -60,8 +60,8 @@ new class BitArray {
     new method incr(idx) {
         assert idx >= 0 && idx < this.size;
 
-        static: new int s  = idx * this.w, 
-                        i1 = this.pa + s + this.w;
+        new int s  = idx * this.w, 
+                i1 = this.pa + s + this.w;
 
         for i = this.pa + s, j = this.pb + s; i < i1; i++, j++ {
             this.flipBit(i, j);
@@ -76,8 +76,8 @@ new class BitArray {
     new method decr(idx) {
         assert idx >= 0 && idx < this.size;
 
-        static: new int s  = idx * this.w, 
-                        i1 = this.pa + s + this.w;
+        new int s  = idx * this.w, 
+                i1 = this.pa + s + this.w;
 
         for i = this.pa + s, j = this.pb + s; i < i1; i++, j++ {
             this.flipBit(i, j);

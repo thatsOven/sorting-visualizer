@@ -27,9 +27,9 @@ use binaryInsertionSort, blockSwap, cycleReverseRotate, lrBinarySearch;
 
 namespace KotaSort {
     new classmethod tLenCalc(n, bLen) {
-        static: new int n1 = n - 2 * bLen,
-                        a  = 0,
-                        b  = 2 * bLen, m;
+        new int n1 = n - 2 * bLen,
+                a  = 0,
+                b  = 2 * bLen, m;
 
         while a < b {
             m = (a + b) // 2;
@@ -45,8 +45,8 @@ namespace KotaSort {
     }
 
     new classmethod findKeysBW(array, a, b, nKeys) {
-        static: new int f = 1,
-                        p = b - f, loc;
+        new int f = 1,
+                p = b - f, loc;
 
         for i = p; i > a && f < nKeys; i-- {
             loc = lrBinarySearch(array, p, p + f, array[i - 1], True) - p;
@@ -64,8 +64,8 @@ namespace KotaSort {
     }
 
     new classmethod mergeTo(array, a, m, b, p) {
-        static: new int i = a,
-                        j = m;
+        new int i = a,
+                j = m;
         
         for ; i < m && j < b; p++ {
             if array[i] <= array[j] {
@@ -87,8 +87,8 @@ namespace KotaSort {
     }
 
     new classmethod pingPongMerge(array, a, m1, m, m2, b, p) {
-        static: new int p1   = p + m - a, 
-                        pEnd = p + b - a;
+        new int p1   = p + m - a, 
+                pEnd = p + b - a;
 			
 		this.mergeTo(array, a, m1, m, p);
 		this.mergeTo(array, m, m2, b, p1);
@@ -114,7 +114,7 @@ namespace KotaSort {
     }
 
     new classmethod selectMin(array, a, b, bLen) {
-        static: new int min = a;
+        new int min = a;
 
         for i = min + bLen; i < b; i += bLen {
             if array[i] < array[min] {
@@ -140,13 +140,13 @@ namespace KotaSort {
     }
 
     new classmethod blockMerge(array, a, m, b, t, p, bLen) {
-        static: new int c  = 0,
-                        tp = t,
-                        i  = a,
-                        j  = m,
-                        k  = p,
-                        l  = 0,
-                        r  = 0; 
+        new int c  = 0,
+                tp = t,
+                i  = a,
+                j  = m,
+                k  = p,
+                l  = 0,
+                r  = 0; 
         
         for ; c < 2 * bLen; k++, c++ {
             if array[i] <= array[j] {
@@ -190,7 +190,7 @@ namespace KotaSort {
             }
         } while i < m || j < b;
 
-        static: new int b1 = b - c;
+        new int b1 = b - c;
 
         blockSwap(array, k - c, b1, c);
         r -= c;
@@ -208,8 +208,8 @@ namespace KotaSort {
             array[i].swap(array[j]);
         }
 
-        static: new int i  = a + bLen,
-                        b1 = b - (b - m) % bLen;
+        new int i  = a + bLen,
+                b1 = b - (b - m) % bLen;
 
         while i < m && m < b1 {
             if array[i - 1] > array[m + bLen - 1] {
@@ -255,12 +255,12 @@ namespace KotaSort {
             return;
         }
 
-        static: new int bLen = 1;
+        new int bLen = 1;
         for ; bLen * bLen < b - a; bLen *= 2 {}
 
-        static: new int tLen   = this.tLenCalc(b - a, bLen),
-                        bufLen = 2 * bLen,
-                        j      = 16;
+        new int tLen   = this.tLenCalc(b - a, bLen),
+                bufLen = 2 * bLen,
+                j      = 16;
 
         new int keys = this.findKeysBW(array, a, b, bufLen + tLen);
 
@@ -287,9 +287,9 @@ namespace KotaSort {
             tLen = keys - bufLen; 
         }
 
-        static: new int b1 = b - keys,
-                        t  = b1,
-                        p  = b1 + tLen;
+        new int b1 = b - keys,
+                t  = b1,
+                p  = b1 + tLen;
 
         for i = a; i < b1; i += j {
             binaryInsertionSort(array, i, min(i + j, b1));
@@ -311,7 +311,7 @@ namespace KotaSort {
             }
         }
 
-        static: new int limit = bLen * (tLen + 3);
+        new int limit = bLen * (tLen + 3);
 
         for ; j < b1 - a && min(2 * j, b1 - a) < limit; j *= 2 {
             for i = a; i + j + bufLen < b1; i += 2 * j {

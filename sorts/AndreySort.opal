@@ -61,7 +61,7 @@ namespace AndreySort {
 
     new classmethod rbnd(len) {
         len //= 2;
-        static: new int k = 0, i;
+        new int k = 0, i;
         for i = 1; i < len; i *= 2, k++ {}
         len //= k;
         for k = 1; k <= len; k *= 2 {}
@@ -74,8 +74,8 @@ namespace AndreySort {
             return;
         }
 
-        static: new int r  = this.rbnd(len),
-                        lr = (len // r - 1) * r;
+        new int r  = this.rbnd(len),
+                lr = (len // r - 1) * r;
 
         for p = 2; p <= lr; p += 2 {
             compSwap(array, a + (p - 2), a + (p - 1));
@@ -108,7 +108,7 @@ namespace AndreySort {
             }
         }
 
-        static: new int q1 = 0;
+        new int q1 = 0;
         for q = r; q < lr; q *= 2 {
             if (lr & q) != 0 {
                 q1 += q;
@@ -118,7 +118,7 @@ namespace AndreySort {
             }
         }
 
-        static: new int s = len - lr;
+        new int s = len - lr;
         this.msort(array, a + lr, s);
         blockSwap(array, a, a + lr, s);
         s += this.backmerge(array, a + (s - 1), s, a + (lr - 1), lr - s);

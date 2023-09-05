@@ -3,7 +3,7 @@
 use arrayCopy;
 
 new class ShelfSort {
-    static: new int SMALL_SORT = 4;
+    new int SMALL_SORT = 4;
 
     new classmethod smallSort(array, start) {
         new Value a = array[start    ].copy(),
@@ -65,8 +65,8 @@ new class ShelfSort {
     }
 
     new classmethod mergePair(array, start1, start2, output, oStart, n) {
-        static: new int i1 = n,
-                        i2 = n, i;
+        new int i1 = n,
+                i2 = n, i;
 
         for i = n * 2 + 1; i1 >= 0 && i2 >= 0; i-- {
             new Value x = array[start1 + i1],
@@ -91,25 +91,25 @@ new class ShelfSort {
     $macro shelfSortUnloadScratch
         arrayCopy(scratch, 0, output, outOffs, bSize);
         arrayCopy(scratch, bSize, array, start + nextClearBId * bSize, bSize);
-        static: new int last = bCount1 + bCount2 - 1;
+        new int last = bCount1 + bCount2 - 1;
         this.indicesB[iStart + last - 1].write(clearBId);
         this.indicesB[iStart + last    ].write(nextClearBId); 
     $end
 
     new classmethod blockMerge(array, start, scratch, iStart, bCount1, bCount2, bSize) {
-        static: new int ii1          = bCount1 - 1,
-                        ii2          = bCount2 - 1,
-                        bId1         = this.indicesA[iStart + ii1].readInt(),
-                        bId2         = this.indicesA[iStart + bCount1 + ii2].readInt(),
-                        p1           = start + bId1 * bSize,
-                        p2           = start + (bCount1 + bId2) * bSize,
-                        outBCount    = bCount1 + bCount2 - 2,
-                        clearBId     = 0,
-                        nextClearBId = 0,
-                        i            = bSize * 2 - 1,
-                        i1           = bSize - 1,
-                        i2           = i1,
-                        outOffs      = 0;
+        new int ii1          = bCount1 - 1,
+                ii2          = bCount2 - 1,
+                bId1         = this.indicesA[iStart + ii1].readInt(),
+                bId2         = this.indicesA[iStart + bCount1 + ii2].readInt(),
+                p1           = start + bId1 * bSize,
+                p2           = start + (bCount1 + bId2) * bSize,
+                outBCount    = bCount1 + bCount2 - 2,
+                clearBId     = 0,
+                nextClearBId = 0,
+                i            = bSize * 2 - 1,
+                i1           = bSize - 1,
+                i2           = i1,
+                outOffs      = 0;
 
         new list output = scratch;
 
@@ -239,11 +239,11 @@ new class ShelfSort {
 
     new classmethod finalBlockSorting(array, start, scratch, blocks, bSize) {
         for b in range(blocks) {
-            static: new int ix = this.indicesA[b].readInt();
+            new int ix = this.indicesA[b].readInt();
 
             if ix != b {
                 arrayCopy(array, start + b * bSize, scratch, 0, bSize);
-                static: new int emptyBlock = b;
+                new int emptyBlock = b;
 
                 while ix != b {
                     arrayCopy(array, start + ix * bSize, array, start + emptyBlock * bSize, bSize);
@@ -263,14 +263,14 @@ new class ShelfSort {
     }
 
     new classmethod sort(array, start, size) {
-        static: new int logSize = 0,
-                              v = size;
+        new int logSize = 0,
+                      v = size;
 
         for ; v > 0; v //= 2 {
             logSize++;
         }
 
-        static: new int scratchSize = 1 << (2 + (logSize + 1) // 2);
+        new int scratchSize = 1 << (2 + (logSize + 1) // 2);
 
         for i = 0; i < size; i += ShelfSort.SMALL_SORT {
             this.smallSort(array, start + i);
@@ -282,7 +282,7 @@ new class ShelfSort {
         sortingVisualizer.setAux(scratch);
         sortingVisualizer.setAdaptAux(this.__adaptAux);
 
-        static: new int sortedZoneSize = ShelfSort.SMALL_SORT, runLen, i;
+        new int sortedZoneSize = ShelfSort.SMALL_SORT, runLen, i;
         for ; sortedZoneSize < scratchSize // 2; sortedZoneSize *= 2 {
             runLen = sortedZoneSize;
             sortedZoneSize *= 2;
@@ -322,9 +322,9 @@ new class ShelfSort {
             }
         }
 
-        static: new int bSize = scratchSize // 2,
-                        total = size // bSize,
-                        blocksPerRun = sortedZoneSize // bSize, j, blocks1, blocks2;
+        new int bSize = scratchSize // 2,
+                total = size // bSize,
+                blocksPerRun = sortedZoneSize // bSize, j, blocks1, blocks2;
 
         for i = 0; i < total; i += blocksPerRun {
             for j in range(blocksPerRun) {
