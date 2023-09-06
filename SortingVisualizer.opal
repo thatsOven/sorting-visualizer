@@ -91,8 +91,8 @@ new class SortingVisualizer {
         this.__checking = False;
         this.__prepared = False;
 
-        this.__autoUserValue = None;
-        this.__shufThread    = None;
+        this.__autoUserValues = Queue();
+        this.__shufThread     = None;
 
         this.__forceLoadedIndices = [];
 
@@ -668,12 +668,16 @@ new class SortingVisualizer {
         this.__checking = False;
     }
 
-    new method setAutoValue(value) {
-        this.__autoUserValue = value;
+    new method pushAutoValue(value) {
+        this.__autoUserValues.push(value);
     }
 
-    new method resetAutoValue() {
-        this.__autoUserValue = None;
+    new method popAutoValue() {
+        return this.__autoUserValues.pop();
+    }
+
+    new method resetAutoValues() {
+        while this.__autoUserValues.pop() is not None {}
     }
 
     new method setSpeed(value) {
@@ -724,7 +728,7 @@ new class SortingVisualizer {
     }
 
     new method getUserInput(message = "", default = "", type_ = int) {
-        if this.__autoUserValue is None {
+        if this.__autoUserValues.isEmpty() {
             new dynamic res = this.__gui.userInputDialog(this.__currentlyRunning, message, type_, default);
             
             if this.__prepared {
@@ -733,12 +737,12 @@ new class SortingVisualizer {
 
             return res;
         } else {
-            return this.__autoUserValue;
+            return this.popAutoValue();
         }
     }
 
     new method getUserSelection(content, message = "") {
-        if this.__autoUserValue is None {
+        if this.__autoUserValues.isEmpty() {
             new dynamic res = this.__gui.selection(this.__currentlyRunning, message, content);
             
             if this.__prepared {
@@ -747,7 +751,7 @@ new class SortingVisualizer {
             
             return res;
         } else {
-            return this.__autoUserValue;
+            return this.popAutoValue();
         }
     }
 
@@ -765,19 +769,8 @@ new class SortingVisualizer {
         }
     }
 
-    new method runSortingProcess(distribution, length, shuffle, categoryName, sortName, speed = 1.0, mult = 1.0, autoValue = True, stAutoValue = None, ndAutoValue = 0, killers = {}) {
-        if stAutoValue is None {
-            stAutoValue = length;
-        }
-
-        if autoValue {
-            this.setAutoValue(stAutoValue);
-        }
+    new method runSortingProcess(distribution, length, shuffle, categoryName, sortName, speed = 1.0, mult = 1.0, killers = {}) {
         this.generateArray(distribution, shuffle, length);
-
-        if autoValue {
-            this.setAutoValue(ndAutoValue);
-        }
 
         if (killers != {}) {
             if shuffle in this.getKillerIds(killers, distribution) {

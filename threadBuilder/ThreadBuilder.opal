@@ -2,7 +2,7 @@ this.shuffles.pop();
 
 new tuple msg, modes;
 msg   = ("add", "insert", "replace");
-modes = ("SORT", "SHUFFLE", "DISTRIBUTION", "VISUAL", "SPEED", "AUTOVALUE", "SPEED_RESET", "AUTOVALUE_RESET");
+modes = ("SORT", "SHUFFLE", "DISTRIBUTION", "VISUAL", "SPEED", "AUTOVALUE_PUSH", "AUTOVALUE_POP", "SPEED_RESET", "AUTOVALUES_RESET");
 
 new list commands = [];
 new dict macros   = {};

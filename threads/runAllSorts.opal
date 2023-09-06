@@ -1,10 +1,19 @@
 this.setVisual(runOpts["visual"]);
 
-new function runAllSort(size, name, speed, ndAutoValue = 0, killers = {}) {
+new function runAllSort(size, name, speed, toPush = [], killers = {}) {
+    this.pushAutoValue(autoValue * size // 2);
+
+    if type(toPush) in (list, tuple) {
+        for item in toPush {
+            this.pushAutoValue(item);
+        }
+    } else {
+        this.pushAutoValue(toPush);
+    }
+
     this.runSortingProcess(
         runOpts["distribution"], size, runOpts["shuffle"], 
-        ct, name, speed * runOpts["speed"], stAutoValue = autoValue * size // 2, 
-        ndAutoValue = ndAutoValue, killers = killers
+        ct, name, speed * runOpts["speed"], killers = killers
     );
 }
 
@@ -23,7 +32,7 @@ runAllSort(256,  "Odd-Even Sort", 20);
 runAllSort(128,     "Gnome Sort",  1);
 runAllSort(128, "Sandpaper Sort",  1);
 runAllSort(512,    "Circle Sort",  5);
-runAllSort(1024,     "Comb Sort", 10);
+runAllSort(1024,     "Comb Sort", 10, 1.3);
 
 
 ct = "Insertion Sorts";
@@ -93,8 +102,8 @@ runAllSort(2048, "Andrey's Merge",        5);
 
 
 ct = "Block Merge Sorts";
-runAllSort(2048, "Wiki Sort",     7);
-runAllSort(2048, "Grail Sort",    7);
+runAllSort(2048, "Wiki Sort",     7, 0);
+runAllSort(2048, "Grail Sort",    7, 0);
 runAllSort(2048, "Helium Sort",   5, 0);
 runAllSort(1024, "Hydrogen Sort", 1);
 runAllSort(2048, "Kota Sort",     7);

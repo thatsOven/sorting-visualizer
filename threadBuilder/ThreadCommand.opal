@@ -22,14 +22,17 @@ new class ThreadCommand {
             case "SPEED" {
                 return "this.setSpeed(" + str(this.__id) + ")\n";
             }
-            case "AUTOVALUE" {
-                return "this.setAutoValue(" + str(this.__id) + ")\n";
+            case "AUTOVALUE_PUSH" {
+                return "this.pushAutoValue(" + str(this.__id) + ")\n";
+            }
+            case "AUTOVALUE_POP" {
+                return "this.popAutoValue()\n";
             }
             case "SPEED_RESET" {
                 return "this.resetSpeed()\n";
             }
-            case "AUTOVALUE_RESET" {
-                return "this.resetAutoValue()\n";
+            case "AUTOVALUES_RESET" {
+                return "this.resetAutoValues()\n";
             }
             case "DEFINE" {
                 return "#" + str(this.__id) + "\n";
@@ -56,13 +59,16 @@ new class ThreadCommand {
             case "SPEED" {
                 name = "SET | " + str(this.__id);
             }
-            case "AUTOVALUE" {
-                name = "SET | " + str(this.__id);
+            case "AUTOVALUE_PUSH" {
+                name = "PUSH | " + str(this.__id);
+            }
+            case "AUTOVALUE_POP" {
+                name = "POP";
             }
             case "SPEED_RESET" {
                 name = "RESET";
             }
-            case "AUTOVALUE_RESET" {
+            case "AUTOVALUES_RESET" {
                 name = "RESET";
             }
             case "DEFINE" {

@@ -51,13 +51,14 @@ new method __builderEvaluator(title, msg, sel, commands, macros, modes) {
                     command = ThreadCommand(modes[mode], speed);
                 }
                 case 1 {
-                    command = ThreadCommand(modes[mode + 2], None);
+                    command = ThreadCommand(modes[mode + 3], None);
                 }
             }
         }
         case 5 {
             new int msel = this.__gui.selection(title + " builder", "Select type of autovalue change: ", [
-                "Set",
+                "Push",
+                "Pop",
                 "Reset"
             ]);
 
@@ -68,7 +69,10 @@ new method __builderEvaluator(title, msg, sel, commands, macros, modes) {
                     command = ThreadCommand(modes[mode], value);
                 }
                 case 1 {
-                    command = ThreadCommand(modes[mode + 2], None);
+                    command = ThreadCommand(modes[mode + 1], None);
+                }
+                case 2 {
+                    command = ThreadCommand(modes[mode + 3], None);
                 }
             }
         }
