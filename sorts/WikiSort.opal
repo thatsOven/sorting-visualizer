@@ -94,7 +94,7 @@ new class WikiIterator {
 }
 
 new class WikiSort {
-    new method __init__(cacheSize, cache = None) {
+    new method __init__(cacheSize, cache = None, rot = None) {
         this.cache_size = cacheSize;
 
         if this.cache_size != 0 {
@@ -107,6 +107,17 @@ new class WikiSort {
             sortingVisualizer.setAux(this.cache);
         } else {
             this.cache = None;
+        }
+
+        if rot is None {
+            this.internalRotate = sortingVisualizer.getRotation(
+                id = sortingVisualizer.getUserSelection(
+                    [r.name for r in sortingVisualizer.rotations],
+                    "Select rotation algorithm (default: Triple Reversal)"
+                )
+            ).indexedFn;
+        } else {
+            this.internalRotate = sortingVisualizer.getRotation(name = rot).indexedFn;
         }
     }
 
@@ -257,9 +268,7 @@ new class WikiSort {
             }
         }
 
-        this.reverse(array, range1);
-        this.reverse(array, range2);
-        this.reverse(array, range);
+        this.internalRotate(array, range.start, split, range.end);
     }
 
     new method mergeInto(from_, A, B, into, at_index) {

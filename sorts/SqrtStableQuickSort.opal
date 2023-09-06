@@ -133,7 +133,7 @@ new class SqrtStableQuickSort {
 
                     p1 = this.oopPartition(array, m, b, p);
 
-                    heliumRotate(array, p0, m, p1);
+                    this.rotate(array, p0, m, p1);
 
                     return p1 - ones;
                 }
@@ -227,11 +227,25 @@ new class SqrtStableQuickSort {
     }
 }
 
+main {
+    SqrtStableQuickSort.rotate = sortingVisualizer.getRotation(
+        name = "Helium"
+    ).indexedFn;
+}
+
 @Sort(
     "Quick Sorts",
     "Sqrt Stable QuickSort",
     "Sqrt Stable Quick"
 );
 new function sqrtStableQuickSortRun(array) {
+    new dynamic rotate = sortingVisualizer.getRotation(
+        id = sortingVisualizer.getUserSelection(
+            [r.name for r in sortingVisualizer.rotations],
+            "Select rotation algorithm (default: Helium)"
+        )
+    ).indexedFn;
+    
+    SqrtStableQuickSort.rotate = rotate;
     SqrtStableQuickSort.sort(array, 0, len(array));
 }

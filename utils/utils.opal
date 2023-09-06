@@ -131,30 +131,13 @@ new function insertToRight(array, _from, to) {
     array[to].writeRestoreIdx(temp, idx);
 }
 
-new function heliumRotate(array, a, m, b) {
-    static: new int rl = b - m,
-                    ll = m - a;
-
-    while ll > 1 and rl > 1 {
-        if rl < ll {
-            blockSwap(array, a, m, rl);
-            a  += rl;
-            ll -= rl;
-        } else {
-            b  -= ll;
-            rl -= ll;
-            backwardBlockSwap(array, a, b, ll);
-        }
+new function checkMergeBounds(array, a, m, b, rotate = None) {
+    if rotate is None {
+        rotate = sortingVisualizer.getRotation(
+            name = "Helium"
+        ).indexedFn;
     }
 
-    if rl == 1 {
-        insertToLeft(array, m, a);
-    } elif ll == 1 {
-        insertToRight(array, a, b - 1);
-    }
-}
-
-new function checkMergeBounds(array, a, m, b, rotate = heliumRotate) {
     if   array[m - 1] <= array[m] {
         return True;
     } elif array[a] > array[b - 1] {
@@ -281,55 +264,4 @@ new function findMin(array, a, b) {
 
 new function findHighestPower(array, a, b, base) {
     return math.log(findMax(array, a, b), base);
-}
-
-new function cycleReverseRotate(array, a, m, e) {
-    static: new int lenA = m - a,
-                    lenB = e - m;
-
-    if lenA < 1 || lenB < 1 {
-        return;
-    }
-
-    static: new int b = m - 1,
-                    c = m,
-                    d = e - 1;
-
-    new Value swap;
-
-    while a < b && c < d {
-        swap = array[b].read();
-        array[b].write(array[a]);
-        b--;
-        array[a].write(array[c]);
-        a++;
-        array[c].write(array[d]);
-        c++;
-        array[d].write(swap);
-        d--;
-    }
-
-    while a < b {
-        swap = array[b].read();
-        array[b].write(array[a]);
-        b--;
-        array[a].write(array[d]);
-        a++;
-        array[d].write(swap);
-        d--;
-    }
-
-    while c < d {
-        swap = array[c].read();
-        array[c].write(array[d]);
-        c++;
-        array[d].write(array[a]);
-        d--;
-        array[a].write(swap);
-        a++;
-    }
-
-    if a < d {
-        reverse(array, a, d + 1);
-    }
 }

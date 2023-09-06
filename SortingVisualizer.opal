@@ -25,6 +25,10 @@ enum RefreshMode {
     STANDARD, NOREFRESH, FULL
 }
 
+enum RotationMode {
+    INDEXED, LENGTHS
+}
+
 new function checkType(value, type_) {
     try {
         new dynamic tmp = type_(value);
@@ -58,6 +62,7 @@ new class SortingVisualizer {
         this.categories = [];
 
         this.pivotSelections = [];
+        this.rotations       = [];
 
         this.__fontSize = round(((RESOLUTION.x / 1280) + (RESOLUTION.y / 720)) * 11);
 
@@ -291,6 +296,14 @@ new class SortingVisualizer {
         return this.__runSDModule("pivot selection", this.__getPivotSelectionById, this.pivotSelections, id, name, PivotSelection).getFunc();
     }
 
+    new method __getRotationById(id, placeHolder) {
+        return this.rotations[id];
+    }
+
+    new method getRotation(id = None, name = None) {
+        return this.__runSDModule("rotation", this.__getRotationById, this.rotations, id, name, Rotation);
+    }
+
     new method __runSortById(category, id) {
         this.resetStats();
         this.__currentlyRunning = this.sorts[category][id].name;
@@ -469,6 +482,10 @@ new class SortingVisualizer {
 
     new method addPivotSelection(pSel) {
         this.pivotSelections.append(pSel);
+    }
+
+    new method addRotation(rot) {
+        this.rotations.append(rot);
     }
 
     new method renderStats() {
@@ -733,6 +750,7 @@ new class SortingVisualizer {
             
             if this.__prepared {
                 this.drawFullArray();
+                this.renderStats();
             }
 
             return res;
@@ -747,6 +765,7 @@ new class SortingVisualizer {
             
             if this.__prepared {
                 this.drawFullArray();
+                this.renderStats();
             }
             
             return res;
@@ -992,6 +1011,7 @@ main {
 
     $includeDirectory os.path.join(HOME_DIR, "distributions")
     $includeDirectory os.path.join(HOME_DIR, "pivotSelections")
+    $includeDirectory os.path.join(HOME_DIR, "rotations")
     $includeDirectory os.path.join(HOME_DIR, "shuffles")
     $includeDirectory os.path.join(HOME_DIR, "sorts")
 

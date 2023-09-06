@@ -65,7 +65,7 @@
 
 use reverse, arrayCopy, blockSwap, backwardBlockSwap, 
     compareValues, compareIntToValue, insertToLeft,
-    heliumRotate, checkMergeBounds, lrBinarySearch, binaryInsertionSort;
+    checkMergeBounds, lrBinarySearch, binaryInsertionSort;
 
 new class HeliumSort {
     new int RUN_SIZE           = 32,
@@ -75,10 +75,21 @@ new class HeliumSort {
             MIN_REV_RUN_SIZE   = 8,
             SMALL_MERGE        = 16;
 
-    new method __init__() {
+    new method __init__(rot = None) {
         this.buffer  = None;
         this.indices = None;
         this.keys    = None;
+
+        if rot is None {
+            this.rotate = sortingVisualizer.getRotation(
+                id = sortingVisualizer.getUserSelection(
+                    [r.name for r in sortingVisualizer.rotations],
+                    "Select rotation algorithm (default: Helium)"
+                )
+            ).indexedFn;
+        } else {
+            this.rotate = sortingVisualizer.getRotation(name = rot).indexedFn;
+        }
     }
 
     new method reverseRuns(array, a, b) {
@@ -117,7 +128,7 @@ new class HeliumSort {
         for i = p + n; i < b && n < q; i++ {
             new int l = lrBinarySearch(array, p, p + n, array[i], True);
             if i == l || array[i] != array[l] {
-                heliumRotate(array, p, p + n, i);
+                this.rotate(array, p, p + n, i);
                 new int add = i - p - n;
                 l += add;
                 p += add;
@@ -127,7 +138,7 @@ new class HeliumSort {
             }
         }
 
-        heliumRotate(array, to, p, p + n);
+        this.rotate(array, to, p, p + n);
         return n;
     }
 
@@ -137,16 +148,16 @@ new class HeliumSort {
         
         for i = a + 1; i < b && n < q; i++ {
             if array[i] > array[i - 1] {
-                heliumRotate(array, p, p + n, i);
+                this.rotate(array, p, p + n, i);
                 p = i + n;
                 n++;
             }
         }
 
         if n == q {
-            heliumRotate(array, a, p, p + n);
+            this.rotate(array, a, p, p + n);
         } else {
-            heliumRotate(array, p, p + n, b);
+            this.rotate(array, p, p + n, b);
         }
 
         return n;
@@ -200,7 +211,7 @@ new class HeliumSort {
             new int cmp = compareValues(array[s], array[l]);
             if cmp > 0 if left else cmp >= 0 {
                 new int p = lrBinarySearch(array, l, b, array[s], left);
-                heliumRotate(array, s, l, p);
+                this.rotate(array, s, l, p);
                 s += p - l;
                 l = p;
             } else {
@@ -217,7 +228,7 @@ new class HeliumSort {
             new int cmp = compareValues(array[l], array[s]);
             if cmp > 0 if left else cmp >= 0 {
                 new int p = lrBinarySearch(array, a, l, array[s], !left);
-                heliumRotate(array, p, l + 1, s + 1);
+                this.rotate(array, p, l + 1, s + 1);
                 s -= l + 1 - p;
                 l = p - 1;
             } else {

@@ -23,7 +23,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-use binaryInsertionSort, blockSwap, cycleReverseRotate, lrBinarySearch;
+use binaryInsertionSort, blockSwap, lrBinarySearch;
 
 namespace KotaSort {
     new classmethod tLenCalc(n, bLen) {
@@ -52,14 +52,14 @@ namespace KotaSort {
             loc = lrBinarySearch(array, p, p + f, array[i - 1], True) - p;
 
             if loc == f || array[i - 1] < array[p + loc] {
-                cycleReverseRotate(array, i, p, p + f);
+                KotaSort.rotate(array, i, p, p + f);
                 f++;
                 p = i - 1;
-                cycleReverseRotate(array, i - 1, i, p + loc + 1);
+                KotaSort.rotate(array, i - 1, i, p + loc + 1);
             }
         }
 
-        cycleReverseRotate(array, p, p + f, b);
+        KotaSort.rotate(array, p, p + f, b);
         return f;
     }
 
@@ -99,7 +99,7 @@ namespace KotaSort {
         while b > m && m > a {
             new int i = lrBinarySearch(array, a, m, array[b - 1], False);
 
-            cycleReverseRotate(array, i, m, b);
+            KotaSort.rotate(array, i, m, b);
 
             new int t = m - i;
             m = i;
@@ -344,11 +344,25 @@ namespace KotaSort {
     }
 }
 
+main {
+    KotaSort.rotate = sortingVisualizer.getRotation(
+        name = "Cycle Reverse"
+    ).indexedFn;
+}
+
 @Sort(
     "Block Merge Sorts",
     "Kota Sort",
     "Kota Sort"
 );
 new function kotaSortRun(array) {
+    new dynamic rotate = sortingVisualizer.getRotation(
+        id = sortingVisualizer.getUserSelection(
+            [r.name for r in sortingVisualizer.rotations],
+            "Select rotation algorithm (default: Cycle Reverse)"
+        )
+    ).indexedFn;
+
+    KotaSort.rotate = rotate;
     KotaSort.sort(array, 0, len(array));
 }

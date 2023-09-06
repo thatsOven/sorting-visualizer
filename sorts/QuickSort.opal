@@ -14,7 +14,7 @@ new class QuickSort {
 
     new method LRQuickSort(array, a, b) {
         while b - a > 1 {
-            array[a].swap(array[this.pSel(array, a, b)])
+            array[a].swap(array[this.pSel(array, a, b)]);
 
             new int p;
             p = partition(array, a, b, a);

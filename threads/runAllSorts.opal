@@ -24,6 +24,9 @@ if runOpts["distribution"] == 1 {
     autoValue = 1;
 }
 
+new list pivotSelections = [p.name for p in this.pivotSelections],
+         rotations       = [r.name for r in this.rotations];
+
 
 new str ct;
 ct = "Exchange Sorts";
@@ -78,35 +81,35 @@ new dict centerKillers = {
     "Quintic":   ["Reversed Sawtooth", "Sawtooth"]
 };
 
-runAllSort(1024, "LL Quick Sort", 2, 1, {
+runAllSort(1024, "LL Quick Sort", 2, pivotSelections.index("First"), {
     "Linear":    ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"], 
     "Quadratic": ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"], 
     "Quintic":   ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"]
 });
-runAllSort(1024, "LR Quick Sort",          2, 3, centerKillers);
-runAllSort(1024, "Stackless Quick",        2, 2, centerKillers);
+runAllSort(1024, "LR Quick Sort",          2, pivotSelections.index("Middle"), centerKillers);
+runAllSort(1024, "Stackless Quick",        2, pivotSelections.index("Median of three"), centerKillers);
 runAllSort(1024, "Dual Pivot Quick",       2, killers = centerKillers);
 runAllSort(2048, "Median-Of-16 A. Quick", 10);
 runAllSort(2048, "PDQ Sort",              10);
-runAllSort(1024, "Sqrt Stable Quick",      1);
+runAllSort(1024, "Sqrt Stable Quick",      1, rotations.index("Helium"));
 
 
 ct = "Merge Sorts";
 runAllSort(1024, "Merge Sort",            5);
 runAllSort(1024, "Bottom Up Merge",       3);
 runAllSort(256,  "Lazy Stable",           1);
-runAllSort(1024, "Adaptive Rotate Merge", 5, 128);
-runAllSort(1024, "Uranium Sort",          2);
+runAllSort(1024, "Adaptive Rotate Merge", 5, [128, rotations.index("Helium")]);
+runAllSort(1024, "Uranium Sort",          2, rotations.index("Helium"));
 runAllSort(1024, "Tim Sort",              5);
 runAllSort(2048, "Andrey's Merge",        5);
 
 
 ct = "Block Merge Sorts";
-runAllSort(2048, "Wiki Sort",     7, 0);
-runAllSort(2048, "Grail Sort",    7, 0);
-runAllSort(2048, "Helium Sort",   5, 0);
-runAllSort(1024, "Hydrogen Sort", 1);
-runAllSort(2048, "Kota Sort",     7);
+runAllSort(2048, "Wiki Sort",     7, [0, rotations.index("Triple Reversal")]);
+runAllSort(2048, "Grail Sort",    7, [0, rotations.index("Gries-Mills")]);
+runAllSort(2048, "Helium Sort",   5, [0, rotations.index("Helium")]);
+runAllSort(1024, "Hydrogen Sort", 1, rotations.index("Helium"));
+runAllSort(2048, "Kota Sort",     7, rotations.index("Cycle Reverse"));
 runAllSort(1024, "Ecta Sort",     1);
 
 

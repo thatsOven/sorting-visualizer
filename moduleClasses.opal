@@ -154,3 +154,66 @@ new class PivotSelection {
         return False;
     }
 }
+
+@total_ordering;
+new class Rotation {
+    new method __init__(name, mode = RotationMode.INDEXED) {
+        this.name = name;
+        this.mode = mode;
+
+        this.indexedFn = None;
+        this.lengthFn  = None;
+    }
+
+    new method __call__(func) {
+        new Rotation rot = Rotation(this.name);
+        
+        match this.mode {
+            case RotationMode.INDEXED {
+                rot.indexedFn = deepcopy(func);
+                del func;
+
+                new function __lengthFn(array, a, ll, lr) {
+                    new dynamic tmp = a + ll;
+                    rot.indexedFn(array, a, tmp, tmp + lr);
+                }
+
+                rot.lengthFn = __lengthFn;
+            }
+            case RotationMode.LENGTHS {
+                rot.lengthFn = deepcopy(func);
+                del func;
+
+                new function __indexedFn(array, a, m, b) {
+                    rot.lengthFn(array, a, m - a, b - m);
+                }
+
+                rot.indexedFn = __indexedFn;
+            }
+            default {
+                IO.out(f'Warning: unknown rotation mode "{this.mode}"!\n');
+                return;
+            }
+        }
+
+        sortingVisualizer.addRotation(rot);
+    }
+
+    new method getFunc() {
+        return this.func;
+    }
+
+    new method __eq__(other) {
+        if this.name == other.name {
+            return True;
+        }
+        return False;
+    }
+
+    new method __lt__(other) {
+        if this.name < other.name {
+            return True;
+        }
+        return False;
+    }
+}

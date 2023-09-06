@@ -46,7 +46,7 @@
  #
  # Special thanks to "The Studio" Discord community!
 
-# REWRITTEN GRAILSORT FOR OPAL - A heavily refactored C/C++-to-Python version of
+# REWRITTEN GRAILSORT FOR OPAL - A heavily refactored C/C++-to-Opal version of
 #                                  Andrey Astrelin's GrailSort.h, aiming to be as
 #                                  readable and intuitive as possible.
 #
@@ -77,19 +77,6 @@ namespace GrailSort {
     new classmethod grailBlockSwap(array, a, b, blockLen) {
         for i = 0; i < blockLen; i++ {
             GrailSort.grailSwap(array, a + i, b + i);
-        }
-    }
-
-    new classmethod grailRotate(array, start, leftLen, rightLen) {
-        while leftLen > 0 and rightLen > 0 {
-            if leftLen <= rightLen {
-                this.grailBlockSwap(array, start, start + leftLen, leftLen);
-                start    += leftLen;
-                rightLen -= leftLen;
-            } else {
-                this.grailBlockSwap(array, start + leftLen - rightLen, start + leftLen, rightLen);
-                leftLen -= rightLen;
-            }
         }
     }
 
@@ -950,6 +937,12 @@ namespace GrailSort {
     }
 }
 
+main {
+    GrailSort.grailRotate = sortingVisualizer.getRotation(
+        name = "Gries-Mills"
+    ).lengthFn;
+}
+
 new function grailSortInPlace(array, start, length) {
     GrailSort.extBuffer    = None;
     GrailSort.extBufferLen = 0;
@@ -990,6 +983,15 @@ new function grailSortGivenAux(array, start, length, aux, set = True) {
 new function grailSortRun(array) {
     new int mode;
     mode = sortingVisualizer.getUserInput("Insert buffer size (0 for in-place, -1 for dynamic)", "0");
+
+    new dynamic rotate = sortingVisualizer.getRotation(
+        id = sortingVisualizer.getUserSelection(
+            [r.name for r in sortingVisualizer.rotations],
+            "Select rotation algorithm (default: Gries-Mills)"
+        )
+    ).lengthFn;
+
+    GrailSort.grailRotate = rotate;
 
     match mode {
         case 0 {

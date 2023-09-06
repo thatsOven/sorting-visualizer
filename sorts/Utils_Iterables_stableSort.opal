@@ -1,5 +1,5 @@
 new class UtilsIterablesStableSortMerge {
-    new method __init__(size, aux = None) {
+    new method __init__(size, aux = None, rot = None) {
         if aux is None {
             this.aux = sortingVisualizer.createValueArray(size);
         } else {
@@ -8,6 +8,17 @@ new class UtilsIterablesStableSortMerge {
         sortingVisualizer.setAux(this.aux);
 
         this.__capacity = size;
+
+        if rot is None {
+            this.rotate = sortingVisualizer.getRotation(
+                id = sortingVisualizer.getUserSelection(
+                    [r.name for r in sortingVisualizer.rotations],
+                    "Select rotation algorithm (default: Helium)"
+                )
+            ).indexedFn;
+        } else {
+            this.rotate = sortingVisualizer.getRotation(name = rot).indexedFn;
+        }
     }
 
     new method __mergeUp(array, a, m, b) {
@@ -79,7 +90,7 @@ new class UtilsIterablesStableSortMerge {
             while i < j and j < b {
                 if array[i] > array[j] {
                     k = lrBinarySearch(array, j, b, array[i].read());
-                    heliumRotate(array, i, j, k);
+                    this.rotate(array, i, j, k);
                     i += k - j;
                     j = k;
                 } else {
@@ -94,7 +105,7 @@ new class UtilsIterablesStableSortMerge {
                 if array[i] > array[j] {
                     k = lrBinarySearch(array, a, i, array[j].read(), False);
                     i++;
-                    heliumRotate(array, k, i, j + 1);
+                    this.rotate(array, k, i, j + 1);
                     j -= i - k;
                     i = k - 1;
                 } else {
@@ -105,7 +116,7 @@ new class UtilsIterablesStableSortMerge {
     }
 
     new method __rotateMerge(array, a, m, m1, m2, m3, b) {
-        heliumRotate(array, m1, m, m2);
+        this.rotate(array, m1, m, m2);
 
         if m1 - a > 0 and m3 - m1 > 0 {
             this.merge(array,  a, m1, m3, False);
@@ -163,8 +174,8 @@ new class UtilsIterablesStableSortMerge {
 use binaryInsertionSort;
 
 new class UtilsIterablesStableSort {
-    new method __init__(size, aux = None) {
-        this.__merge = UtilsIterablesStableSortMerge(size, aux);
+    new method __init__(size, aux = None, rot = None) {
+        this.__merge = UtilsIterablesStableSortMerge(size, aux, rot);
     }
 
     new classmethod getReversedRuns(array, a, b) {
