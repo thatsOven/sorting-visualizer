@@ -8,9 +8,9 @@ new class StacklessQuickSort {
                     [p.name for p in sortingVisualizer.pivotSelections],
                     "Select pivot selection: "
                 )
-            ).getFunc();
+            );
         } else {
-            this.pSel = pSel;
+            this.pSel = sortingVisualizer.getPivotSelection(name = pSel);
         }
     }
 
@@ -54,7 +54,7 @@ new class StacklessQuickSort {
         while True {
             while b1 - a > 16 {
                 if med {
-                    this.pSel(array, a, b1, a);
+                    array[a].swap(array[this.pSel(array, a, b1)]);
                 }
                 new int p = this.partition(array, a, b1);
                 array[p].swap(array[b]);

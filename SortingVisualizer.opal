@@ -288,7 +288,7 @@ new class SortingVisualizer {
     }
 
     new method getPivotSelection(id = None, name = None) {
-        return this.__runSDModule("pivot selection", this.__getPivotSelectionById, this.pivotSelections, id, name, PivotSelection);
+        return this.__runSDModule("pivot selection", this.__getPivotSelectionById, this.pivotSelections, id, name, PivotSelection).getFunc();
     }
 
     new method __runSortById(category, id) {

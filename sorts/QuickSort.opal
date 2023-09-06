@@ -6,9 +6,9 @@ new class QuickSort {
                     [p.name for p in sortingVisualizer.pivotSelections],
                     "Select pivot selection: "
                 )
-            ).getFunc();
+            );
         } else {
-            this.pSel = pSel;
+            this.pSel = sortingVisualizer.getPivotSelection(name = pSel);
         }
     }
 
