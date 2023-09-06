@@ -1,40 +1,24 @@
 @PivotSelection("First");
-new function firstPivot(array, a, b, p) {
-    if p != a {
-        array[p].swap(array[a]);
-    }
+new function firstPivot(array, a, b) {
+    return a;
 }
 
 @PivotSelection("Last");
-new function lastPivot(array, a, b, p) {
-    if p != b - 1 {
-        array[p].swap(array[b - 1]);
-    }
+new function lastPivot(array, a, b) {
+    return b - 1;
 }
 
 @PivotSelection("Middle");
-new function middlePivot(array, a, b, p) {
-    new int mid = a + ((b - a) // 2);
-
-    if p != mid {
-        array[p].swap(array[mid]);
-    }
+new function middlePivot(array, a, b) {
+    return a + ((b - a) // 2);
 }
 
 @PivotSelection("Median of three");
-new function medianOfThreePivot(array, a, b, p) {
-    new int p0 = medianOfThreeIdx(array, a, a + (b - a) // 2, b - 1);
-
-    if p != p0 {
-        array[p].swap(array[p0]);
-    }
+new function medianOfThreePivot(array, a, b) {
+    return medianOfThreeIdx(array, a, a + (b - a) // 2, b - 1);
 }
 
 @PivotSelection("Random");
-new function randomPivot(array, a, b, p) {
-    new int rnd = random.randint(a, b - 1);
-
-    if rnd != p {
-        array[p].swap(array[rnd]);
-    }
+new function randomPivot(array, a, b) {
+    return random.randint(a, b - 1);
 }

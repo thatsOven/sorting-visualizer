@@ -18,7 +18,7 @@ new class StacklessQuickSort {
         new int i = a,
                 j = b;
 
-        this.pSel(array, a, b, a);
+        array[a].swap(array[this.pSel(array, a, b)]);
 
         while True {
             do i < j and array[i] < array[a] {
