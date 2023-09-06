@@ -947,46 +947,49 @@ new class SortingVisualizer {
 
         this.__gui.setSv(this);
 
-        new int sel = this.__gui.selection("Mode", "Select mode: ", [
-            "Run sort",
-            "Run all sorts",
-            "Threads"
-        ]);
+        while True {
+            new int sel = this.__gui.selection("Mode", "Select mode: ", [
+                "Run sort",
+                "Run all sorts",
+                "Threads"
+            ]);
 
-        match sel {
-            case 0 {
-                do opt == 0 {
-                    new dict runOpts = this.__gui.runSort();
+            match sel {
+                case 0 {
+                    do opt == 0 {
+                        new dict runOpts = this.__gui.runSort();
 
-                    this.__visual = this.visuals[runOpts["visual"]];
-                    this.__prepared = False;
-                    this.generateArray(runOpts["distribution"], runOpts["shuffle"], runOpts["array-size"]);
-                    this.setSpeed(runOpts["speed"]);
-                    this.runSort(this.categories[runOpts["category"]], id = runOpts["sort"]);
-                    this.__resetShufThread();
+                        this.__visual = this.visuals[runOpts["visual"]];
+                        this.__prepared = False;
+                        this.generateArray(runOpts["distribution"], runOpts["shuffle"], runOpts["array-size"]);
+                        this.setSpeed(runOpts["speed"]);
+                        this.runSort(this.categories[runOpts["category"]], id = runOpts["sort"]);
+                        this.__resetShufThread();
 
-                    new int opt = this.__gui.selection("Done", "Continue?", [
-                        "Yes",
-                        "No"
-                    ]);
-                }
-            }
-            case 1 {
-                new dict runOpts = this.__gui.runAll();
-                $include os.path.join(HOME_DIR, "threads", "runAllSorts.opal")
-            }
-            case 2 {
-                sel = this.__gui.selection("Threads", "Select: ", [
-                    "Run thread from threads folder",
-                    "Thread builder"
-                ]);
-
-                match sel {
-                    case 0 {
-                        this.__selectThread("Thread", True, True);
+                        new int opt = this.__gui.selection("Done", "Continue?", [
+                            "Yes",
+                            "No"
+                        ]);
                     }
-                    case 1 {
-                        $include os.path.join(HOME_DIR, "threadBuilder", "ThreadBuilder.opal")
+                }
+                case 1 {
+                    new dict runOpts = this.__gui.runAll();
+                    $include os.path.join(HOME_DIR, "threads", "runAllSorts.opal")
+                    this.__gui.userWarn("Finished", "All sorts have been visualized.");
+                }
+                case 2 {
+                    sel = this.__gui.selection("Threads", "Select: ", [
+                        "Run thread from threads folder",
+                        "Thread builder"
+                    ]);
+
+                    match sel {
+                        case 0 {
+                            this.__selectThread("Thread", True, True);
+                        }
+                        case 1 {
+                            $include os.path.join(HOME_DIR, "threadBuilder", "ThreadBuilder.opal")
+                        }
                     }
                 }
             }

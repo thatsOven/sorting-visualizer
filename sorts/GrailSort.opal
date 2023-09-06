@@ -1014,5 +1014,13 @@ new function grailSortRun(array) {
     "Lazy Stable"
 );
 new function lazyStableSortRun(array) {
+    new dynamic rotate = sortingVisualizer.getRotation(
+        id = sortingVisualizer.getUserSelection(
+            [r.name for r in sortingVisualizer.rotations],
+            "Select rotation algorithm (default: Gries-Mills)"
+        )
+    ).lengthFn;
+
+    GrailSort.grailRotate = rotate;
     GrailSort.grailLazyStableSort(array, 0, len(array));
 }
