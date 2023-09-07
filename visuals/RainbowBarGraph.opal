@@ -15,7 +15,7 @@ new class RainbowBarGraph: LineVisual {
     new method onAuxOn(length) {
         super.onAuxOn(length);
 
-        this.auxColorConstant = 1.0 / max(sortingVisualizer.auxMax, sortingVisualizer.arrayMax);
+        this.auxColorConstant = 1.0 / sortingVisualizer.auxMax;
     }
 
     new method draw(array, indices, color) {

@@ -31,7 +31,7 @@ new class LineVisual: Visual {
         this.auxResolution = sortingVisualizer.graphics.resolution.copy();
         this.auxResolution.y //= 4;
 
-        this.auxLineLengthConst = this.auxResolution.y / max(sortingVisualizer.auxMax, sortingVisualizer.arrayMax);
+        this.auxLineLengthConst = this.auxResolution.y / sortingVisualizer.auxMax;
 
         if this.auxResolution.x >= length {
             if this.auxResolution.x == length {

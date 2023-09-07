@@ -5,7 +5,7 @@ new Vector RESOLUTION = Vector(1280, 720);
 static {
     new int   FREQUENCY_SAMPLE = 48000;
     new float SAMPLE_DURATION  = 1.0 / 30.0;
-    new str   VERSION          = "2023.9.6";
+    new str   VERSION          = "2023.9.7";
 }
 
 import math, random, time, os, numpy, sys, pygame_gui;
@@ -365,7 +365,7 @@ new class SortingVisualizer {
             }
         }
 
-        return 1 if maxVal == 0 else maxVal;
+        return 1 if maxVal == 0 else maxVal + 1;
     }
 
     new method getMax() {
@@ -374,9 +374,9 @@ new class SortingVisualizer {
 
     new method getAuxMax(array = None) {
         if array is None {
-            this.auxMax = float(max(this.getMaxViaKey(this.__adaptAux(this.aux)), this.arrayMax));
+            this.auxMax = float(this.getMaxViaKey(this.__adaptAux(this.aux)));
         } else {
-            this.auxMax = float(max(this.getMaxViaKey(array), this.arrayMax));
+            this.auxMax = float(this.getMaxViaKey(array));
         }
     }
 
@@ -606,13 +606,14 @@ new class SortingVisualizer {
 
                     if this.__oldAuxLen != length {
                         this.__visual.onAuxOn(length);
+                        this.__oldAuxLen = length;
                     } else {
                         new dynamic oldMax = this.auxMax;
-                        this.getAuxMax();
+                        this.getAuxMax(adapted);
                         if this.auxMax != oldMax {
                             this.__visual.onAuxOn(length);
                         }
-                    }       
+                    }
 
                     this.__visual.drawAux(adapted, auxList, this.__visual.highlightColor);
                 }
