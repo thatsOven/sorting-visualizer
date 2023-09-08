@@ -1,5 +1,9 @@
 @Shuffle("No shuffle");
-new function noShuffle(array) {}
+new function noShuffle(array) {
+    for i in range(len(array)) {
+        sortingVisualizer.highlight(i);
+    }
+}
 
 @Shuffle("Reversed");
 new function reversedShuffle(array) {
