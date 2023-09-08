@@ -240,9 +240,11 @@ new class SortingVisualizer {
     new method __runDistributionById(id, length, unique) {
         this.array = [None for _ in range(length)];
         this.__currentlyRunning = this.distributions[id].name + " (distribution)";
-        this.distributions[id].func(this.array, length, unique);
+        this.distributions[id].func(this.array, length);
 
+        new float t = length / unique;
         for i in range(length) {
+            this.array[i] = Value(int(t * int(this.array[i] / t) + t // 2));
             this.array[i].stabIdx = i;
             this.array[i].idx     = i;
         }

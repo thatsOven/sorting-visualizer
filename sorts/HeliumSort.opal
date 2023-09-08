@@ -149,7 +149,7 @@ new class HeliumSort {
         for i = a + 1; i < b && n < q; i++ {
             if array[i] > array[i - 1] {
                 this.rotate(array, p, p + n, i);
-                p = i + n;
+                p = i - n;
                 n++;
             }
         }
@@ -873,7 +873,7 @@ new class HeliumSort {
                     target = twoR // kLen;
                 }
 
-                for ; bLen < target; bLen *= 2 {}
+                for ; bLen <= target; bLen *= 2 {}
                 this.blockLen = bLen;
             }
 

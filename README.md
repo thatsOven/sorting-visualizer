@@ -101,17 +101,17 @@ Pivot selections are algorithms used to select a pivot in partitioning sorts tha
 ```
 @PivotSelection("Pivot Selection Name");
 new function myPivotSelection(array, start, end, pivotDestination) {
-	 # [start, end) is the interval in which the selection should pick a pivot
-	 # pivotDestination should be the destination index the pivot should be swapped to
-     # your code here
+	# [start, end) is the interval in which the selection should pick a pivot
+	# pivotDestination should be the destination index the pivot should be swapped to
+    # your code here
 }
 ```
 ## Adding new distributions
 Adding distributions is similar to adding shuffles and pivot selections. Files need to be added to the `distributions` folder. Creating arrays doesn't use the `Value` API, since the `Value`s aren't placed in the array at that time yet.
 ```
 @Distribution("Distribution Name");
-new function myDistribution(array, length, uniqueAmount) {
-     # your code here
+new function myDistribution(array, length) {
+    # your code here
 }
 ```
 ## Adding visual styles
