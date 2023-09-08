@@ -58,7 +58,12 @@ runAllSort(64,   "Cycle Sort",       1);
 
 
 ct = "Tree Sorts";
-runAllSort(512,  "Tree Sort",        2);
+runAllSort(512,  "Tree Sort",        2, killers = {
+    "Linear":    ["Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth"],
+    "Quadratic": ["Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth"],
+    "Quintic":   ["Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth"],
+    "Sine Wave": ["Reversed", "Reversed Sawtooth", "No shuffle", "Sawtooth"]
+});
 runAllSort(2048, "Max Heap Sort",   15);
 runAllSort(2048, "Poplar Heap",     10);
 runAllSort(1024, "Weak Heap Sort",   2);

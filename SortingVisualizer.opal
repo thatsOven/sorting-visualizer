@@ -800,7 +800,7 @@ new class SortingVisualizer {
 
         if (killers != {}) {
             if shuffle in this.getKillerIds(killers, distribution) {
-                this.__speed = 1000;
+                this.__speed = 50;
             } else {
                 this.setSpeed(speed * mult);
             }
