@@ -12,6 +12,7 @@ static {
 import math, random, time, os, numpy, sys, pygame_gui;
 package timeit:      import default_timer;
 package functools:   import total_ordering;
+package traceback:   import format_exception;
 package pygame_gui:  import UIManager, elements;
 package pygame:      import Rect;
 package pygame.time: import Clock;
@@ -37,6 +38,10 @@ new function checkType(value, type_) {
         return False;
     }
     return True;
+}
+
+new function formatException(e) {
+    return (''.join(format_exception(e))).replace("<", "&lt;").replace(">", "&gt;");
 }
 
 new dynamic sortingVisualizer = None;
@@ -511,7 +516,7 @@ new class SortingVisualizer {
                 this.__currentCategory + ": " + this.__currentlyRunning,
                 "",
                 "Dropped frames: " + this.__dFramesPerc,
-                "Current delay: " + str(this.__sleep + this.__tmpSleep) + " ms",
+                "Current delay: " + str(round((this.__sleep + this.__tmpSleep) * 1000, 2)) + " ms",
                 "",
                 "Writes: " + str(this.writes),
                 "Swaps: "  + str(this.__swaps),
@@ -973,12 +978,15 @@ new class SortingVisualizer {
                     do opt == 0 {
                         new dict runOpts = this.__gui.runSort();
 
-                        this.__visual = this.visuals[runOpts["visual"]];
-                        this.__prepared = False;
-                        this.generateArray(runOpts["distribution"], runOpts["shuffle"], runOpts["array-size"], runOpts["unique"]);
-                        this.setSpeed(runOpts["speed"]);
-                        this.runSort(this.categories[runOpts["category"]], id = runOpts["sort"]);
-                        this.__resetShufThread();
+                        try {
+                            this.setVisual(runOpts["visual"]);
+                            this.generateArray(runOpts["distribution"], runOpts["shuffle"], runOpts["array-size"], runOpts["unique"]);
+                            this.setSpeed(runOpts["speed"]);
+                            this.runSort(this.categories[runOpts["category"]], id = runOpts["sort"]);
+                            this.__resetShufThread();
+                        } catch Exception as e {
+                            this.__gui.userWarn("Exception occurred", formatException(e));
+                        } 
 
                         new int opt = this.__gui.selection("Done", "Continue?", [
                             "Yes",
@@ -988,8 +996,13 @@ new class SortingVisualizer {
                 }
                 case 1 {
                     new dict runOpts = this.__gui.runAll();
-                    $include os.path.join(HOME_DIR, "threads", "runAllSorts.opal")
-                    this.__gui.userWarn("Finished", "All sorts have been visualized.");
+                    try {
+                        $include os.path.join(HOME_DIR, "threads", "runAllSorts.opal")
+                    } catch Exception as e {
+                        this.__gui.userWarn("Exception occurred", formatException(e));
+                    } success {
+                        this.__gui.userWarn("Finished", "All sorts have been visualized.");
+                    }
                 }
                 case 2 {
                     sel = this.__gui.selection("Threads", "Select: ", [

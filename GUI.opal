@@ -68,17 +68,18 @@ new class GUI {
         win.on_close_window_button_pressed = lambda *a: None;
         win.set_position((RESOLUTION // 2 - GUI.WIN_SIZE // 2).toList(2));
 
-        elements.UITextBox(
-            message, Rect(
-                GUI.TEXT_OFFS.x, GUI.TEXT_OFFS.y, 
-                GUI.WIN_SIZE.x - GUI.TEXT_OFFS.x, 
-                80
-            ),
-            this.__manager, container = win
-        );
-
+        
         new dynamic entry;
         if textInput {
+            elements.UITextBox(
+                message, Rect(
+                    GUI.TEXT_OFFS.x, GUI.TEXT_OFFS.y, 
+                    GUI.WIN_SIZE.x - GUI.TEXT_OFFS.x - 40, 
+                    80
+                ),
+                this.__manager, container = win
+            );
+
             entry = elements.UITextEntryLine(
                 Rect(
                     GUI.TEXT_OFFS.x, GUI.TEXT_OFFS.y + 80, 
@@ -89,6 +90,15 @@ new class GUI {
                 initial_text = default,
             );
         } else {
+            elements.UITextBox(
+                message, Rect(
+                    GUI.TEXT_OFFS.x, GUI.TEXT_OFFS.y, 
+                    GUI.WIN_SIZE.x - GUI.TEXT_OFFS.x - 40, 
+                    GUI.WIN_SIZE.y - GUI.TEXT_OFFS.y - 120
+                ),
+                this.__manager, container = win
+            );
+
             entry = None;
         }
 
