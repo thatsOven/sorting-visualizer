@@ -1,14 +1,15 @@
 new class ThreadCommand {
-    new method __init__(mode, id, lengthC = None) {
+    new method __init__(mode, id, lengthC = None, unique = None) {
         this.__mode    = mode;
         this.__id      = id;
         this.__lengthC = lengthC;
+        this.__unique  = unique;
     }
 
     new method compile() {
         match this.__mode {
             case "DISTRIBUTION" {
-                return "this.runDistribution(" + str(this.__lengthC) + ", " + str(this.__id) + ")\n";
+                return "this.runDistribution(" + str(this.__lengthC) + ", " + str(this.__id)  + ", " + str(this.__unique) + ")\n";
             }
             case "VISUAL" {
                 return "this.setVisual(" + str(this.__id) + ")\n";
@@ -37,6 +38,9 @@ new class ThreadCommand {
             case "DEFINE" {
                 return "#" + str(this.__id) + "\n";
             }
+            case "VERSION" {
+                return "#v" + str(this.__id) + "\n";
+            }
         }
     }
 
@@ -45,7 +49,7 @@ new class ThreadCommand {
 
         match this.__mode {
             case "DISTRIBUTION" {
-                name = sortingVisualizer.distributions[this.__id].name + " | " + str(this.__lengthC) + " elements";
+                name = sortingVisualizer.distributions[this.__id].name + " | " + str(this.__lengthC) + " elements, " + str(this.__unique) + " unique";
             }
             case "VISUAL" {
                 name = sortingVisualizer.visuals[this.__id].name;
@@ -71,7 +75,7 @@ new class ThreadCommand {
             case "AUTOVALUES_RESET" {
                 name = "RESET";
             }
-            case "DEFINE" {
+            case "DEFINE" | "VERSION" {
                 name = str(this.__id);
             }
         }

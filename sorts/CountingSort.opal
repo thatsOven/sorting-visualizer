@@ -1,28 +1,34 @@
-new function countingSort(array, a, b) {
-    new int max_;
-    max_ = findMax(array, a, b);
-
-    new list output = sortingVisualizer.createValueArray(b - a),
-             counts = sortingVisualizer.createValueArray(max_ + 1);
-    sortingVisualizer.setInvisibleArray(output);
-    sortingVisualizer.setAux(counts);
-
-    arrayCopy(array, a, output, 0, b - a);
-
-    for i = a; i < b; i++ {
-        counts[array[i].readInt()]++;
+new class CountingSort {
+    new method __adaptAux(array) {
+        return array + this.output;
     }
 
-    for i = 1; i < max_ + 1; i++ {
-        counts[i] += counts[i - 1];
-    }
+    new method sort(array, a, b) {
+        new int max_;
+        max_ = findMax(array, a, b);
 
-    for i = b - 1; i >= 0; i-- {
-        output[counts[array[i].getInt()].readInt() - 1].write(array[i]);
-        counts[array[i].getInt()]--;
-    }
+        new list counts = sortingVisualizer.createValueArray(max_ + 1);
+        this.output     = sortingVisualizer.createValueArray(b - a);
+        sortingVisualizer.setAux(counts);
+        sortingVisualizer.setAdaptAux(this.__adaptAux);
 
-    reverseArrayCopy(output, 0, array, a, b - a);
+        arrayCopy(array, a, this.output, 0, b - a);
+
+        for i = a; i < b; i++ {
+            counts[array[i].readInt()]++;
+        }
+
+        for i = 1; i < max_ + 1; i++ {
+            counts[i] += counts[i - 1];
+        }
+
+        for i = b - 1; i >= 0; i-- {
+            this.output[counts[array[i].readInt()].readInt() - 1].write(array[i]);
+            counts[array[i].getInt()]--;
+        }
+
+        reverseArrayCopy(this.output, 0, array, a, b - a);
+    }
 }
 
 @Sort(
@@ -31,5 +37,5 @@ new function countingSort(array, a, b) {
     "Counting Sort"
 );
 new function countingSortRun(array) {
-    countingSort(array, 0, len(array));
+    CountingSort().sort(array, 0, len(array));
 }

@@ -861,7 +861,7 @@ new class HeliumSort {
                 if kBuf >= twoR // kBuf {
                     if internalKeys {
                         this.bufLen = kBuf;
-                        this.bufPOs = this.keyPos + this.keyLen - kBuf;
+                        this.bufPos = this.keyPos + this.keyLen - kBuf;
                     }
 
                     target = kBuf;
@@ -873,7 +873,7 @@ new class HeliumSort {
                     target = twoR // kLen;
                 }
 
-                for ; bLen <= target; bLen *= 2 {}
+                for ; bLen < target; bLen *= 2 {}
                 this.blockLen = bLen;
             }
 

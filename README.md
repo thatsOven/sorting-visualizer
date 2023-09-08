@@ -3,7 +3,7 @@
 
 to run, open or compile `SortingVisualizer.opal` using the opal compiler.
 
-here you can find a video about the program: https://youtu.be/9ZuYW9bnCGw
+here you can find a video about the program: https://youtu.be/qzZ2kDkm28Q
 
 # Installation
 To properly run the visualizer, you will need to install these Python modules:
@@ -60,6 +60,8 @@ The visualization speed can be changed through `sortingVisualizer.setSpeed(value
 
 Delays can be set by using `sortingVisualizer.delay(timeMs: float)` before any highlighted operation.
 
+Custom titles can be set through `sortingVisualizer.setCurrentlyRunning(name: str, category: Optional[str] = None)`. The category is best left untouched to avoid confusion.
+
 The visualizer also provides methods for user input, namely:
 - `sortingVisualizer.getUserInput(message: str = "", default: str = "", type_: int -> type_)`: asks the user a text input that gets converted to `type_`. `default` sets the default value;
 - `sortingVisualizer.getUserSelection(content: list[str], message: str = "") -> int`: asks the user to select between a list of items and returns the selection index.
@@ -108,7 +110,7 @@ new function myPivotSelection(array, start, end, pivotDestination) {
 Adding distributions is similar to adding shuffles and pivot selections. Files need to be added to the `distributions` folder. Creating arrays doesn't use the `Value` API, since the `Value`s aren't placed in the array at that time yet.
 ```
 @Distribution("Distribution Name");
-new function myDistribution(array, length) {
+new function myDistribution(array, length, uniqueAmount) {
      # your code here
 }
 ```

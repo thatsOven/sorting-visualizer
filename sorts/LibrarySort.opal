@@ -1,6 +1,6 @@
 use binaryInsertionSort;
 
-namespace LibrarySort {
+new class LibrarySort {
     new int R = 4;
 
     new classmethod getMinLevel(n) {
@@ -10,40 +10,39 @@ namespace LibrarySort {
         return n;
     }
 
-    new classmethod rebalance(array, temp, cnts, locs, m, b) {
+    new method rebalance(array, temp, m, b) {
         for i = 0; i < m; i++ {
-            cnts[i + 1] += cnts[i] + 1;
-            sortingVisualizer.writes++;
-            sortingVisualizer.multiHighlight([i, i + 1], True);
+            this.cnts[i + 1] += this.cnts[i] + 1;
         }
 
         for i = m, j = 0; i < b; i++, j++ {
-            temp[cnts[locs[j]]].write(array[i]);
-            cnts[locs[j]]++;
-            sortingVisualizer.writes++;
+            temp[this.cnts[this.locs[j].readInt()].readInt()].write(array[i]);
+            this.cnts[this.locs[j].getInt()]++;
         }
 
         for i = 0; i < m; i++ {
-            temp[cnts[i]].write(array[i]);
-            cnts[i]++;
-            sortingVisualizer.writes++;
+            temp[this.cnts[i].readInt()].write(array[i]);
+            this.cnts[i]++;
         }
 
         arrayCopy(temp, 0, array, 0, b);
 
-        binaryInsertionSort(array, 0, cnts[0] - 1);
+        binaryInsertionSort(array, 0, this.cnts[0].readInt() - 1);
         for i = 0; i < m - 1; i++ {
-            binaryInsertionSort(array, cnts[i], cnts[i + 1] - 1);
+            binaryInsertionSort(array, this.cnts[i].readInt(), this.cnts[i + 1].readInt() - 1);
         }
-        binaryInsertionSort(array, cnts[m - 1], cnts[m]);
+        binaryInsertionSort(array, this.cnts[m - 1].readInt(), this.cnts[m].readInt());
 
         for i = 0; i < m + 2; i++ {
-            cnts[i] = 0;
-            sortingVisualizer.writes++;
+            this.cnts[i].write(0);
         }
     }
 
-    new classmethod sort(array, length) {
+    new method __adaptAux(array) {
+        return array + this.cnts + this.locs;
+    }
+
+    new method sort(array, length) {
         if length < 32 {
             binaryInsertionSort(array, 0, length);
             return;
@@ -54,14 +53,15 @@ namespace LibrarySort {
 
         for maxLevel = j; maxLevel * this.R < length; maxLevel *= this.R {}
 
-        new list temp = sortingVisualizer.createValueArray(length),
-                 cnts = [0 for _ in range(maxLevel + 2)],
-                 locs = [0 for _ in range(length - maxLevel)];
+        new list temp = sortingVisualizer.createValueArray(length);
+        this.cnts     = sortingVisualizer.createValueArray(maxLevel + 2);
+        this.locs     = sortingVisualizer.createValueArray(length - maxLevel);
         sortingVisualizer.setAux(temp);
+        sortingVisualizer.setAdaptAux(this.__adaptAux);
 
         for i = j, k = 0; i < length; i++ {
             if this.R * j == i {
-                this.rebalance(array, temp, cnts, locs, j, i);
+                this.rebalance(array, temp, j, i);
                 j = i;
                 k = 0;
             }
@@ -69,14 +69,12 @@ namespace LibrarySort {
             new int loc;
             loc = lrBinarySearch(array, 0, j, array[i], False);
 
-            cnts[loc + 1]++;
-            sortingVisualizer.writes++;
-            locs[k] = loc;
-            sortingVisualizer.writes++;
+            this.cnts[loc + 1]++;
+            this.locs[k].write(loc);
             k++;
         }
 
-        this.rebalance(array, temp, cnts, locs, j, length);
+        this.rebalance(array, temp, j, length);
     }
 }
 
@@ -87,5 +85,5 @@ namespace LibrarySort {
     "Library Sort"
 );
 new function librarySortRun(array) {
-    LibrarySort.sort(array, len(array));
+    LibrarySort().sort(array, len(array));
 }

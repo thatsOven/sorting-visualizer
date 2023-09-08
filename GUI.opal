@@ -9,7 +9,8 @@ new class GUI {
         this.__clock   = Clock();
         this.__sv      = None;
 
-        this.__oldCat = None;
+        this.__oldCat    = None;
+        this.__oldLength = None;
     }
 
     new method setSv(sv) {
@@ -298,6 +299,16 @@ new class GUI {
         );
 
         elements.UILabel(
+            Rect(GUI.OFFS.x + 120, GUI.OFFS.y + 20, 120, 20), 
+            "Unique amount", this.__manager, this.__svPanel
+        );
+        this.__svUnique = elements.UITextEntryLine(
+            Rect(GUI.OFFS.x + 120, GUI.OFFS.y + 40, 120, 20), 
+            this.__manager, this.__svPanel, 
+            initial_text = '512'
+        );
+
+        elements.UILabel(
             Rect(RESOLUTION.x - GUI.OFFS.x * 2 - 120, GUI.OFFS.y + 20, 100, 20), 
             "Speed", this.__manager, this.__svPanel
         );
@@ -377,19 +388,42 @@ new class GUI {
 
         new function __internal(event) {
             if event.ui_element == this.__svRunButton {
-                new dynamic size, speed;
-                size  = this.__svArrayLength.get_text();
-                speed = this.__svSpeed.get_text();
+                new dynamic size, unique, speed;
+                size   = this.__svArrayLength.get_text();
+                unique = this.__svUnique.get_text();
+                speed  = this.__svSpeed.get_text();
 
                 if checkType(size, int) {
                     int <- size;
+
+                    if size < 0 {
+                        this.userWarn("Error", "Invalid array size. Please retry.");
+                        return;
+                    }
                 } else {
                     this.userWarn("Error", "Invalid array size. Please retry.");
                     return;
                 }
 
+                if checkType(unique, int) {
+                    int <- unique;
+
+                    if unique < 0 || unique > size {
+                        this.userWarn("Error", "Invalid unique amount. Please retry.");
+                        return;
+                    }
+                } else {
+                    this.userWarn("Error", "Invalid unique amount. Please retry.");
+                    return;
+                }
+
                 if checkType(speed, float) {
                     float <- speed;
+
+                    if speed < 0 {
+                        this.userWarn("Error", "Invalid speed value. Please retry.");
+                        return;
+                    }
                 } else {
                     this.userWarn("Error", "Invalid speed value. Please retry.");
                     return;
@@ -439,6 +473,7 @@ new class GUI {
 
                 return {
                     "array-size"  : size,
+                    "unique"      : unique,
                     "speed"       : speed,
                     "distribution": dist,
                     "shuffle"     : shuf,
@@ -449,7 +484,21 @@ new class GUI {
             }
         }
 
-        new dict result = this.__loop(__internal, this.__updateSortCat(this.__svCategories, this.__svSorts));
+        new dynamic updateSortCat = this.__updateSortCat(this.__svCategories, this.__svSorts);
+        new function __update() {
+            updateSortCat();
+
+            new dynamic length = this.__svArrayLength.get_text();
+            if length != this.__oldLength {
+                if checkType(length, int) {
+                    this.__oldLength = length;
+                    int <- length;
+                    this.__svUnique.set_text(str(length // 2));
+                }
+            }
+        }
+
+        new dict result = this.__loop(__internal, __update);
         this.__svPanel.hide();
         return result;
     }

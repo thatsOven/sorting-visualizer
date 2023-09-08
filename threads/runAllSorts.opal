@@ -1,8 +1,6 @@
 this.setVisual(runOpts["visual"]);
 
 new function runAllSort(size, name, speed, toPush = [], killers = {}) {
-    this.pushAutoValue(autoValue * size // 2);
-
     if type(toPush) in (list, tuple) {
         for item in toPush {
             this.pushAutoValue(item);
@@ -12,8 +10,9 @@ new function runAllSort(size, name, speed, toPush = [], killers = {}) {
     }
 
     this.runSortingProcess(
-        runOpts["distribution"], size, runOpts["shuffle"], 
-        ct, name, speed * runOpts["speed"], killers = killers
+        runOpts["distribution"], size, autoValue * size // 2, 
+        runOpts["shuffle"], ct, name, speed * runOpts["speed"], 
+        killers = killers
     );
 }
 

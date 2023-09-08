@@ -5,7 +5,8 @@ new Vector RESOLUTION = Vector(1280, 720);
 static {
     new int   FREQUENCY_SAMPLE = 48000;
     new float SAMPLE_DURATION  = 1.0 / 30.0;
-    new str   VERSION          = "2023.9.7";
+    new str   VERSION          = "2023.9.8",
+              THREAD_VERSION   = "1.0";
 }
 
 import math, random, time, os, numpy, sys, pygame_gui;
@@ -210,7 +211,7 @@ new class SortingVisualizer {
         this.__forceLoadedIndices = [i for i in range(round(Utils.translate(worstCaseTextWidth, 0, this.graphics.resolution.x, 0, len(this.array))))];
     }
 
-    new method __runSDModule(mess, func, array, id, name, class_, length=None) {
+    new method __runSDModule(mess, func, array, id, name, class_, length = None, unique = None) {
         if id is None and name is None {
             IO.out("Not enough information to start ", mess, IO.endl);
             return;
@@ -221,14 +222,14 @@ new class SortingVisualizer {
             id = Utils.Iterables.binarySearch(array, class_(name));
 
             if id != -1 {
-                return func(id, length);
+                return func(id, length, unique);
             } else {
                 IO.out("Invalid ", mess, " name!\n");
                 return 0;
             }
         } elif name is None {
             if id in range(0, len(array)) {
-                return func(id, length);
+                return func(id, length, unique);
             } else {
                 IO.out("Invalid ", mess, " ID!\n");
                 return 0;
@@ -236,10 +237,10 @@ new class SortingVisualizer {
         }
     }
 
-    new method __runDistributionById(id, length) {
+    new method __runDistributionById(id, length, unique) {
         this.array = [None for _ in range(length)];
         this.__currentlyRunning = this.distributions[id].name + " (distribution)";
-        this.distributions[id].func(this.array, length);
+        this.distributions[id].func(this.array, length, unique);
 
         for i in range(length) {
             this.array[i].stabIdx = i;
@@ -252,11 +253,11 @@ new class SortingVisualizer {
         this.drawFullArray();
     }
 
-    new method runDistribution(length, id = None, name = None) {
-        this.__runSDModule("distribution", this.__runDistributionById, this.distributions, id, name, Distribution, length);
+    new method runDistribution(length, unique, id = None, name = None) {
+        this.__runSDModule("distribution", this.__runDistributionById, this.distributions, id, name, Distribution, length, unique);
     }
 
-    new method __runShuffleById(id, placeHolder) {
+    new method __runShuffleById(id, placeHolder, ndPlaceHolder) {
         this.resetStats();
         this.__currentlyRunning = this.shuffles[id].name;
         this.__currentCategory  = "Shuffles";
@@ -288,7 +289,7 @@ new class SortingVisualizer {
         this.__runSDModule("shuffle", this.__runShuffleById, this.shuffles, id, name, Shuffle);
     }
 
-    new method __getPivotSelectionById(id, placeHolder) {
+    new method __getPivotSelectionById(id, placeHolder, ndPlaceHolder) {
         return this.pivotSelections[id];
     }
 
@@ -296,7 +297,7 @@ new class SortingVisualizer {
         return this.__runSDModule("pivot selection", this.__getPivotSelectionById, this.pivotSelections, id, name, PivotSelection).getFunc();
     }
 
-    new method __getRotationById(id, placeHolder) {
+    new method __getRotationById(id, placeHolder, ndPlaceHolder) {
         return this.rotations[id];
     }
 
@@ -349,8 +350,8 @@ new class SortingVisualizer {
         }
     }
 
-    new method generateArray(selectedDistributionIdx, selectedShuffleIdx, length) {
-        this.runDistribution(length, id = selectedDistributionIdx);
+    new method generateArray(selectedDistributionIdx, selectedShuffleIdx, length, unique) {
+        this.runDistribution(length, unique, id = selectedDistributionIdx);
         this.runShuffle(id = selectedShuffleIdx);
     }
 
@@ -433,21 +434,21 @@ new class SortingVisualizer {
     new method printArrayState() {
         new str sortName = this.__currentlyRunning;
 
-        this.setCurrentlyRunning("", "Checking...");
+        this.setCurrentlyRunning("Checking...", "");
         new int state = this.checkArrayState();
 
         new tuple color;
         match state {
             case ArrayState.UNSORTED {
-                this.setCurrentlyRunning("", "The list was not sorted");
+                this.setCurrentlyRunning("The list was not sorted", "");
                 IO.out(sortName, " has failed\n");
             }
             case ArrayState.SORTED {
-                this.setCurrentlyRunning("", "The list was sorted");
+                this.setCurrentlyRunning("The list was sorted", "");
                 IO.out(sortName, " sorted the list unstably\n");
             }
             case ArrayState.STABLY_SORTED {
-                this.setCurrentlyRunning("", "The list was sorted stably");
+                this.setCurrentlyRunning("The list was sorted stably", "");
                 IO.out(sortName, " sorted the list stably\n");
             }
         }
@@ -602,7 +603,7 @@ new class SortingVisualizer {
 
                 if this.__showAux and this.aux is not None {
                     new dynamic adapted = this.__adaptAux(this.aux);
-                    static: new int length = len(adapted);
+                    new int length = len(adapted);
 
                     if this.__oldAuxLen != length {
                         this.__visual.onAuxOn(length);
@@ -740,9 +741,12 @@ new class SortingVisualizer {
         this.__dFramesPerc  = "0%";
     }
 
-    new method setCurrentlyRunning(category, name) {
+    new method setCurrentlyRunning(name, category = None) {
         this.__currentlyRunning = name;
-        this.__currentCategory  = category;
+
+        if category is not None {
+            this.__currentCategory = category;
+        }
     }
 
     new method getUserInput(message = "", default = "", type_ = int) {
@@ -789,8 +793,8 @@ new class SortingVisualizer {
         }
     }
 
-    new method runSortingProcess(distribution, length, shuffle, categoryName, sortName, speed = 1.0, mult = 1.0, killers = {}) {
-        this.generateArray(distribution, shuffle, length);
+    new method runSortingProcess(distribution, length, unique, shuffle, categoryName, sortName, speed = 1.0, mult = 1.0, killers = {}) {
+        this.generateArray(distribution, shuffle, length, unique);
 
         if (killers != {}) {
             if shuffle in this.getKillerIds(killers, distribution) {
@@ -867,8 +871,15 @@ new class SortingVisualizer {
 
     new method __threadTypeChecker(path, modeI) {
         new auto f = open(path, "r");
-        new str mode = f.read().split("\n")[0][1:];
+        new list defLines = f.read().split("\n")[:2];
         f.close();
+        new str mode    = defLines[0][1:],
+                version = defLines[1][2:];
+
+        if version != THREAD_VERSION {
+            this.__gui.userWarn("Error - Incompatible", "This thread was built with an older version of the thread builder.");
+            return False;
+        }
 
         modeI = modeI.upper();
 
@@ -962,7 +973,7 @@ new class SortingVisualizer {
 
                         this.__visual = this.visuals[runOpts["visual"]];
                         this.__prepared = False;
-                        this.generateArray(runOpts["distribution"], runOpts["shuffle"], runOpts["array-size"]);
+                        this.generateArray(runOpts["distribution"], runOpts["shuffle"], runOpts["array-size"], runOpts["unique"]);
                         this.setSpeed(runOpts["speed"]);
                         this.runSort(this.categories[runOpts["category"]], id = runOpts["sort"]);
                         this.__resetShufThread();

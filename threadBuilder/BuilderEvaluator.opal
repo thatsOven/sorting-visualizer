@@ -30,8 +30,9 @@ new method __builderEvaluator(title, msg, sel, commands, macros, modes) {
         case 2 {
             new int distSel = this.__gui.selection(title + " builder", "Select distribution:", [dist.name for dist in this.distributions]);
             new int length = this.__gui.userInputDialog(title + " builder", "Insert array length:", int, "1024", [str(2 ** i) for i in range(2, 15)]);
+            new int unique = this.__gui.userInputDialog(title + " builder", "Insert unique amount:", int, "512", [str(2 ** i) for i in range(2, 15)]);
 
-            command = ThreadCommand(modes[mode], distSel, length);
+            command = ThreadCommand(modes[mode], distSel, length, unique);
         }
         case 3 {
             new int visSel = this.__gui.selection(title + " builder", "Select visual:", [vis.name for vis in this.visuals]);

@@ -7,26 +7,32 @@ new class AmericanFlagSort {
         } else {
             this.buckets = buckets;
         }
+
+        sortingVisualizer.setAdaptAux(this.__adaptAux);
+    }
+
+    new method __adaptAux(array) {
+        return this.count + array;
     }
 
     new method sorter(array, a, b, d) {
-        new list count  = sortingVisualizer.createValueArray(this.buckets),
-                 offset = sortingVisualizer.createValueArray(this.buckets);
-        sortingVisualizer.setAux(count);
-
+        new list offset = sortingVisualizer.createValueArray(this.buckets);
+        this.count      = sortingVisualizer.createValueArray(this.buckets);
+        sortingVisualizer.setAux(offset);
+        
         new int digit;
         for i = a; i < b; i++ {
             digit = array[i].readDigit(d, this.buckets);
-            count[digit]++;
+            this.count[digit]++;
         }
-        offset[0].write(a);
 
+        offset[0].write(a);
         for i = 1; i < this.buckets; i++ {
-            offset[i].write(count[i - 1] + offset[i - 1]);
+            offset[i].write(this.count[i - 1] + offset[i - 1]);
         }
 
         for v in range(this.buckets) {
-            while count[v] > 0 {
+            while this.count[v] > 0 {
                 new int origin = offset[v].readInt(),
                         from_  = origin;
                 new Value num = array[from_].copy();
@@ -37,7 +43,7 @@ new class AmericanFlagSort {
                     digit = num.readDigit(d, this.buckets);
                     new int to = offset[digit].readInt();
                     offset[digit]++;
-                    count[digit]--;
+                    this.count[digit]--;
 
                     new Value temp = array[to].copy();
                     array[to].write(num);
