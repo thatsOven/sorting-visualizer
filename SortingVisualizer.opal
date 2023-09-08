@@ -2,12 +2,10 @@ package opal: import *;
 
 new Vector RESOLUTION = Vector(1280, 720);
 
-static {
-    new int   FREQUENCY_SAMPLE = 48000;
-    new float SAMPLE_DURATION  = 1.0 / 30.0;
-    new str   VERSION          = "2023.9.8",
-              THREAD_VERSION   = "1.0";
-}
+new int   FREQUENCY_SAMPLE = 48000;
+new float SAMPLE_DURATION  = 1.0 / 30.0;
+new str   VERSION          = "2023.9.8",
+          THREAD_VERSION   = "1.0";
 
 import math, random, time, os, numpy, sys, pygame_gui;
 package timeit:      import default_timer;
@@ -54,6 +52,8 @@ $include os.path.join(HOME_DIR, "threadBuilder", "ThreadCommand.opal")
 enum ArrayState {
     UNSORTED, SORTED, STABLY_SORTED
 }
+
+new class VisualizerException: Exception {}
 
 new class SortingVisualizer {
     new method __init__() {
@@ -218,8 +218,7 @@ new class SortingVisualizer {
 
     new method __runSDModule(mess, func, array, id, name, class_, length = None, unique = None) {
         if id is None and name is None {
-            IO.out("Not enough information to start ", mess, IO.endl);
-            return;
+            throw VisualizerException(f"Not enough information to start {mess}");
         }
 
         if id is None {
@@ -229,15 +228,13 @@ new class SortingVisualizer {
             if id != -1 {
                 return func(id, length, unique);
             } else {
-                IO.out("Invalid ", mess, " name!\n");
-                return 0;
+                throw VisualizerException(f"Invalid {mess} name");
             }
         } elif name is None {
             if id in range(0, len(array)) {
                 return func(id, length, unique);
             } else {
-                IO.out("Invalid ", mess, " ID!\n");
-                return 0;
+                throw VisualizerException(f"Invalid {mess} ID");
             }
         }
     }
@@ -326,8 +323,7 @@ new class SortingVisualizer {
 
     new method runSort(category, id = None, name = None) {
         if id is None and name is None {
-            IO.out("No id or name given to runSort!\n");
-            return;
+            throw VisualizerException("No id or name given to runSort");
         }
 
         if id is None {
@@ -337,13 +333,13 @@ new class SortingVisualizer {
             if id != -1 {
                 this.__runSortById(category, id);
             } else {
-                IO.out("Invalid sort name!\n");
+                throw VisualizerException(f'Invalid sort name "{name}"');
             }
         } elif name is None {
             if id in range(0, len(this.sorts)) {
                 this.__runSortById(category, id);
             } else {
-                IO.out("Invalid sort name!\n");
+                throw VisualizerException(f'Invalid sort ID "{id}"');
             }
         }
     }
@@ -353,7 +349,7 @@ new class SortingVisualizer {
             this.__visual = this.visuals[id];
             this.__prepared = False;
         } else {
-            IO.out("Invalid visual id!\n");
+            throw VisualizerException(f'Invalid visual ID "{id}"');
         }
     }
 
@@ -872,7 +868,7 @@ new class SortingVisualizer {
         try {
             exec(threadCode);
         } catch Exception as e {
-            IO.out("The thread thrown the following exception: \n", e, IO.endl);
+            this.__gui.userWarn("Exception occurred", formatException(e));
         }
     }
 
@@ -880,8 +876,8 @@ new class SortingVisualizer {
         new auto f = open(path, "r");
         new list defLines = f.read().split("\n")[:2];
         f.close();
-        new str mode    = defLines[0][1:],
-                version = defLines[1][2:];
+        new str version = defLines[0][2:].strip(),
+                mode    = defLines[1][1:].strip();
 
         if version != THREAD_VERSION {
             this.__gui.userWarn("Error - Incompatible", "This thread was built with an older version of the thread builder.");
