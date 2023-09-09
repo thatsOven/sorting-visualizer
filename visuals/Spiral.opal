@@ -103,11 +103,11 @@ new class Spiral: BaseCircleVisual {
 
             if idx in indices {
                 sortingVisualizer.graphics.polygon([
-                    this.circleCenter, pos, posEnd
+                    this.auxCircleCenter, pos, posEnd
                 ], color);
             } else {
                 sortingVisualizer.graphics.polygon([
-                    this.circleCenter, pos, posEnd
+                    this.auxCircleCenter, pos, posEnd
                 ], (255, 255, 255));
             }
         }
@@ -196,17 +196,17 @@ new class RainbowSpiral: Spiral {
 
             if idx in indices {
                 sortingVisualizer.graphics.polygon([
-                    this.circleCenter, pos, posEnd
+                    this.auxCircleCenter, pos, posEnd
                 ], color);
             } else {
                 if array[idx].value < 0 {
                     sortingVisualizer.graphics.polygon([
-                        this.circleCenter, pos, posEnd
+                        this.auxCircleCenter, pos, posEnd
                     ], (255, 0, 0));
                 } else {
                     sortingVisualizer.graphics.polygon([
-                        this.circleCenter, pos, posEnd
-                    ], hsvToRgb(array[idx].value * this.colorConstant));
+                        this.auxCircleCenter, pos, posEnd
+                    ], hsvToRgb(array[idx].value * this.auxColorConstant));
                 }
             }
         }

@@ -4,7 +4,7 @@ new Vector RESOLUTION = Vector(1280, 720);
 
 new int   FREQUENCY_SAMPLE = 48000;
 new float SAMPLE_DURATION  = 1.0 / 30.0;
-new str   VERSION          = "2023.9.8",
+new str   VERSION          = "2023.9.9",
           THREAD_VERSION   = "1.0";
 
 import math, random, time, os, numpy, sys, pygame_gui;

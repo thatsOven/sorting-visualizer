@@ -54,11 +54,26 @@ new class BaseCircleVisual: Visual {
     new method prepare() {
         static: new int length = len(sortingVisualizer.array);
 
-        this.circleRadius = (sortingVisualizer.graphics.resolution.y // 2) - 20;
+        if sortingVisualizer.graphics.resolution.y < sortingVisualizer.graphics.resolution.x {
+            this.circleRadius = (sortingVisualizer.graphics.resolution.y // 2) - 20;
 
-        this.circleCenter = sortingVisualizer.graphics.resolution.copy();
-        this.circleCenter.y //= 2;
-        this.circleCenter.x = sortingVisualizer.graphics.resolution.x - this.circleRadius - 20;
+            this.circleCenter = sortingVisualizer.graphics.resolution.copy();
+            this.circleCenter.y //= 2;
+            this.circleCenter.x = sortingVisualizer.graphics.resolution.x - this.circleRadius - 20;
+        } elif sortingVisualizer.graphics.resolution.y == sortingVisualizer.graphics.resolution.x {
+            this.circleRadius = (sortingVisualizer.graphics.resolution.x // 7) * 2 - 20;
+
+            this.circleCenter = Vector(
+                sortingVisualizer.graphics.resolution.x - this.circleRadius - 20,
+                sortingVisualizer.graphics.resolution.y // 2
+            );
+        } else {
+            this.circleRadius = (sortingVisualizer.graphics.resolution.x // 2) - 20;
+
+            this.circleCenter = sortingVisualizer.graphics.resolution.copy();
+            this.circleCenter.x //= 2;
+            this.circleCenter.y = sortingVisualizer.graphics.resolution.y - this.circleRadius - 20;
+        }
 
         this.circleStart = -(math.pi) / 2.0;
         this.circleEnd   = 1.5 * math.pi;
@@ -71,12 +86,21 @@ new class BaseCircleVisual: Visual {
     }
 
     new method onAuxOn(length) {
-        this.auxCircleRadius = (resolution.y // 6) - 20;
+        if sortingVisualizer.graphics.resolution.y <= sortingVisualizer.graphics.resolution.x {
+            this.auxCircleRadius = (sortingVisualizer.graphics.resolution.y // 6) - 20;
             
-        this.auxCircleCenter = resolution.copy();
-        this.auxCircleCenter.y //= 4;
-        this.auxCircleCenter.y *= 3;
-        this.auxCircleCenter.x = resolution.x // 4;
+            this.auxCircleCenter = sortingVisualizer.graphics.resolution.copy();
+            this.auxCircleCenter.y //= 4;
+            this.auxCircleCenter.y *= 3;
+            this.auxCircleCenter.x = sortingVisualizer.graphics.resolution.x // 4;
+        } else {
+            this.auxCircleRadius = (sortingVisualizer.graphics.resolution.x // 6) - 20;
+            
+            this.auxCircleCenter = sortingVisualizer.graphics.resolution.copy();
+            this.auxCircleCenter.x //= 5;
+            this.auxCircleCenter.x *= 4;
+            this.auxCircleCenter.y = sortingVisualizer.graphics.resolution.y // 4;
+        }
 
         if 360 == length {
             this.auxAngleStep = math.radians(1.0);
@@ -128,12 +152,12 @@ new class CircleVisual: BaseCircleVisual {
             new dynamic pos, posEnd;
             
             pos = Vector().fromAngle(angle);
-            pos.magnitude(this.circleRadius);
+            pos.magnitude(this.auxCircleRadius);
             pos = pos.getIntCoords();
             pos += this.auxCircleCenter;
 
             posEnd = Vector().fromAngle(angle + this.auxAngleStep);
-            posEnd.magnitude(this.circleRadius);
+            posEnd.magnitude(this.auxCircleRadius);
             posEnd = posEnd.getIntCoords();
             posEnd += this.auxCircleCenter;
 
