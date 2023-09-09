@@ -55,6 +55,37 @@ The visualizer provides two methods for manual highlighting:
 To create a new array, the visualizer provides  `sortingVisualizer.createValueArray(length: int) -> list[Value]`, which is pre-filled with already configured `Value`s. To select an auxiliary array for visualization, `sortingVisualizer.setAux(array: list)` can be used, and `sortingVisualizer.resetAux()` can be used to remove it. The visualizer though, can only display one auxiliary array at a time. For this reason, it provides other two methods:
 - `sortingVisualizer.setInvisibleArray(array: list[Value])`: disables all highlights from the given array. Basically, sets all the `Value`'s indices to `None`;
 - `sortingVisualizer.setAdaptAux(fn)`: sets a function to "adapt" the aux array for visualization. It can merge more arrays together, effectively providing multiple-aux visualization, or visualization of multidimensional lists. The visualizer also provides `sortingVisualizer.resetAdaptAux()` to reset the adaptation to default. It's not mandatory to call, but it can be useful.
+## Using rotations and pivot selections provided by the visualizer
+To fetch a specific rotation or pivot selection algorithm, `sortingVisualizer.getPivotSelection(id: Optional[int] = None, name: Optional[str] = None)` and `sortingVisualizer.getRotation(id: Optional[int] = None, name: Optional[str] = None)` can be used. You can either pass the name of the algorithm to the function, like this:
+```
+new auto myRotation = sortingVisualizer.getRotation(name = "Gries-Mills").indexedFn;
+```
+... or you can pass the ID of the rotation of choice, mostly useful in combination with a user selection, for example:
+```
+new auto myPivotSelection = sortingVisualizer.getPivotSelection(
+	id = sortingVisualizer.getUserSelection(
+		[p.name for p in sortingVisualizer.pivotSelections],
+		"Select a pivot selection algorithm: "
+	)
+);
+```
+
+### Rotations
+Rotations provide two modes: indexed, and lengths. Indexed mode uses these types of arguments:
+```
+myIndexedRotation(start, middle, end);
+```
+While lengths mode uses these:
+```
+myLengthsRotation(start, lengthOfFirstSegment, lengthOfSecondSegment);
+```
+
+`sortingVisualizer.getRotation()` returns a `Rotation` object, which provides both `indexedFn`, for the indexed version of the function, and `lengthFn` for the lengths version of the function.
+
+### Pivot Selections
+Pivot Selection algorithms on the other hand, provide just one function that takes as input the start and end of the segment in which the pivot has to be selected, and return the index of the selected pivot.
+
+`sortingVisualizer.getPivotSelection()` returns the function directly.
 ## Other utilities
 The visualization speed can be changed through `sortingVisualizer.setSpeed(value: float)` and reset to 1 via `sortingVisualizer.resetSpeed()`. The speed can be fetched through `sortingVisualizer.speed` for temporary speed editing.
 
@@ -63,7 +94,7 @@ Delays can be set by using `sortingVisualizer.delay(timeMs: float)` before any h
 Custom titles can be set through `sortingVisualizer.setCurrentlyRunning(name: str, category: Optional[str] = None)`. The category is best left untouched to avoid confusion.
 
 The visualizer also provides methods for user input, namely:
-- `sortingVisualizer.getUserInput(message: str = "", default: str = "", type_: int -> type_)`: asks the user a text input that gets converted to `type_`. `default` sets the default value;
+- `sortingVisualizer.getUserInput(message: str = "", default: str = "", type_: int) -> type_`: asks the user a text input that gets converted to `type_`. `default` sets the default value;
 - `sortingVisualizer.getUserSelection(content: list[str], message: str = "") -> int`: asks the user to select between a list of items and returns the selection index.
 
 And a method for warnings and errors, often used for invalid inputs:
@@ -100,10 +131,30 @@ new function mySort(array) {
 Pivot selections are algorithms used to select a pivot in partitioning sorts that require one. The visualizer provides a set of pivot selections for those algorithms to use, and the user can pick the one they prefer to experiment with. The process to adding one is very similar to adding a shuffle. The file needs to be added in the `pivotSelection` folder, and provide a run function:
 ```
 @PivotSelection("Pivot Selection Name");
-new function myPivotSelection(array, start, end, pivotDestination) {
+new function myPivotSelection(array, start, end) -> int {
 	# [start, end) is the interval in which the selection should pick a pivot
-	# pivotDestination should be the destination index the pivot should be swapped to
+	# the code should return the index of the selected pivot
     # your code here
+}
+```
+## Adding new rotation algorithms 
+The process to adding a rotation algorithm is very similar to shuffles and pivot selections. The file needs to be added in the `rotations` folder and provide a run function:
+```
+# using RotationMode.INDEXED (which is default, it doesn't need to be passed)
+# creates the indexed variant of the function. The Rotation class will automatically
+# generate the lengths function
+@Rotation("Rotation Name", RotationMode.INDEXED);
+new function myRotation(array, start, middle, end) {
+	# your code here
+}
+```
+or
+```
+# using RotationMode.LENGTHS creates the lengths variant of the function. 
+# The Rotation class will automatically generate the indexed function
+@Rotation("Rotation Name", RotationMode.LENGTHS);
+new function myRotation(array, start, lenA, lenB) {
+	# your code here
 }
 ```
 ## Adding new distributions
