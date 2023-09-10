@@ -4,7 +4,7 @@ new Vector RESOLUTION = Vector(1280, 720);
 
 new int   FREQUENCY_SAMPLE = 48000;
 new float SAMPLE_DURATION  = 1.0 / 30.0;
-new str   VERSION          = "2023.9.9",
+new str   VERSION          = "2023.9.10",
           THREAD_VERSION   = "1.0";
 
 import math, random, time, os, numpy, sys, pygame_gui;
@@ -797,20 +797,24 @@ new class SortingVisualizer {
     }
 
     new method runSortingProcess(distribution, length, unique, shuffle, categoryName, sortName, speed = 1.0, mult = 1.0, killers = {}) {
-        this.generateArray(distribution, shuffle, length, unique);
+        try {
+            this.generateArray(distribution, shuffle, length, unique);
 
-        if (killers != {}) {
-            if shuffle in this.getKillerIds(killers, distribution) {
-                this.__speed = 50;
+            if (killers != {}) {
+                if shuffle in this.getKillerIds(killers, distribution) {
+                    this.__speed = 50;
+                } else {
+                    this.setSpeed(speed * mult);
+                }
             } else {
                 this.setSpeed(speed * mult);
             }
-        } else {
-            this.setSpeed(speed * mult);
-        }
 
-        this.runSort(categoryName, name = sortName);
-        this.resetSpeed();
+            this.runSort(categoryName, name = sortName);
+            this.resetSpeed();
+        } catch Exception as e {
+            this.__gui.userWarn("Exception occurred", formatException(e));
+        }   
     }
 
     new method createValueArray(length) {
@@ -992,13 +996,8 @@ new class SortingVisualizer {
                 }
                 case 1 {
                     new dict runOpts = this.__gui.runAll();
-                    try {
-                        $include os.path.join(HOME_DIR, "threads", "runAllSorts.opal")
-                    } catch Exception as e {
-                        this.__gui.userWarn("Exception occurred", formatException(e));
-                    } success {
-                        this.__gui.userWarn("Finished", "All sorts have been visualized.");
-                    }
+                    $include os.path.join(HOME_DIR, "threads", "runAllSorts.opal")
+                    this.__gui.userWarn("Finished", "All sorts have been visualized.");
                 }
                 case 2 {
                     sel = this.__gui.selection("Threads", "Select: ", [
