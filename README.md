@@ -60,7 +60,7 @@ To fetch a specific rotation or pivot selection algorithm, `sortingVisualizer.ge
 ```
 new auto myRotation = sortingVisualizer.getRotation(name = "Gries-Mills").indexedFn;
 ```
-... or you can pass the ID of the rotation of choice, mostly useful in combination with a user selection, for example:
+... or you can pass the ID of the algorithm of choice, mostly useful in combination with a user selection, for example:
 ```
 new auto myPivotSelection = sortingVisualizer.getPivotSelection(
 	id = sortingVisualizer.getUserSelection(
