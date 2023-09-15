@@ -413,7 +413,7 @@ new class HeliumSort {
 
             if this.buffer is not None && rl < len(this.buffer) {
                 this.mergeOOPBW(array, a, m, b, left);
-            } elif rl <= this.bufLen {
+            } elif buf != -1 && rl <= this.bufLen {
                 this.mergeWithBufferBW(array, a, m, b, buf, left);
             } else {
                 return False;
@@ -426,7 +426,7 @@ new class HeliumSort {
 
             if this.buffer is not None && ll <= len(this.buffer) {
                 this.mergeOOPFW(array, a, m, b, left);
-            } elif ll <= this.bufLen {
+            } elif buf != -1 && ll <= this.bufLen {
                 this.mergeWithBufferFW(array, a, m, b, buf, left);
             } else {
                 return False;
@@ -808,12 +808,7 @@ new class HeliumSort {
                     e = s + this.keyLen;
 
             binaryInsertionSort(array, s, e);
-
-            if this.keyLen > HeliumSort.SMALL_MERGE {
-                this.mergeOOP(array, s, e, b);
-            } else {
-                this.mergeInPlace(array, s, e, b);
-            }
+            this.mergeOOP(array, s, e, b);
         }
     }
 
@@ -900,10 +895,10 @@ new class HeliumSort {
 
             binaryInsertionSort(array, s, e);
 
-            if this.buffer is not None && l <= len(this.buffer) && l > SMALL_MERGE {
-                this.mergeOOP(array, s, e, b);
-            } else {
-                this.mergeInPlace(array, s, e, b);
+            s, b = this.reduceMergeBounds(array, s, e, b);
+
+            if !this.optiSmartMerge(array, s, e, b, -1, True) {
+                this.mergeInPlace(array, s, e, b, True, False);
             }
         }
     }
