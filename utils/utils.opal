@@ -45,28 +45,88 @@ new function medianOfThree(array, a, b) {
     array[a].swap(array[m]);
 }
 
-new function medianOfThreeIdx(array, a, m, b) {
-    if array[m] > array[a] {
-        if array[m] < array[b] {
-            return m;
-        }
-
-        if array[a] > array[b] {
-            return a;
-        }
-
-        return b;
+new function medianOfThreeIndices(array, indices) {
+    if len(indices) == 0 {
+        return -1;
     }
 
-    if array[m] > array[b] {
-        return m;
+    if len(indices) < 3 {
+        return indices[0]
+    }
+
+    if array[indices[1]] > array[indices[0]] {
+        if array[indices[2]] > array[indices[1]] {
+            return indices[1];
+        }
+
+        if array[indices[0]] < array[indices[2]] {
+            return indices[2];
+        }
+
+        return indices[0];
+    }
+
+    if array[indices[2]] < array[indices[1]] {
+        return indices[1];
     }
         
-    if array[a] < array[b] {
+    if array[indices[2]] > array[indices[0]] {
+        return indices[0];
+    }
+
+    return indices[2];
+}
+
+new function medianOfThreeIdx(array, a, m, b) {
+    return medianOfThreeIndices(array, [a, m, b]);
+}
+
+new function medianOf9(array, a, b) {
+    new int l = b - a;
+		    h = l // 2;
+		    q = h // 2;
+		    e = q // 2;
+
+    new int m0 = medianOfThreeIndices(array, [        a,         a + e, a + q    ]),
+            m1 = medianOfThreeIndices(array, [a + q + e,         a + h, a + h + e]),
+            m2 = medianOfThreeIndices(array, [a + h + q, a + h + q + e, b - 1    ]);
+
+    return medianOfThreeIndices(array, [m0, m1, m2]);
+}
+
+new function mOMHelper(array, a, len) {
+    if len == 1 {
         return a;
     }
 
-    return b;
+    new int t = l // 3;
+    return medianOfThreeIndices(array, [
+        mOMHelper(array,         a, t),
+        mOMHelper(array,     a + t, t),
+        mOMHelper(array, a + 2 * t, t)
+    ]);
+}
+
+new function medianOfMedians(array, a, len) {
+    if len == 1 {
+        return a;
+    }
+
+    new int nearPow = 3 ** round(math.log(len, 3));
+    if nearPow == len {
+        return mOMHelper(array, a, len);
+    }
+
+    nearPow //= 2;
+    if 2 * nearPow >= len {
+        nearPow //= 3;
+    }
+
+    return medianOfThreeIndices(array, [
+        mOMHelper(array,                 a, nearPow),
+        mOMHelper(array, a + len - nearPow, nearPow),
+        medianOfMedians(array, a + nearPow, len - 2 * nearPow)
+    ]);
 }
 
 new function reverse(array, a, b) {
@@ -100,11 +160,15 @@ new function backwardBlockSwap(array, a, b, len) {
 }
 
 new function compareValues(a, b) {
-    return (a > b) - (a < b);
+    new int x = a.readInt(),
+            y = b.readInt();
+
+    return (x > y) - (x < y);
 }
 
 new function compareIntToValue(a, value) {
-    return (value < a) - (value > a);
+    new int x = value.readInt();
+    return (x < a) - (x > a);
 }
 
 new function insertToLeft(array, _from, to) {
@@ -264,4 +328,10 @@ new function findMin(array, a, b) {
 
 new function findHighestPower(array, a, b, base) {
     return math.log(findMax(array, a, b), base);
+}
+
+new function log2(n) {
+    new int target = 0;
+    for ; n != 0; n >>= 1, target++ {}
+    return target;
 }
