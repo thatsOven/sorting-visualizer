@@ -22,17 +22,11 @@ new class Sort {
     }
 
     new method __eq__(other) {
-        if this.listName == other.listName {
-            return True;
-        }
-        return False;
+        return this.listName == other.listName;
     }
 
     new method __lt__(other) {
-        if this.listName < other.listName {
-            return True;
-        }
-        return False;
+        return this.listName < other.listName;
     }
 }
 
@@ -51,17 +45,11 @@ new class Shuffle {
     }
 
     new method __eq__(other) {
-        if this.name == other.name {
-            return True;
-        }
-        return False;
+        return this.name == other.name;
     }
 
     new method __lt__(other) {
-        if this.name < other.name {
-            return True;
-        }
-        return False;
+        return this.name < other.name;
     }
 }
 
@@ -80,17 +68,11 @@ new class Distribution {
     }
 
     new method __eq__(other) {
-        if this.name == other.name {
-            return True;
-        }
-        return False;
+        return this.name == other.name;
     }
 
     new method __lt__(other) {
-        if this.name < other.name {
-            return True;
-        }
-        return False;
+        return this.name < other.name;
     }
 }
 
@@ -113,17 +95,11 @@ abstract: new class Visual {
     abstract: new method drawAux(array, indices, color); # draws the aux array in that visual style
 
     new method __eq__(other) {
-        if this.name == other.name {
-            return True;
-        }
-        return False;
+        return this.name == other.name;
     }
 
     new method __lt__(other) {
-        if this.name < other.name {
-            return True;
-        }
-        return False;
+        return this.name < other.name;
     }
 }
 
@@ -146,17 +122,11 @@ new class PivotSelection {
     }
 
     new method __eq__(other) {
-        if this.name == other.name {
-            return True;
-        }
-        return False;
+        return this.name == other.name;
     }
 
     new method __lt__(other) {
-        if this.name < other.name {
-            return True;
-        }
-        return False;
+        return this.name < other.name;
     }
 }
 
@@ -204,21 +174,11 @@ new class Rotation {
         sortingVisualizer.addRotation(rot);
     }
 
-    new method getFunc() {
-        return this.func;
-    }
-
     new method __eq__(other) {
-        if this.name == other.name {
-            return True;
-        }
-        return False;
+        return this.name == other.name;
     }
 
     new method __lt__(other) {
-        if this.name < other.name {
-            return True;
-        }
-        return False;
+        return this.name < other.name;
     }
 }
