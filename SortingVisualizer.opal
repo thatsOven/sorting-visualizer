@@ -635,13 +635,14 @@ new class SortingVisualizer {
 
                 $call update
 
-                new dynamic tTime = this.__sleep + this.__tmpSleep;
-                while tTime - default_timer() + sTime > 0 {
-                    $call update
-                }
-
                 this.__visual.draw(this.array, set(hList + this.__forceLoadedIndices), None);
                 this.__soundSample = this.__currSample;
+
+                new dynamic tTime = this.__sleep + this.__tmpSleep - default_timer() + sTime;
+                if tTime > 0 {
+                    time.sleep(tTime);
+                }
+                
                 this.__tmpSleep = 0;
             } else {
                 this.__visual.draw(this.array, this.__partitionIndices(hList)[0], None);
