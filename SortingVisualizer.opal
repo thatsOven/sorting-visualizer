@@ -562,9 +562,9 @@ new class SortingVisualizer {
         new dynamic tmp;
 
         if i.aux and this.aux is not None {
-            tmp = 200.0 * signal.square(2.0 * numpy.pi  * int(((400.0 + (this.__adaptAux(this.aux)[i.idx].value * (500.0 / this.auxMax)))) + 50.0) * this.__soundSample);
+            tmp = 200.0 * signal.square(2.0 * numpy.pi * (((400.0 + (this.__adaptAux(this.aux)[i.idx].value * (500.0 / this.auxMax)))) + 50.0) * this.__soundSample);
         } else {
-            tmp = 200.0 * signal.square(2.0 * numpy.pi  * int(((400.0 + (this.array[i.idx].value * (500.0 / this.arrayMax)))) + 50.0) * this.__soundSample);
+            tmp = 200.0 * signal.square(2.0 * numpy.pi * (((400.0 + (this.array[i.idx].value * (500.0 / this.arrayMax)))) + 50.0) * this.__soundSample);
         }
 
         if this.__audioChs > 1 {
