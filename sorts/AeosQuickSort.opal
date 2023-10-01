@@ -62,18 +62,18 @@ new class AeosQuickSort {
                         array[j].write(array[k]);
                     }
 
-                    for k = sqrt - 1; k > 0; k--, j-- {
+                    for k = sqrt - 1; k >= 0; k--, j-- {
                         array[j].write(this.aux[k]);
                     }
 
                     larges = 0;
-                    this.indices[blockCnt] = -1;
+                    this.indices[blockCnt].write(-1);
                     blockCnt++;
                 }
             }
         }
 
-        for j = b - 1, k = larges - 1; k > 0; k--, j-- {
+        for j = b - 1, k = larges - 1; k >= 0; k--, j-- {
             array[j].write(this.aux[k]);
         }
 
@@ -133,7 +133,7 @@ new class AeosQuickSort {
                 array[k].write(this.aux[j]);
             }
 
-            this.indices[to] = to;
+            this.indices[to].write(to);
 
             do {
                 i++;
@@ -154,27 +154,30 @@ new class AeosQuickSort {
                 pivPos = medianOf9(array, a, b);
             } elif badPartition > 0 {
                 new int len = b - a;
-                len -= ~len & 1;
+                if (len & 1) == 0 {
+                    len -= 1;
+                }
                 pivPos = medianOfMedians(array, a, len);
             } else {
-                pivPos = medianOfFewUnique(array, a, b);
+                pivPos = this.medianOfFewUnique(array, a, b);
                 badPartition = ~badPartition;
             }
 
-            pivPos = this.partition(array, a, b, sqrt, array[pivPos]);
+            new Value piv = array[pivPos].read();
+            pivPos = this.partition(array, a, b, sqrt, piv);
 
             new int newEnd   = a + pivPos,
                     newStart = newEnd;
 
-            for ; newStart < end && array[newStart] == array[pivPos]; newStart++ {}
+            for ; newStart < b && array[newStart] == piv; newStart++ {}
 
             new int len1 = newEnd - a,
                     len2 = b - newStart;
 
             if len1 > len2 {
                 badPartition += int(len1 > 8 * len2);
-                this.sortRec(array, newStart, end, sqrt, badPartition);
-                end = newEnd;
+                this.sortRec(array, newStart, b, sqrt, badPartition);
+                b = newEnd;
             } elif len2 > 8 * len1 {
                 if len1 == 0 {
                     badPartition = ~badPartition;
@@ -218,7 +221,8 @@ new class AeosQuickSort {
 @Sort(
     "Quick Sorts",
     "Aeos QuickSort",
-    "Aeos Quick"
+    "Aeos Quick",
+    enabled = False
 );
 new function aeosQuicksortRun(array) {
     AeosQuickSort().sort(array, 0, len(array));

@@ -51,7 +51,7 @@ new function medianOfThreeIndices(array, indices) {
     }
 
     if len(indices) < 3 {
-        return indices[0]
+        return indices[0];
     }
 
     if array[indices[1]] > array[indices[0]] {
@@ -82,9 +82,9 @@ new function medianOfThreeIdx(array, a, m, b) {
 }
 
 new function medianOf9(array, a, b) {
-    new int l = b - a;
-		    h = l // 2;
-		    q = h // 2;
+    new int l = b - a,
+		    h = l // 2,
+		    q = h // 2,
 		    e = q // 2;
 
     new int m0 = medianOfThreeIndices(array, [        a,         a + e, a + q    ]),
@@ -99,7 +99,7 @@ new function mOMHelper(array, a, len) {
         return a;
     }
 
-    new int t = l // 3;
+    new int t = len // 3;
     return medianOfThreeIndices(array, [
         mOMHelper(array,         a, t),
         mOMHelper(array,     a + t, t),

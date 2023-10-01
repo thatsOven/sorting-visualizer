@@ -2,18 +2,23 @@ package copy: import deepcopy;
 
 @total_ordering;
 new class Sort {
-    new method __init__(category, name, listName) {
+    new method __init__(category, name, listName, enabled = True) {
         this.category = category;
         this.name     = name;
         this.listName = listName;
+        this.enabled  = enabled;
         this.func     = None;
     }
 
     new method __call__(func) {
-        new Sort sort = Sort(this.category, this.name, this.listName);
-        sort.func = deepcopy(func);
-        del func;
-        sortingVisualizer.addSort(sort);
+        if this.enabled {
+            new Sort sort = Sort(this.category, this.name, this.listName);
+            sort.func = deepcopy(func);
+            del func;
+            sortingVisualizer.addSort(sort);
+        } else {
+            IO.out(this.name, " is manually disabled\n");
+        }
     }
 
     new method __eq__(other) {

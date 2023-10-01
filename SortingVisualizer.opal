@@ -2,10 +2,10 @@ package opal: import *;
 
 new Vector RESOLUTION = Vector(1280, 720);
 
-new int   FREQUENCY_SAMPLE = 48000;
-new float SAMPLE_DURATION  = 1.0 / 30.0;
-new str   VERSION          = "2023.9.10",
-          THREAD_VERSION   = "1.0";
+new int   FREQUENCY_SAMPLE     = 48000;
+new float UNIT_SAMPLE_DURATION = 1.0 / 30.0;
+new str   VERSION              = "2023.10.1",
+          THREAD_VERSION       = "1.0";
 
 import math, random, time, os, numpy, sys, pygame_gui;
 package timeit:      import default_timer;
@@ -107,7 +107,9 @@ new class SortingVisualizer {
 
         this.__forceLoadedIndices = [];
 
-        this.__soundSample = numpy.arange(0, SAMPLE_DURATION, 1.0 / float(this.graphics.frequencySample));
+        this.__unitSample  = this.__makeSample(UNIT_SAMPLE_DURATION);
+        this.__currSample  = this.__unitSample;
+        this.__soundSample = this.__unitSample;
         this.__audioChs    = this.graphics.getAudioChs()[2];
 
         new auto f = open(os.path.join(HOME_DIR, "config.json"), "r");
@@ -167,9 +169,15 @@ new class SortingVisualizer {
         this.time += (default_timer() - sTime) * 1000;
     }
 
+    new method __makeSample(sTime) {
+        return numpy.arange(0, sTime, 1.0 / float(this.graphics.frequencySample));
+    }
+
     new method delay(dTime) {
-        this.__speedCounter = 0;
-        this.__tmpSleep     = dTime / 1000;
+        new dynamic s = (dTime * max(this.__sleep, 0.001)) / this.__speed - this.__sleep;
+        this.__speedCounter = this.__speed;
+        this.__soundSample  = this.__makeSample(s);
+        this.__tmpSleep     = s;
     }
 
     $macro update
@@ -586,6 +594,7 @@ new class SortingVisualizer {
     }
 
     new method internalMultiHighlight(hList) {
+        new dynamic sTime = default_timer();
         hList = [x for x in hList if x is not None];
         hList = [x for x in hList if x.idx is not None];
 
@@ -626,18 +635,21 @@ new class SortingVisualizer {
 
                 $call update
 
+                new dynamic tTime = this.__sleep + this.__tmpSleep;
+                while tTime - default_timer() + sTime > 0 {
+                    $call update
+                }
+
                 this.__visual.draw(this.array, set(hList + this.__forceLoadedIndices), None);
-
-                time.sleep(this.__sleep + this.__tmpSleep);
-
+                this.__soundSample = this.__currSample;
                 this.__tmpSleep = 0;
             } else {
                 this.__visual.draw(this.array, this.__partitionIndices(hList)[0], None);
             }
         } elif this.__speedCounter >= this.__speed {
             this.__speedCounter = 0;
-            this.__tmpSleep = 0;
         }
+
         this.__speedCounter++;
     }
 
@@ -703,27 +715,21 @@ new class SortingVisualizer {
     }
 
     new method setSpeed(value) {
-        match this.__visual.refresh {
-            case RefreshMode.FULL {
-                value *= 2.0;
-            }
-            case RefreshMode.NOREFRESH {
-                value /= 2.0;
-
-                if value >= 1 {
-                    value = int(value);
-                }
-            }
-        }
-
         if value >= 1 {
             this.__speed       = value;
             this.__sleep       = 0;
+            this.__currSample  = this.__unitSample;
             this.__dFramesPerc = str(round(((value - 1) / value) * 100, 4)) + "%";
         } else {
             this.__speed       = 1;
             this.__sleep       = 0.001 / value;
             this.__dFramesPerc = "0%";
+
+            if this.__sleep > UNIT_SAMPLE_DURATION {
+                this.__currSample = this.__makeSample(this.__sleep);
+            } else {
+                this.__currSample = this.__unitSample;
+            }
         }
     }
 
@@ -740,6 +746,8 @@ new class SortingVisualizer {
     new method resetSpeed() {
         this.__speed        = 1;
         this.__sleep        = 0;
+        this.__currSample   = this.__unitSample;
+        this.__soundSample  = this.__unitSample;
         this.__speedCounter = 0;
         this.__dFramesPerc  = "0%";
     }
@@ -786,6 +794,12 @@ new class SortingVisualizer {
         this.__gui.userWarn(this.__currentlyRunning, message);
     }
 
+    new method __reportException(e) {
+        new str f = formatException(e);
+        IO.out(f, IO.endl);
+        this.__gui.userWarn("Exception occurred", f);
+    }
+
     new method getKillerIds(killers, distribution) {
         if this.distributions[distribution].name in killers {
             new list tmp;
@@ -813,7 +827,7 @@ new class SortingVisualizer {
             this.runSort(categoryName, name = sortName);
             this.resetSpeed();
         } catch Exception as e {
-            this.__gui.userWarn("Exception occurred", formatException(e));
+            this.__reportException(e);
         }   
     }
 
@@ -841,13 +855,7 @@ new class SortingVisualizer {
         this.aux = array;
 
         if this.__showAux and not this.__enteredAuxMode {
-            if this.__sleep != 0 {
-                this.__sleep /= 10.0;
-            } else {
-                this.__speed *= 5.0;
-            }
             this.__enteredAuxMode = True;
-            
             new dynamic adapted = this.__adaptAux(this.aux);
             this.getAuxMax(adapted);
             this.__visual.onAuxOn(len(adapted));
@@ -872,7 +880,7 @@ new class SortingVisualizer {
         try {
             exec(threadCode);
         } catch Exception as e {
-            this.__gui.userWarn("Exception occurred", formatException(e));
+            this.__reportException(e);
         }
     }
 
@@ -985,7 +993,7 @@ new class SortingVisualizer {
                             this.runSort(this.categories[runOpts["category"]], id = runOpts["sort"]);
                             this.__resetShufThread();
                         } catch Exception as e {
-                            this.__gui.userWarn("Exception occurred", formatException(e));
+                            this.__reportException(e);
                         } 
 
                         new int opt = this.__gui.selection("Done", "Continue?", [
