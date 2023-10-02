@@ -24,8 +24,9 @@ new class AeosQuickSort {
             this.aux[k].write(array[j]);
         }
 
-        k = a + ll - 1;
-        for j--; k > a; j--, k-- {
+        k = a + ll;
+        while k > a {
+            j--; k--;
             array[j].write(array[k]);
         }
 
@@ -163,7 +164,7 @@ new class AeosQuickSort {
                 badPartition = ~badPartition;
             }
 
-            new Value piv = array[pivPos].read();
+            new int piv = array[pivPos].readInt();
             pivPos = this.partition(array, a, b, sqrt, piv);
 
             new int newEnd   = a + pivPos,
@@ -222,7 +223,6 @@ new class AeosQuickSort {
     "Quick Sorts",
     "Aeos QuickSort",
     "Aeos Quick",
-    enabled = False
 );
 new function aeosQuicksortRun(array) {
     AeosQuickSort().sort(array, 0, len(array));

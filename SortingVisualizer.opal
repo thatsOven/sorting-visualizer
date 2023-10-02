@@ -50,7 +50,7 @@ $include os.path.join(HOME_DIR, "moduleClasses.opal")
 $include os.path.join(HOME_DIR, "threadBuilder", "ThreadCommand.opal")
 
 enum ArrayState {
-    UNSORTED, SORTED, STABLY_SORTED
+    UNSORTED, SORTED, STABLY_SORTED, CONTENTS_CHANGED, UNSORTED_AND_CHANGED
 }
 
 new class VisualizerException: Exception {}
@@ -59,6 +59,7 @@ new class SortingVisualizer {
     new method __init__() {
         this.array = [];
         this.aux   = None;
+        this.__verifyArray = None;
 
         this.distributions = [];
         this.shuffles      = [];
@@ -295,6 +296,9 @@ new class SortingVisualizer {
         this.drawFullArray();
         this.renderStats();
         $call update
+
+        this.__verifyArray = [x.value for x in this.array];
+        Utils.Iterables.fastSort(this.__verifyArray);
     }
 
     new method runShuffle(id = None, name = None) {
@@ -406,7 +410,15 @@ new class SortingVisualizer {
 
         sUntil = this.checkSorted(this.array);
 
-        if sUntil == len(this.array) - 1 {
+        new int eq = len(this.array) - 1;
+        for i in range(len(this.array)) {
+            if this.array[i].value != this.__verifyArray[i] {
+                eq = i - 1;
+                break;
+            }
+        }
+
+        if sUntil == len(this.array) - 1 && eq == len(this.array) - 1 {
             this.sweep(0, len(this.array), (0, 255, 0));
 
             new dict stabilityCheck = {};
@@ -435,10 +447,19 @@ new class SortingVisualizer {
             return ArrayState.STABLY_SORTED;
 
         } else {
-            this.sweep(     0,          sUntil, (0, 255, 0));
-            this.sweep(sUntil, len(this.array), (255, 0, 0));
+            new int p = min(sUntil, eq);
+            this.sweep(0,               p, (0, 255, 0));
+            this.sweep(p, len(this.array), (255, 0, 0));
 
-            return ArrayState.UNSORTED;
+            if eq != len(this.array) - 1 {
+                if sUntil != len(this.array) - 1 {
+                    return ArrayState.UNSORTED_AND_CHANGED;
+                } else {
+                    return ArrayState.CONTENTS_CHANGED;
+                }
+            } else {
+                return ArrayState.UNSORTED;
+            }
         }
     }
 
@@ -453,6 +474,14 @@ new class SortingVisualizer {
             case ArrayState.UNSORTED {
                 this.setCurrentlyRunning("The list was not sorted", "");
                 IO.out(sortName, " has failed\n");
+            }
+            case ArrayState.UNSORTED_AND_CHANGED {
+                this.setCurrentlyRunning("The list was not sorted and its original contents were changed", "");
+                IO.out(sortName, " has failed (unsorted + contents changed)\n");
+            }
+            case ArrayState.CONTENTS_CHANGED {
+                this.setCurrentlyRunning("The list's original contents were changed", "");
+                IO.out(sortName, " has failed (contents changed)\n");
             }
             case ArrayState.SORTED {
                 this.setCurrentlyRunning("The list was sorted", "");

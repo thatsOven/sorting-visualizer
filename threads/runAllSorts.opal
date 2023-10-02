@@ -95,9 +95,8 @@ runAllSort(1024, "LR Quick Sort",          2, pivotSelections.index("Middle"), c
 runAllSort(1024, "Stackless Quick",        2, pivotSelections.index("Median of three"), centerKillers);
 runAllSort(1024, "Dual Pivot Quick",       2, killers = centerKillers);
 runAllSort(2048, "Median-Of-16 A. Quick", 10);
-runAllSort(2048, "PDQ Sort",              10);
-# runAllSort(1024, "Aeos Quick",             1);
-runAllSort(1024, "Sqrt Stable Quick",      1);
+runAllSort(2048, "PDQ Sort",              10); 
+runAllSort(1024, "Aeos Quick",             3);
 
 
 ct = "Merge Sorts";
