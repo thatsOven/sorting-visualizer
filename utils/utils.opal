@@ -160,9 +160,20 @@ new function backwardBlockSwap(array, a, b, len) {
 }
 
 new function compareValues(a, b) {
-    new int x = a.readInt(),
-            y = b.readInt();
+    new int x, y;
+    if type(a) is Value {
+        x = a.getInt();
+    } else {
+        x = a;
+    }
 
+    if type(b) is Value {
+        y = b.getInt();
+    } else {
+        y = b;
+    }
+
+    sortingVisualizer.comparisons++;
     return (x > y) - (x < y);
 }
 

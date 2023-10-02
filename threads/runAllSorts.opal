@@ -115,6 +115,7 @@ runAllSort(2048, "Wiki Sort",     7, [0, rotations.index("Triple Reversal")]);
 runAllSort(2048, "Grail Sort",    7, [0, rotations.index("Gries-Mills")]);
 runAllSort(2048, "Helium Sort",   5, [0, rotations.index("Helium")]);
 runAllSort(1024, "Hydrogen Sort", 1, rotations.index("Helium"));
+runAllSort(2048, "Lithium Sort",  5, rotations.index("Helium"));
 runAllSort(2048, "Kota Sort",     7, rotations.index("Cycle Reverse"));
 runAllSort(1024, "Ecta Sort",     1);
 

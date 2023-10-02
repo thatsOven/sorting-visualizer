@@ -633,7 +633,6 @@ new class LithiumSort {
     "Block Merge Sorts",
     "Lithium Sort",
     "Lithium Sort",
-    enabled = False
 );
 new function lithiumSortRun(array) {
     LithiumSort().sort(array, 0, len(array));
