@@ -12,6 +12,21 @@ pygame_gui
 scipy
 perlin_noise
 ```
+To use render mode, ffmpeg needs to be properly installed on your system.
+
+# Settings
+### Show text
+If set to `False`, the visualizer will hide the text in the top left corner.
+### Show auxiliary array
+If set to `False`, auxiliary arrays will not be visualized.
+### Show internal information
+If set to `True`, additional information about the visualizer's state will be visualized in the top left text.
+### Render mode
+If set to `True`, the visualizer will generate videos instead of visualizing algorithms in real-time. A preview of the video will be visualized on the screen while it's being made, at a lower framerate.
+### Lazy auxiliary visualization
+The visualizer usually checks if the auxiliary array changed in size, or its maximum element change, so that the visual can re-compute its data accordingly. If lazy auxiliary visualization is set to `False`, these checks are disabled, that is, the visualizer will assume the maximum element of the auxiliary array and its length are constant.
+### Lazy rendering
+Real-time visualization will always try to use `fast` variants of the given visual style for performance reasons, while render mode always uses standard variants, which are slower but higher quality. If lazy rendering is set to `True`, the visualizer will use `fast` variants of visual styles for render mode too. This does not result in quality loss in certain cases, like with the bar graph-like visual styles under a certain array size.
 
 # The API
 ## Array operations
@@ -191,6 +206,8 @@ The class also provides three methods that get called in specific scenarios and 
 - `prepare()`: precomputes data for the visual style;
 - `onAuxOn(length)`: gets called when aux is turned on or constants are to recompute. Useful to prepare data;
 - `onAuxOff()`: gets called when aux mode is turned off. Useful to restore old values.
+- `fastDraw(array: list[Value], indices: list[int], color: Optional[tuple[int, int, int]])`: like `draw`, but it can contain a lower quality version of the visual style which is less expensive to compute. By default, it just calls `draw`.
+- `fastDrawAux(array: list[Value], indices: list[int], color: Optional[tuple[int, int, int]])`: like `fastDraw`, but draws the aux array. By default, it just calls `drawAux`
 
 The `graphicsUtils.opal` file contains some presets for common visual styles.
 
