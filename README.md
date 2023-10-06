@@ -24,7 +24,7 @@ If set to `True`, additional information about the visualizer's state will be vi
 ### Render mode
 If set to `True`, the visualizer will generate videos instead of visualizing algorithms in real-time. A preview of the video will be visualized on the screen while it's being made, at a lower framerate.
 ### Lazy auxiliary visualization
-The visualizer usually checks if the auxiliary array changed in size, or its maximum element change, so that the visual can re-compute its data accordingly. If lazy auxiliary visualization is set to `False`, these checks are disabled, that is, the visualizer will assume the maximum element of the auxiliary array and its length are constant.
+The visualizer usually checks if the auxiliary array changed in size, or its maximum element changed, so that the visual can re-compute its data accordingly. If lazy auxiliary visualization is set to `False`, these checks are disabled, that is, the visualizer will assume the maximum element of the auxiliary array and its length are constant.
 ### Lazy rendering
 Real-time visualization will always try to use `fast` variants of the given visual style for performance reasons, while render mode always uses standard variants, which are slower but higher quality. If lazy rendering is set to `True`, the visualizer will use `fast` variants of visual styles for render mode too. This does not result in quality loss in certain cases, like with the bar graph-like visual styles under a certain array size.
 
