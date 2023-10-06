@@ -92,7 +92,15 @@ abstract: new class Visual {
     new method onAuxOff()      {} # gets called when aux mode is turned off. useful to restore old values
     
     abstract: new method draw(array, indices, color);    # draws the visual style 
-    abstract: new method drawAux(array, indices, color); # draws the aux array in that visual style
+    abstract: new method drawAux(array, indices, color); # draws the aux array in that visual style 
+
+    new method fastDraw(array, indices, color) {
+        this.draw(array, indices, color);
+    }
+
+    new method fastDrawAux(array, indices, color) {
+        this.drawAux(array, indices, color);
+    }
 
     new method __eq__(other) {
         return this.name == other.name;

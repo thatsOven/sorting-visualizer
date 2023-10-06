@@ -2,24 +2,31 @@ package opal: import *;
 
 new Vector RESOLUTION = Vector(1280, 720);
 
-new int   FREQUENCY_SAMPLE     = 48000;
-new float UNIT_SAMPLE_DURATION = 1.0 / 30.0;
-new str   VERSION              = "2023.10.1",
-          THREAD_VERSION       = "1.0";
+new int FREQUENCY_SAMPLE        = 48000,
+        FRAME_DIGS              = 9,
+        NATIVE_FRAMERATE        = 120,
+        RENDER_FRAMERATE        = 60,
+        PREVIEW_MOD             = 5,
+        MAX_UNCOMPRESSED_FRAMES = 2048;
 
-import math, random, time, os, numpy, sys, pygame_gui;
+new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
+          MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
+
+new str VERSION        = "2023.10.6",
+        THREAD_VERSION = "1.0";
+
+import math, random, time, os, numpy, sys, 
+       pygame_gui, json, subprocess, shutil;
 package timeit:      import default_timer;
 package functools:   import total_ordering;
 package traceback:   import format_exception;
 package pygame_gui:  import UIManager, elements;
-package pygame:      import Rect;
+package pygame:      import Rect, image;
 package pygame.time: import Clock;
-package scipy:       import signal;
-package json:        import loads;
-use exec, getattr;
+package scipy:       import signal, io;
+use exec, getattr, eval;
 $args ["--nostatic"]
-
-sys.setrecursionlimit(65536);
+$define FRAME_NAME os.path.join(SortingVisualizer.IMAGE_BUF, str(this.__currFrame).zfill(FRAME_DIGS) + ".jpg")
 
 enum RefreshMode {
     STANDARD, NOREFRESH, FULL
@@ -29,17 +36,22 @@ enum RotationMode {
     INDEXED, LENGTHS
 }
 
-new function checkType(value, type_) {
-    try {
-        new dynamic tmp = type_(value);
-    } catch ValueError {
-        return False;
-    }
-    return True;
-}
-
 new function formatException(e) {
     return (''.join(format_exception(e))).replace("<", "&lt;").replace(">", "&gt;");
+}
+
+new function getVideoDuration(file) {
+    # using ffprobe to avoid adding dependencies
+
+    return float(subprocess.run(
+        [
+            "ffprobe", "-v", "error", "-show_entries",
+            "format=duration", "-of",
+            "default=noprint_wrappers=1:nokey=1", file
+        ],
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE
+    ).stdout);
 }
 
 new dynamic sortingVisualizer = None;
@@ -56,6 +68,9 @@ enum ArrayState {
 new class VisualizerException: Exception {}
 
 new class SortingVisualizer {
+    new str SETTINGS_FILE = os.path.join(HOME_DIR, "config.json"),
+            IMAGE_BUF     = os.path.join(HOME_DIR, "frames");
+
     new method __init__() {
         this.array = [];
         this.aux   = None;
@@ -71,7 +86,7 @@ new class SortingVisualizer {
         this.pivotSelections = [];
         this.rotations       = [];
 
-        this.__fontSize = round(((RESOLUTION.x / 1280) + (RESOLUTION.y / 720)) * 11);
+        this.__fontSize = round(((RESOLUTION.x / 1280.0) + (RESOLUTION.y / 720.0)) * 11);
 
         this.__visual = None;
         this.graphics = Graphics(
@@ -79,8 +94,7 @@ new class SortingVisualizer {
             font = "Times New Roman", fontSize = this.__fontSize, 
             frequencySample = FREQUENCY_SAMPLE
         );
-        this.__running = False;
-        this.__gui     = GUI();
+        this.__gui = GUI();
 
         this.resetStats();
 
@@ -107,24 +121,37 @@ new class SortingVisualizer {
         this.__shufThread     = None;
 
         this.__forceLoadedIndices = [];
+        
+        this.__rtHighlightFn = this.internalMultiHighlight;
+        this.__rtSweepFn     = this.sweep;
+        this.__currFrame     = 0;
+        this.__iVideo        = 0;
+        this.__audioPtr      = 0;
+        this.__audio         = None;
 
         this.__unitSample  = this.__makeSample(UNIT_SAMPLE_DURATION);
         this.__currSample  = this.__unitSample;
         this.__soundSample = this.__unitSample;
         this.__audioChs    = this.graphics.getAudioChs()[2];
 
-        new auto f = open(os.path.join(HOME_DIR, "config.json"), "r");
-        new dict settings = loads(f.read());
-        f.close();
+        this.__loadSettings();
 
-        this.__showText = settings["show-text"];
-        this.__showAux  = settings["show-aux"];
-        this.__moreInfo = settings["internal-info"];
-
-        if this.__moreInfo {
+        if this.settings["internal-info"] {
             this.__movingTextSize = Vector(0, this.__fontSize * 20);
         } else {
             this.__movingTextSize = Vector(0, this.__fontSize * 15);
+        }
+    }
+
+    new method __loadSettings() {
+        with open(SortingVisualizer.SETTINGS_FILE, "r") as f {
+            this.settings = json.loads(f.read());
+        }
+    }
+
+    new method _writeSettings() {
+        with open(SortingVisualizer.SETTINGS_FILE, "w") as f {
+            json.dump(this.settings, f);
         }
     }
 
@@ -206,23 +233,30 @@ new class SortingVisualizer {
 
         new int worstCaseTextWidth;
 
-        match this.__visual.refresh {
-            case RefreshMode.STANDARD {
-                if this.__showText {
-                    worstCaseTextWidth = round(35 * (this.__fontSize / 2.25));
-                } else {
+        if this.settings["render"] && !this.settings["lazy-render"] {
+            this.__forceLoadedIndices = [];
+            return;
+        } else {
+            match this.__visual.refresh {
+                case RefreshMode.STANDARD {
+                    if this.settings["show-text"] {
+                        worstCaseTextWidth = round(35 * (this.__fontSize / 2.25));
+                    } else {
+                        this.__forceLoadedIndices = [];
+                        return;
+                    }
+                }
+                case RefreshMode.NOREFRESH {
+                    this.__forceLoadedIndices = [];
                     return;
                 }
+                case RefreshMode.FULL {
+                    worstCaseTextWidth = this.graphics.resolution.x;
+                }
             }
-            case RefreshMode.NOREFRESH {
-                return;
-            }
-            case RefreshMode.FULL {
-                worstCaseTextWidth = this.graphics.resolution.x;
-            }
-        }
 
-        this.__forceLoadedIndices = [i for i in range(round(Utils.translate(worstCaseTextWidth, 0, this.graphics.resolution.x, 0, len(this.array))))];
+            this.__forceLoadedIndices = [i for i in range(round(Utils.translate(worstCaseTextWidth, 0, this.graphics.resolution.x, 0, len(this.array))))];
+        }
     }
 
     new method __runSDModule(mess, func, array, id, name, class_, length = None, unique = None) {
@@ -277,13 +311,7 @@ new class SortingVisualizer {
 
         this.__getSizes();
 
-        new float speed = len(this.array) / 256.0;
-
-        if speed < 1 {
-            this.setSpeed(speed);
-        } else {
-            this.setSpeed(round(speed));
-        }
+        this.setSpeed(len(this.array) / 128.0);
 
         this.shuffles[id].func(this.array);
 
@@ -295,7 +323,13 @@ new class SortingVisualizer {
         this.resetAdaptAux();
         this.drawFullArray();
         this.renderStats();
-        $call update
+
+        if this.settings["render"] {
+            image.save(this.graphics.screen, FRAME_NAME);
+            this.__currFrame++;
+        } else {
+            $call update
+        }
 
         this.__verifyArray = [x.value for x in this.array];
         Utils.Iterables.fastSort(this.__verifyArray);
@@ -325,11 +359,19 @@ new class SortingVisualizer {
         this.resetStats();
         this.__currentlyRunning = this.sorts[category][id].name;
         this.__currentCategory  = category;
-        time.sleep(1.25);
+
+        if this.settings["render"] {
+            this.__renderedSleep(1.25);
+        } else {
+            time.sleep(1.25);
+        }
+
         this.sorts[category][id].func(this.array);
+
         this.resetAux();
         this.resetAdaptAux();
         this.drawFullArray();
+
         this.printArrayState();
     }
 
@@ -440,7 +482,7 @@ new class SortingVisualizer {
                     return ArrayState.SORTED;
                 }
 
-                this.sweep(currentIdx, currentIdx + len(stabilityCheck[unique]), (0, 0, 255));
+                this.sweep(currentIdx, currentIdx + len(stabilityCheck[unique]), (0, 0, 255), 0);
                 currentIdx += len(stabilityCheck[unique]);
             }
 
@@ -495,9 +537,13 @@ new class SortingVisualizer {
 
         this.drawFullArray();
         this.renderStats();
-        $call update
-
-        time.sleep(1.25);
+        
+        if this.settings["render"] {
+            this.__renderedSleep(1.25);
+        } else {
+            $call update
+            time.sleep(1.25);
+        }
     }
 
     new method addDistribution(distribution) {
@@ -530,7 +576,7 @@ new class SortingVisualizer {
     }
 
     new method renderStats() {
-        if not this.__showText {
+        if not this.settings["show-text"] {
             return;
         }
 
@@ -543,7 +589,7 @@ new class SortingVisualizer {
             this.graphics.fastRectangle(pos, this.__movingTextSize, (0, 0, 0));
         }
 
-        if this.__moreInfo {
+        if this.settings["internal-info"] {
             this.graphics.drawOutlineText([
                 "Array length: " + str(len(this.array)) + " elements",
                 this.__currentCategory + ": " + this.__currentlyRunning,
@@ -587,24 +633,24 @@ new class SortingVisualizer {
         this.__adaptAux = this.__defaultAdaptAux;
     }
 
-    new method __getWaveformFromIdx(i) {
+    new method __getWaveformFromIdx(i, adapted) {
         new dynamic tmp;
 
         if i.aux and this.aux is not None {
-            tmp = 200.0 * signal.square(2.0 * numpy.pi * ((450.0 + (this.__adaptAux(this.aux)[i.idx].value * (500.0 / this.auxMax)))) * this.__soundSample);
+            tmp = 200.0 * signal.square(2.0 * numpy.pi * ((450.0 + (adapted[i.idx].value * (500.0 / this.auxMax)))) * this.__soundSample);
         } else {
             tmp = 200.0 * signal.square(2.0 * numpy.pi * ((450.0 + (this.array[i.idx].value * (500.0 / this.arrayMax)))) * this.__soundSample);
         }
 
         if this.__audioChs > 1 {
-            return numpy.repeat(tmp.reshape(tmp.size, 1), this.__audioChs, axis = 1);
+            return numpy.repeat(tmp.reshape(tmp.size, 1), this.__audioChs, axis = 1).astype(numpy.int16);
         } else {
-            return tmp;
+            return tmp.astype(numpy.int16);
         }
     }
 
-    $macro playSound(hList)
-        this.graphics.playWaveforms([this.__getWaveformFromIdx(x) for x in hList]);
+    $macro playSound(hList, adapted)
+        this.graphics.playWaveforms([this.__getWaveformFromIdx(x, adapted) for x in hList]);
     $end
 
     new method __partitionIndices(hList) {
@@ -622,6 +668,23 @@ new class SortingVisualizer {
         return internal, aux;
     }
 
+    $macro auxSect
+        if !this.settings["lazy-aux"] {
+            new int length = len(adapted);
+
+            if this.__oldAuxLen != length {
+                this.__visual.onAuxOn(length);
+                this.__oldAuxLen = length;
+            } else {
+                new dynamic oldMax = this.auxMax;
+                this.getAuxMax(adapted);
+                if this.auxMax != oldMax {
+                    this.__visual.onAuxOn(length);
+                }
+            }
+        }
+    $end
+
     new method internalMultiHighlight(hList) {
         new dynamic sTime = default_timer();
         hList = [x for x in hList if x is not None];
@@ -630,51 +693,197 @@ new class SortingVisualizer {
         if len(hList) != 0 {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
+                
+                new bool aux = this.settings["show-aux"] and this.aux is not None;
+                new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
+                $call playSound(hList, adapted)
 
-                $call playSound(hList)
-
-                if this.__showAux and this.aux is not None {
+                if aux {
                     new dynamic auxList;
                     hList, auxList = this.__partitionIndices(hList);
                 } else {
                     hList = [x.idx for x in hList];
                 }
 
-                this.__visual.draw(this.array, hList, this.__visual.highlightColor);
+                this.__visual.fastDraw(this.array, hList, this.__visual.highlightColor);
 
-                if this.__showAux and this.aux is not None {
-                    new dynamic adapted = this.__adaptAux(this.aux);
-                    new int length = len(adapted);
-
-                    if this.__oldAuxLen != length {
-                        this.__visual.onAuxOn(length);
-                        this.__oldAuxLen = length;
-                    } else {
-                        new dynamic oldMax = this.auxMax;
-                        this.getAuxMax(adapted);
-                        if this.auxMax != oldMax {
-                            this.__visual.onAuxOn(length);
-                        }
-                    }
-
-                    this.__visual.drawAux(adapted, auxList, this.__visual.highlightColor);
+                if aux {
+                    $call auxSect
+                    this.__visual.fastDrawAux(adapted, auxList, this.__visual.highlightColor);
                 }
 
                 this.renderStats();
 
                 $call update
 
-                this.__visual.draw(this.array, set(hList + this.__forceLoadedIndices), None);
+                this.__visual.fastDraw(this.array, set(hList + this.__forceLoadedIndices), None);
                 this.__soundSample = this.__currSample;
 
-                new dynamic tTime = this.__sleep + this.__tmpSleep - default_timer() + sTime;
+                new dynamic tTime = max(this.__sleep + this.__tmpSleep, MIN_SLEEP) - default_timer() + sTime;
                 if tTime > 0 {
                     time.sleep(tTime);
                 }
                 
                 this.__tmpSleep = 0;
             } else {
-                this.__visual.draw(this.array, this.__partitionIndices(hList)[0], None);
+                this.__visual.fastDraw(this.array, this.__partitionIndices(hList)[0], None);
+            }
+        } elif this.__speedCounter >= this.__speed {
+            this.__speedCounter = 0;
+        }
+
+        this.__speedCounter++;
+    }
+
+    new method __videoGen() {
+        new dynamic cwd = os.getcwd();
+        os.chdir(SortingVisualizer.IMAGE_BUF);
+
+        use f;
+        with open("input.txt", "w") as f {
+            for i in range(this.__currFrame) {
+                f.write("file " + str(i).zfill(FRAME_DIGS) + f".jpg\nduration {round(1 / RENDER_FRAMERATE, 4)}\n");
+            }
+        }
+
+        this.__currFrame = 0;
+
+        this.__gui.renderScreen(subprocess.Popen([
+            "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt", 
+            "-c:v", "libx264", "-pix_fmt", "yuvj420p", str(this.__iVideo).zfill(FRAME_DIGS) + ".mp4",
+        ]), "Compressing frames...");
+
+        os.remove("input.txt");
+        this.__iVideo++;
+        return cwd;
+    }
+
+    new method __imgSave() {
+        image.save(this.graphics.screen, FRAME_NAME);
+        this.__currFrame++;
+
+        if this.__currFrame == MAX_UNCOMPRESSED_FRAMES {
+            os.chdir(this.__videoGen());
+        }
+    }
+
+    $macro mixAudio(t)
+        if this.__audio is None {
+            this.__audio    = currWave;
+            this.__audioPtr = round(t * FREQUENCY_SAMPLE); 
+        } else {
+            if this.__audioPtr < len(this.__audio) {
+                new dynamic zeros = numpy.zeros(this.__audioPtr);
+                if this.__audioChs > 1 {
+                    zeros = numpy.repeat(zeros.reshape(zeros.size, 1), this.__audioChs, axis = 1).astype(numpy.int16);
+                } else {
+                    zeros = zeros.astype(numpy.int16);
+                }
+
+                if this.__audioPtr + len(currWave) < len(this.__audio) {
+                    this.__audio += numpy.concatenate((zeros, currWave));
+                } else {
+                    new dynamic size = len(this.__audio) - this.__audioPtr;
+
+                    this.__audio += numpy.concatenate((zeros, currWave[:size]));
+
+                    this.__audio = numpy.concatenate((
+                        this.__audio, currWave[size:]
+                    ));
+                }
+            } else {
+                this.__audio = numpy.concatenate((
+                    this.__audio, currWave
+                ));
+            }
+
+            this.__audioPtr += round(t * FREQUENCY_SAMPLE);
+        }
+    $end
+
+    new method __renderedSleep(t) {
+        new dynamic currWave = numpy.zeros(int(t * FREQUENCY_SAMPLE));
+
+        if this.__audioChs > 1 {
+            currWave = numpy.repeat(currWave.reshape(currWave.size, 1), this.__audioChs, axis = 1).astype(numpy.int16);
+        } else {
+            currWave = currWave.astype(numpy.int16);
+        }
+
+        $call mixAudio(t)
+
+        for i = 0; i < t; i += 1.0 / RENDER_FRAMERATE {
+            this.__imgSave();
+        }
+    }
+
+    new method __renderedMultiHighlight(hList) {
+        hList = [x for x in hList if x is not None];
+        hList = [x for x in hList if x.idx is not None];
+        new dynamic lazy = this.settings["lazy-render"];
+
+        this.graphics.updateEvents();
+
+        if len(hList) != 0 {
+            if this.__speedCounter >= this.__speed {
+                this.__speedCounter = 0;
+                
+                new bool aux = this.settings["show-aux"] and this.aux is not None;
+                new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
+
+                new dynamic tSleep = max(1.0 / RENDER_FRAMERATE, this.__sleep + this.__tmpSleep);
+                this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
+                
+                new dynamic currWave = this.__getWaveformFromIdx(hList[0], adapted);
+                for h in hList {
+                    currWave += this.__getWaveformFromIdx(h, adapted);
+                }
+
+                $call mixAudio(tSleep)
+
+                if aux {
+                    new dynamic auxList;
+                    hList, auxList = this.__partitionIndices(hList);
+                } else {
+                    hList = [x.idx for x in hList];
+                }
+
+                if lazy {
+                    this.__visual.fastDraw(this.array, hList, this.__visual.highlightColor);
+                } else {
+                    this.graphics.fill((0, 0, 0));
+                    this.__visual.draw(this.array, hList, this.__visual.highlightColor);
+                }
+                
+                if aux {
+                    $call auxSect
+
+                    if lazy {
+                        this.__visual.fastDrawAux(adapted, auxList, this.__visual.highlightColor);
+                    } else {
+                        this.__visual.drawAux(adapted, auxList, this.__visual.highlightColor);
+                    }
+                }
+
+                this.renderStats();
+
+                if this.__currFrame % PREVIEW_MOD == 0 {
+                    $call update
+                }
+
+                for i = 0; i < tSleep; i += 1.0 / RENDER_FRAMERATE {
+                    this.__imgSave();
+                }
+                
+                if lazy {
+                    this.__visual.fastDraw(this.array, set(hList + this.__forceLoadedIndices), None);
+                }
+                
+                this.__tmpSleep = 0;
+            } else {
+                if lazy {
+                    this.__visual.fastDraw(this.array, this.__partitionIndices(hList)[0], None);
+                }
             }
         } elif this.__speedCounter >= this.__speed {
             this.__speedCounter = 0;
@@ -695,37 +904,91 @@ new class SortingVisualizer {
         this.internalHighlight(HighlightPair(index, aux));
     }
 
-    new method sweep(a, b, color) {
-        this.__checking = True;
-
-        this.renderStats();
-
-        new float speed = len(this.array) / 256.0;
-
-        if speed < 1 {
-            this.setSpeed(speed);
-        } else {
-            this.setSpeed(round(speed));
+    new method sweep(a, b, color, s = None) {
+        if s is None {
+            s = a;
         }
 
-        for i = a; i < b; i++ {
-            time.sleep(this.__sleep);
+        this.renderStats();
+        this.__checking = True;
 
-            this.__visual.draw(this.array, [i], color);
+        this.setSpeed(len(this.array) / 128.0);
+        new dynamic sleep = max(this.__sleep, MIN_SLEEP);
+        
+        for i = a; i < b; i++ {
+            new dynamic sTime = default_timer();
 
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
 
-                $call playSound([HighlightPair(i, False)])
+                this.graphics.playWaveforms([this.__getWaveformFromIdx(HighlightPair(i, False), None)]);
+
+                this.__visual.fastDraw(this.array, [i], color);
 
                 if len(this.__forceLoadedIndices) != 0 {
                     if i <= this.__forceLoadedIndices[-1] {
                         this.renderStats();
                     }
                 }
-
+            
                 $call update
+
+                new dynamic tTime = sleep - default_timer() + sTime;
+                if tTime > 0 {
+                    time.sleep(tTime);
+                }    
             }
+
+            this.__speedCounter++;
+        }
+
+        this.__checking = False;
+    }
+
+    new method __renderedSweep(a, b, color, s = None) {
+        if s is None {
+            s = a;
+        }
+
+        this.renderStats();
+        this.__checking = True;
+
+        this.setSpeed(len(this.array) / 128.0);
+
+        new dynamic tSleep = max(1.0 / RENDER_FRAMERATE, this.__sleep);
+        this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
+        new dynamic hList = [];
+        if s != a {
+            hList += [i for i in range(a, s)];
+        }
+
+        for i = a; i < b; i++ {
+            this.graphics.updateEvents();
+            hList.append(i);
+
+            if this.settings["lazy-render"] {
+                this.__visual.fastDraw(this.array, hList, color);
+            } else {
+                this.__visual.draw(this.array, hList, color);
+            }
+
+            if this.__speedCounter >= this.__speed {
+                this.__speedCounter = 0;
+
+                new dynamic currWave = this.__getWaveformFromIdx(HighlightPair(i, False), None);
+                $call mixAudio(tSleep)
+                
+                this.renderStats();
+
+                if this.__currFrame % PREVIEW_MOD == 0 {
+                    $call update
+                }
+
+                for j = 0; j < tSleep; j += 1.0 / RENDER_FRAMERATE {
+                    this.__imgSave();
+                }
+            }
+
             this.__speedCounter++;
         }
 
@@ -745,8 +1008,12 @@ new class SortingVisualizer {
     }
 
     new method setSpeed(value) {
+        if this.settings["render"] {
+            value *= NATIVE_FRAMERATE / RENDER_FRAMERATE;
+        }
+
         if value >= 1 {
-            this.__speed       = value;
+            this.__speed       = round(value);
             this.__sleep       = 0;
             this.__currSample  = this.__unitSample;
             this.__dFramesPerc = str(round(((value - 1) / value) * 100, 4)) + "%";
@@ -825,6 +1092,11 @@ new class SortingVisualizer {
     }
 
     new method __reportException(e) {
+        if this.__prepared {
+            this.drawFullArray();
+            this.renderStats();
+        }
+
         new str f = formatException(e);
         IO.out(f, IO.endl);
         this.__gui.userWarn("Exception occurred", f);
@@ -884,7 +1156,7 @@ new class SortingVisualizer {
     new method setAux(array) {
         this.aux = array;
 
-        if this.__showAux and not this.__enteredAuxMode {
+        if this.settings["show-aux"] and not this.__enteredAuxMode {
             this.__enteredAuxMode = True;
             new dynamic adapted = this.__adaptAux(this.aux);
             this.getAuxMax(adapted);
@@ -985,6 +1257,46 @@ new class SortingVisualizer {
 
     $include os.path.join(HOME_DIR, "threadBuilder", "BuilderEvaluator.opal")
 
+    new method __finalizeRender() {
+        if this.settings["render"] && this.__audio is not None {
+            new dynamic cwd;
+            if this.__currFrame != 0 {
+                cwd = this.__videoGen();
+            } else {
+                cwd = os.getcwd();
+                os.chdir(SortingVisualizer.IMAGE_BUF);
+            }
+
+            use f;
+            with open("input.txt", "w") as f {
+                for i in range(this.__iVideo) {
+                    new dynamic fileName = str(i).zfill(FRAME_DIGS) + ".mp4";
+                    f.write("file " + fileName + f"\nduration {round(getVideoDuration(fileName), 4)}\n");
+                }
+            }
+
+            this.__iVideo = 0;
+
+            this.__gui.renderScreen(subprocess.Popen([
+                "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt", 
+                "-c:v", "libx264", "-pix_fmt", "yuvj420p", "tmp.mp4",
+            ]), "Merging videos...");
+
+            io.wavfile.write("audio.wav", FREQUENCY_SAMPLE, this.__audio);
+            this.__audio = None;
+
+            this.__gui.renderScreen(subprocess.Popen([
+                "ffmpeg", "-i", "tmp.mp4", "-i", "audio.wav",
+                "-c:v", "copy", "-map", "0:v", "-map", "1:a",
+                "-y", "output.mp4"
+            ]), "Adding audio...");
+
+            os.chdir(cwd);
+            shutil.copy(os.path.join(SortingVisualizer.IMAGE_BUF, "output.mp4"), cwd);
+            shutil.rmtree(SortingVisualizer.IMAGE_BUF);
+        }
+    }
+
     new method run() {
         this.graphics.event(QUIT)(lambda _: quit());
 
@@ -1005,10 +1317,28 @@ new class SortingVisualizer {
         this.__gui.setSv(this);
 
         while True {
+            if this.settings["render"] {
+                if !os.path.exists(SortingVisualizer.IMAGE_BUF) {
+                    try {
+                        os.mkdir(SortingVisualizer.IMAGE_BUF);
+                    } catch Exception as e {
+                        this.__gui.userWarn("Error", f"Unable to create image buffer folder. Exception:\n{e}");
+                        quit;
+                    }
+                }
+
+                this.internalMultiHighlight = this.__renderedMultiHighlight;
+                this.sweep                  = this.__renderedSweep;
+            } else {
+                this.internalMultiHighlight = this.__rtHighlightFn;
+                this.sweep                  = this.__rtSweepFn;
+            }
+
             new int sel = this.__gui.selection("Mode", "Select mode: ", [
                 "Run sort",
                 "Run all sorts",
-                "Threads"
+                "Threads",
+                "Settings"
             ]);
 
             match sel {
@@ -1026,6 +1356,8 @@ new class SortingVisualizer {
                             this.__reportException(e);
                         } 
 
+                        this.__finalizeRender();
+
                         new int opt = this.__gui.selection("Done", "Continue?", [
                             "Yes",
                             "No"
@@ -1035,6 +1367,7 @@ new class SortingVisualizer {
                 case 1 {
                     new dict runOpts = this.__gui.runAll();
                     $include os.path.join(HOME_DIR, "threads", "runAllSorts.opal")
+                    this.__finalizeRender();
                     this.__gui.userWarn("Finished", "All sorts have been visualized.");
                 }
                 case 2 {
@@ -1052,12 +1385,17 @@ new class SortingVisualizer {
                         }
                     }
                 }
+                case 3 {
+                    this.__gui.settings();
+                }
             }
         }
     }
 }
 
 main {
+    sys.setrecursionlimit(65536);
+
     new SortingVisualizer sortingVisualizer = SortingVisualizer();
 
     $includeDirectory os.path.join(HOME_DIR, "utils")

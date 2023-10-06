@@ -1,7 +1,17 @@
+new function checkType(value, type_) {
+    try {
+        new dynamic tmp = type_(value);
+    } catch ValueError {
+        return False;
+    }
+    return True;
+}
+
 new class GUI {
-    new Vector OFFS      = RESOLUTION // 80,
-               WIN_SIZE  = RESOLUTION // 2,
-               TEXT_OFFS = Vector(2, 2);
+    new Vector OFFS           = RESOLUTION // 80,
+               WIN_SIZE       = RESOLUTION // 2,
+               SMALL_WIN_SIZE = Vector(RESOLUTION.x // 4, RESOLUTION.y // 6),
+               TEXT_OFFS      = Vector(2, 2);
     new int FPS = 60;
 
     new method __init__() {
@@ -34,7 +44,10 @@ new class GUI {
                     this.__sv.graphics.eventActions[event.type](event);
                 }
 
-                if event.type == pygame_gui.UI_BUTTON_PRESSED {
+                if event.type in (
+                    pygame_gui.UI_BUTTON_PRESSED, 
+                    pygame_gui.UI_DROP_DOWN_MENU_CHANGED
+                ) {
                     new dynamic res = fn(event);
                     if res is not None {
                         return res;
@@ -44,7 +57,9 @@ new class GUI {
                 this.__manager.process_events(event);
             }
 
-            fn0();
+            if fn0() {
+                return;
+            }
 
             this.__manager.update(delta);
 
@@ -68,7 +83,6 @@ new class GUI {
         win.on_close_window_button_pressed = lambda *a: None;
         win.set_position((RESOLUTION // 2 - GUI.WIN_SIZE // 2).toList(2));
 
-        
         new dynamic entry;
         if textInput {
             elements.UITextBox(
@@ -628,5 +642,200 @@ new class GUI {
         new dict result = this.__loop(__internal);
         this.__runAllPanel.hide();
         return result;
+    }
+
+    new method settings() {
+        new dynamic showTextSettingValue     = this.__sv.settings["show-text"],
+                    renderSettingValue       = this.__sv.settings["render"],
+                    internalInfoSettingValue = this.__sv.settings["internal-info"],
+                    showAuxSettingValue      = this.__sv.settings["show-aux"],
+                    lazyAuxSettingValue      = this.__sv.settings["lazy-aux"],
+                    lazyRenderSettingValue   = this.__sv.settings["lazy-render"];
+
+        new dynamic settingsPanel = elements.UIPanel(
+            Rect(
+                RESOLUTION.x // 2 - GUI.WIN_SIZE.x // 2, 
+                RESOLUTION.y // 2 - GUI.WIN_SIZE.y // 2, 
+                GUI.WIN_SIZE.x, GUI.WIN_SIZE.y
+            ), manager = this.__manager
+        );
+
+        elements.UILabel(
+            Rect(GUI.WIN_SIZE.x // 2 - 50, GUI.OFFS.y + 10, 100, 20), 
+            "Settings", this.__manager, settingsPanel
+        );
+
+        elements.UILabel(
+            Rect(GUI.OFFS.x, GUI.OFFS.y + 40, 250, 20), 
+            "Show text", this.__manager, settingsPanel
+        );
+        new dynamic showTextSetting = elements.ui_drop_down_menu.UIDropDownMenu(
+            ["True", "False"], str(showTextSettingValue),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 40, 100, 20),
+            this.__manager, settingsPanel 
+        );
+
+        elements.UILabel(
+            Rect(GUI.OFFS.x, GUI.OFFS.y + 70, 250, 20), 
+            "Show auxiliary array", this.__manager, settingsPanel
+        );
+        new dynamic showAuxSetting = elements.ui_drop_down_menu.UIDropDownMenu(
+            ["True", "False"], str(showAuxSettingValue),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 70, 100, 20),
+            this.__manager, settingsPanel 
+        );
+
+        elements.UILabel(
+            Rect(GUI.OFFS.x, GUI.OFFS.y + 100, 250, 20), 
+            "Show internal information", this.__manager, settingsPanel
+        );
+        new dynamic internalInfoSetting = elements.ui_drop_down_menu.UIDropDownMenu(
+            ["True", "False"], str(internalInfoSettingValue),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 100, 100, 20),
+            this.__manager, settingsPanel 
+        );
+
+        elements.UILabel(
+            Rect(GUI.OFFS.x, GUI.OFFS.y + 130, 250, 20), 
+            "Render mode", this.__manager, settingsPanel
+        );
+        new dynamic renderSetting = elements.ui_drop_down_menu.UIDropDownMenu(
+            ["True", "False"], str(renderSettingValue),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 130, 100, 20),
+            this.__manager, settingsPanel 
+        );
+
+        elements.UILabel(
+            Rect(GUI.OFFS.x, GUI.OFFS.y + 160, 250, 20), 
+            "Lazy auxiliary visualization", this.__manager, settingsPanel
+        );
+        new dynamic lazyAuxSetting = elements.ui_drop_down_menu.UIDropDownMenu(
+            ["True", "False"], str(lazyAuxSettingValue),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 160, 100, 20),
+            this.__manager, settingsPanel 
+        );
+
+        elements.UILabel(
+            Rect(GUI.OFFS.x, GUI.OFFS.y + 190, 250, 20), 
+            "Lazy rendering", this.__manager, settingsPanel
+        );
+        new dynamic lazyRenderSetting = elements.ui_drop_down_menu.UIDropDownMenu(
+            ["True", "False"], str(lazyRenderSettingValue),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 190, 100, 20),
+            this.__manager, settingsPanel 
+        );
+
+        new dynamic settingsBackButton = elements.UIButton(
+            Rect(20, GUI.WIN_SIZE.y - 60, 100, 40),            
+            "Back", this.__manager, settingsPanel, 
+            tool_tip_text = "Goes back to the main menu without saving"
+        );
+
+        new dynamic settingsSaveButton = elements.UIButton(
+            Rect(GUI.WIN_SIZE.x - 130, GUI.WIN_SIZE.y - 60, 100, 40),            
+            "Save", this.__manager, settingsPanel, 
+            tool_tip_text = "Saves given settings"
+        );
+
+        new function __internal(event) {
+            external showTextSettingValue, showAuxSettingValue, 
+                     internalInfoSettingValue, renderSettingValue,
+                     lazyAuxSettingValue, lazyRenderSettingValue;
+
+            if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED {
+                new bool val = event.text == "True";
+
+                match:() event.ui_element {
+                    case showTextSetting {
+                        showTextSettingValue = val;
+                    }
+                    case showAuxSetting {
+                        showAuxSettingValue = val;
+                    }
+                    case internalInfoSetting {
+                        internalInfoSettingValue = val;
+                    }
+                    case renderSetting {
+                        renderSettingValue = val;
+                    }
+                    case lazyAuxSetting {
+                        lazyAuxSettingValue = val;
+                    }
+                    case lazyRenderSetting {
+                        lazyRenderSettingValue = val;
+                    }
+                }
+            } elif event.type == pygame_gui.UI_BUTTON_PRESSED {
+                match:() event.ui_element {
+                    case settingsBackButton {
+                        return 1;
+                    }
+                    case settingsSaveButton {
+                        this.__sv.settings = {
+                            "show-text":     showTextSettingValue,
+                            "show-aux":      showAuxSettingValue,
+                            "internal-info": internalInfoSettingValue,
+                            "render":        renderSettingValue,
+                            "lazy-aux":      lazyAuxSettingValue,
+                            "lazy-render":   lazyRenderSettingValue
+                        };
+
+                        try {
+                            this.__sv._writeSettings();
+                        } catch Exception as e {
+                            this.userWarn("Error", f"An error occurred while saving your settings:\n{e}");
+                            return;
+                        } success {
+                            this.userWarn("Success", "Settings saved successfully.");
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        this.__loop(__internal);
+        settingsPanel.kill();
+    }
+
+    $macro outputBytesConvertAndWrite
+        for line in lines {
+            if line && type(line) is bytes {
+                try {
+                    line = line.decode("utf-8");
+                } ignore UnicodeDecodeError; success {
+                    console.add_output_line_to_log(line, False);
+                }
+            }
+        }
+    $end
+
+    new method renderScreen(process, message) {
+        new dynamic panel = elements.UIPanel(
+            Rect(
+                RESOLUTION.x // 2 - GUI.SMALL_WIN_SIZE.x // 2, 
+                RESOLUTION.y // 2 - GUI.SMALL_WIN_SIZE.y // 2, 
+                GUI.SMALL_WIN_SIZE.x, GUI.SMALL_WIN_SIZE.y
+            ), manager = this.__manager
+        );
+
+        elements.UILabel(
+            Rect(0, GUI.SMALL_WIN_SIZE.y // 2 - 15, GUI.SMALL_WIN_SIZE.x, 20), 
+            message, this.__manager, panel
+        ).set_text_scale(2);
+
+        new function __internal() {
+            if process.poll() is not None {
+                return True;
+            }
+        }
+
+        this.__loop(lambda _: None, __internal);
+        panel.kill();
+        this.__sv.graphics.blitSurf(this.__background, Vector());
+
+        if process.returncode != 0 {
+            throw VisualizerException("ffmpeg exited with a non-zero return code");
+        }
     }
 }

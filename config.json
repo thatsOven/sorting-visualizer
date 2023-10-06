@@ -1,5 +1,1 @@
-{
-    "show-text": true,
-    "show-aux": true,
-    "internal-info": false
-}
+{"show-text": true, "show-aux": true, "internal-info": false, "render": true, "lazy-aux": false, "lazy-render": false}

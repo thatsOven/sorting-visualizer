@@ -21,6 +21,39 @@ new class BWGradientBarGraph: LineVisual {
     new method draw(array, indices, color) {
         new dynamic drawn = {};
 
+        for idx in range(len(array)) {
+            new dynamic pos = sortingVisualizer.graphics.resolution.copy(), lineEnd;
+
+            pos.x = Utils.translate(
+                    idx, 0, len(array), 0, 
+                    sortingVisualizer.graphics.resolution.x // this.lineSize
+                ) * this.lineSize + (this.lineSize // 2);
+
+            if pos.x in drawn {
+                continue;
+            } else {
+                drawn[pos.x] = None;
+            }
+
+            lineEnd = pos - Vector(0, int(array[idx].value * this.lineLengthConst));
+
+            if idx in indices && color is not None {
+                sortingVisualizer.graphics.line(pos, lineEnd, color, this.lineSize);
+            } else {
+                if array[idx].value < 0 {
+                    sortingVisualizer.graphics.line(pos, lineEnd, (40, 40, 40), this.lineSize);
+                } else {
+                    sortingVisualizer.graphics.line(pos, lineEnd, [40 + int(array[idx].value * this.colorConstant)] * 3, this.lineSize);
+                }
+            }
+        }
+
+        del drawn;
+    }
+
+    new method fastDraw(array, indices, color) {
+        new dynamic drawn = {};
+
         for idx in indices {
             new dynamic pos = sortingVisualizer.graphics.resolution.copy(), lineEnd;
 
