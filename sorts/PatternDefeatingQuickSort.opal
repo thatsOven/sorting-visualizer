@@ -222,37 +222,37 @@ namespace PDQSort {
                 }
 
                 if leftSize >= this.insertSortThreshold {
-                    sortingVisualizer.delay(65);
+                    sortingVisualizer.delay(1040);
                     array[begin].swap(array[begin + leftSize // 4]);
-                    sortingVisualizer.delay(65);
+                    sortingVisualizer.delay(1040);
                     array[pivotPos - 1].swap(array[pivotPos - leftSize // 4]);
 
                     if leftSize > this.nintherThreshold {
-                        sortingVisualizer.delay(65);
+                        sortingVisualizer.delay(1040);
                         array[begin + 1].swap(array[begin + (leftSize // 4 + 1)]);
-                        sortingVisualizer.delay(65);
+                        sortingVisualizer.delay(1040);
                         array[begin + 2].swap(array[begin + (leftSize // 4 + 2)]);
-                        sortingVisualizer.delay(65);
+                        sortingVisualizer.delay(1040);
                         array[pivotPos - 2].swap(array[pivotPos - (leftSize // 4 + 1)]);
-                        sortingVisualizer.delay(65);
+                        sortingVisualizer.delay(1040);
                         array[pivotPos - 3].swap(array[pivotPos - (leftSize // 4 + 2)]);
                     }
                 }
 
                 if rightSize >= this.insertSortThreshold {
-                    sortingVisualizer.delay(65);
+                    sortingVisualizer.delay(1040);
                     array[pivotPos + 1].swap(array[pivotPos + (1 + rightSize // 4)]);
-                    sortingVisualizer.delay(65);
+                    sortingVisualizer.delay(1040);
                     array[end - 1].swap(array[end - rightSize // 4]);
 
                     if rightSize > this.nintherThreshold {
-                        sortingVisualizer.delay(65);
+                        sortingVisualizer.delay(1040);
                         array[pivotPos + 2].swap(array[pivotPos + (2 + rightSize // 4)]);
-                        sortingVisualizer.delay(65);
+                        sortingVisualizer.delay(1040);
                         array[pivotPos + 3].swap(array[pivotPos + (3 + rightSize // 4)]);
-                        sortingVisualizer.delay(65);
+                        sortingVisualizer.delay(1040);
                         array[end - 2].swap(array[end - (1 + rightSize // 4)]);
-                        sortingVisualizer.delay(65);
+                        sortingVisualizer.delay(1040);
                         array[end - 3].swap(array[end - (2 + rightSize // 4)]);
                     }
                 }

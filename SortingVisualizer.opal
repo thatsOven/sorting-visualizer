@@ -754,7 +754,7 @@ new class SortingVisualizer {
         use f;
         with open("input.txt", "w") as f {
             for i in range(this.__currFrame) {
-                f.write("file " + str(i).zfill(FRAME_DIGS) + f".jpg\nduration {round(1 / RENDER_FRAMERATE, 4)}\n");
+                f.write("file " + str(i).zfill(FRAME_DIGS) + f".jpg\nduration {1 / RENDER_FRAMERATE}\n");
             }
         }
 
@@ -779,23 +779,22 @@ new class SortingVisualizer {
         }
     }
 
-    $macro mixAudio(t)
+    $macro mixAudio(d)
         if this.__audio is None {
-            this.__audio    = currWave;
-            this.__audioPtr = round(t * FREQUENCY_SAMPLE); 
+            this.__audio = currWave;
         } else {
-            if this.__audioPtr < len(this.__audio) {
-                new dynamic zeros = numpy.zeros(this.__audioPtr);
+            if round(this.__audioPtr) < len(this.__audio) {
+                new dynamic zeros = numpy.zeros(round(this.__audioPtr));
                 if this.__audioChs > 1 {
                     zeros = numpy.repeat(zeros.reshape(zeros.size, 1), this.__audioChs, axis = 1).astype(numpy.int16);
                 } else {
                     zeros = zeros.astype(numpy.int16);
                 }
 
-                if this.__audioPtr + len(currWave) < len(this.__audio) {
+                if round(this.__audioPtr) + len(currWave) < len(this.__audio) {
                     this.__audio += numpy.concatenate((zeros, currWave));
                 } else {
-                    new dynamic size = len(this.__audio) - this.__audioPtr;
+                    new dynamic size = len(this.__audio) - round(this.__audioPtr);
 
                     this.__audio += numpy.concatenate((zeros, currWave[:size]));
 
@@ -807,14 +806,15 @@ new class SortingVisualizer {
                 this.__audio = numpy.concatenate((
                     this.__audio, currWave
                 ));
-            }
-
-            this.__audioPtr += round(t * FREQUENCY_SAMPLE);
+            }    
         }
+
+        for t = 1.0 / RENDER_FRAMERATE; t < d; t += 1.0 / RENDER_FRAMERATE {}
+        this.__audioPtr += t * FREQUENCY_SAMPLE;
     $end
 
     new method __renderedSleep(t) {
-        new dynamic currWave = numpy.zeros(int(t * FREQUENCY_SAMPLE));
+        new dynamic currWave = numpy.zeros(round(t * FREQUENCY_SAMPLE));
 
         if this.__audioChs > 1 {
             currWave = numpy.repeat(currWave.reshape(currWave.size, 1), this.__audioChs, axis = 1).astype(numpy.int16);
@@ -936,10 +936,8 @@ new class SortingVisualizer {
 
                 this.graphics.playWaveforms([this.__getWaveformFromIdx(HighlightPair(i, False), None)]);
 
-                if len(this.__forceLoadedIndices) != 0 {
-                    if i <= this.__forceLoadedIndices[-1] {
-                        this.renderStats();
-                    }
+                if len(this.__forceLoadedIndices) != 0 && i <= this.__forceLoadedIndices[-1] {
+                    this.renderStats();
                 }
             
                 $call update
@@ -966,6 +964,7 @@ new class SortingVisualizer {
 
         this.setSpeed(len(this.array) / 128.0);
 
+        new dynamic lazy = this.settings["lazy-render"];
         new dynamic tSleep = max(1.0 / RENDER_FRAMERATE, this.__sleep);
         this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
         new dynamic hList = [];
@@ -975,11 +974,11 @@ new class SortingVisualizer {
 
         for i = a; i < b; i++ {
             this.graphics.updateEvents();
-            hList.append(i);
-
-            if this.settings["lazy-render"] {
-                this.__visual.fastDraw(this.array, hList, color);
+            
+            if lazy {
+                this.__visual.fastDraw(this.array, [i], color);
             } else {
+                hList.append(i);
                 this.__visual.draw(this.array, hList, color);
             }
 
@@ -989,7 +988,13 @@ new class SortingVisualizer {
                 new dynamic currWave = this.__getWaveformFromIdx(HighlightPair(i, False), None);
                 $call mixAudio(tSleep)
                 
-                this.renderStats();
+                if lazy {
+                    if len(this.__forceLoadedIndices) != 0 && i <= this.__forceLoadedIndices[-1] {
+                        this.renderStats();
+                    }
+                } else {
+                    this.renderStats();
+                }
 
                 if this.__currFrame % PREVIEW_MOD == 0 {
                     $call update
