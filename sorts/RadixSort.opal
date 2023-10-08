@@ -32,6 +32,13 @@ new class RadixSort {
         return result;
     }
 
+    new method adaptIdxLSD(idx, aux) {
+        for i in range(idx) {
+            idx += len(this.aux[i]);
+        }
+
+        return idx;
+    }
 
     new method transcribe(array, a, aux, empty = True) {
         new int i = a;
@@ -61,18 +68,18 @@ new class RadixSort {
 
         new int hPow = this.getHighestPower(array, a, b);
 
-        new list aux = [[] for _ in range(this.base)];
+        this.aux = [[] for _ in range(this.base)];
 
-        sortingVisualizer.setAdaptAux(this.adaptAux);
-        sortingVisualizer.setAux(aux);
+        sortingVisualizer.setAdaptAux(this.adaptAux, this.adaptIdxLSD);
+        sortingVisualizer.setAux(this.aux);
 
         for p in range(hPow + 1) {
             for i = a; i < b; i++ {
                 new int dig = array[i].readDigit(p, this.base);
-                this.auxWrite(aux, dig, array, i);
+                this.auxWrite(this.aux, dig, array, i);
             }
 
-            this.transcribe(array, a, aux);
+            this.transcribe(array, a, this.aux);
         }
     }
 

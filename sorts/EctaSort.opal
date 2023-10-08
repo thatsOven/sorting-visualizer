@@ -186,6 +186,14 @@ new class EctaSort {
         return array + this.tags;
     }
 
+    new method __adaptIdx(idx, aux) {
+        if aux is this.tags {
+            return idx + len(this.buf);
+        }
+
+        return idx;
+    }
+
     new method sort(array, a, b) {
         if b - a <= 32 {
             binaryInsertionSort(array, a, b);
@@ -208,34 +216,34 @@ new class EctaSort {
 
         sortingVisualizer.setSpeed(speed);
 
-        new list buf = sortingVisualizer.createValueArray(bufLen);
-        this.tags    = sortingVisualizer.createValueArray(tLen);
-        sortingVisualizer.setAux(buf);
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
+        this.buf  = sortingVisualizer.createValueArray(bufLen);
+        this.tags = sortingVisualizer.createValueArray(tLen);
+        sortingVisualizer.setAux(this.buf);
+        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
 
         for ; 4 * j <= bufLen; j *= 4 {
             for i = a; i + 2 * j < b; i += 4 * j {
-                this.pingPongMerge(array, buf, i, i + j, i + 2 * j, min(i + 3 * j, b), min(i + 4 * j, b));
+                this.pingPongMerge(array, this.buf, i, i + j, i + 2 * j, min(i + 3 * j, b), min(i + 4 * j, b));
             }
 
             if i + j < b {
-                this.mergeBWExt(array, buf, i, i + j, b);
+                this.mergeBWExt(array, this.buf, i, i + j, b);
             }
         }
 
         for ; j <= bufLen; j *= 2 {
             for i = a; i + j < b; i += 2 * j {
-                this.mergeBWExt(array, buf, i, i + j, min(i + 2 * j, b));
+                this.mergeBWExt(array, this.buf, i, i + j, min(i + 2 * j, b));
             }
         }
 
         for ; j < b - a; j *= 2 {
             for i = a; i + j + bufLen < b; i += 2 * j {
-                this.blockMerge(array, buf, this.tags, i, i + j, min(i + 2 * j, b), bLen);
+                this.blockMerge(array, this.buf, this.tags, i, i + j, min(i + 2 * j, b), bLen);
             }
 
             if i + j < b {
-                this.mergeBWExt(array, buf, i, i + j, b);
+                this.mergeBWExt(array, this.buf, i, i + j, b);
             }
         } 
     }

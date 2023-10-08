@@ -16,12 +16,22 @@ new class TreeSort {
         return array + this.upper + this.tmp;
     }
 
+    new method __adaptIdx(idx, aux) {
+        if aux is this.lower {
+            return idx;
+        } elif aux is this.upper {
+            return idx + len(this.lower);
+        }
+
+        return idx + len(this.lower) + len(this.upper);
+    }
+
     new method sort(array) {
-        new list lower = sortingVisualizer.createValueArray(len(array));
-        this.upper     = sortingVisualizer.createValueArray(len(array));
-        this.tmp       = sortingVisualizer.createValueArray(len(array));
-        sortingVisualizer.setAux(lower);
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
+        this.lower = sortingVisualizer.createValueArray(len(array));
+        this.upper = sortingVisualizer.createValueArray(len(array));
+        this.tmp   = sortingVisualizer.createValueArray(len(array));
+        sortingVisualizer.setAux(this.lower);
+        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
 
         for i = 1; i < len(array); i++ {
             new int c = 0;
@@ -29,7 +39,7 @@ new class TreeSort {
             while True {
                 new list next;
                 if array[i] < array[c] {
-                    next = lower;
+                    next = this.lower;
                 } else {
                     next = this.upper;
                 }
@@ -44,7 +54,7 @@ new class TreeSort {
         } 
 
         this.idx = 0;
-        this.traverse(array, this.tmp, lower, this.upper, 0);
+        this.traverse(array, this.tmp, this.lower, this.upper, 0);
         arrayCopy(this.tmp, 0, array, 0, len(array));
     }
 }

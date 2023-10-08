@@ -262,6 +262,16 @@ new class ShelfSort {
         return array + this.indicesA + this.indicesB;
     }
 
+    new classmethod __adaptIdx(idx, aux) {
+        if aux is this.scratch {
+            return idx;
+        } elif aux is this.indicesA {
+            return idx + len(this.scratch);
+        }
+
+        return idx + len(this.scratch) + len(this.indicesA);
+    }
+
     new classmethod sort(array, start, size) {
         new int logSize = 0,
                       v = size;
@@ -276,11 +286,11 @@ new class ShelfSort {
             this.smallSort(array, start + i);
         }
 
-        new list scratch = sortingVisualizer.createValueArray(scratchSize);
-        this.indicesA    = sortingVisualizer.createValueArray(scratchSize);
-        this.indicesB    = sortingVisualizer.createValueArray(scratchSize);
-        sortingVisualizer.setAux(scratch);
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
+        this.scratch  = sortingVisualizer.createValueArray(scratchSize);
+        this.indicesA = sortingVisualizer.createValueArray(scratchSize);
+        this.indicesB = sortingVisualizer.createValueArray(scratchSize);
+        sortingVisualizer.setAux(this.scratch);
+        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
 
         new int sortedZoneSize = ShelfSort.SMALL_SORT, runLen, i;
         for ; sortedZoneSize < scratchSize // 2; sortedZoneSize *= 2 {
@@ -299,26 +309,26 @@ new class ShelfSort {
                 } 
 
                 if !less1 {
-                    this.mergePair(array, p1, p2, scratch, 0, runLen - 1);
+                    this.mergePair(array, p1, p2, this.scratch, 0, runLen - 1);
                 }
 
                 if !less2 {
-                    this.mergePair(array, p3, p4, scratch, sortedZoneSize, runLen - 1);
+                    this.mergePair(array, p3, p4, this.scratch, sortedZoneSize, runLen - 1);
                 }
 
                 if less1 || less2 {
                     if !less1 {
-                        arrayCopy(array, p3, scratch, sortedZoneSize, sortedZoneSize);
+                        arrayCopy(array, p3, this.scratch, sortedZoneSize, sortedZoneSize);
                     } elif !less2 {
-                        arrayCopy(array, p1, scratch, 0, sortedZoneSize);
+                        arrayCopy(array, p1, this.scratch, 0, sortedZoneSize);
                     } elif array[p1 + sortedZoneSize - 1] <= array[p3] {
                         continue;
                     } else {
-                        arrayCopy(array, p1, scratch, 0, sortedZoneSize * 2);
+                        arrayCopy(array, p1, this.scratch, 0, sortedZoneSize * 2);
                     }
                 }
 
-                this.mergePair(scratch, 0, sortedZoneSize, array, p1, sortedZoneSize - 1);
+                this.mergePair(this.scratch, 0, sortedZoneSize, array, p1, sortedZoneSize - 1);
             }
         }
 
@@ -339,7 +349,7 @@ new class ShelfSort {
             sortedZoneSize *= 2;
 
             for i = 0; i < total; i += blocks1 + blocks2 {
-                this.blockMerge(array, start + i * bSize, scratch, i, blocks1, blocks2, bSize);
+                this.blockMerge(array, start + i * bSize, this.scratch, i, blocks1, blocks2, bSize);
             }
 
             for i in range(len(this.indicesA)) {
@@ -349,7 +359,7 @@ new class ShelfSort {
             }
         }
 
-        this.finalBlockSorting(array, start, scratch, sortedZoneSize // bSize, bSize);
+        this.finalBlockSorting(array, start, this.scratch, sortedZoneSize // bSize, bSize);
     }
 }
 

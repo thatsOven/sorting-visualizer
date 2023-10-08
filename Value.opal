@@ -6,7 +6,7 @@ new class Value {
         this.value   = value;
         this.idx     = None;
         this.stabIdx = None;
-        this.aux     = False;
+        this.aux     = None;
     }
 
     new method copy() {

@@ -103,6 +103,7 @@ new class SortingVisualizer {
 
         this.__enteredAuxMode = False;
         this.__adaptAux       = this.__defaultAdaptAux;
+        this.__adaptIdx       = this.__defaultAdaptIdx;
         this.__oldAuxLen      = 0;
 
         this.__speed        = 1;
@@ -625,12 +626,23 @@ new class SortingVisualizer {
         return array;
     }
 
-    new method setAdaptAux(func) {
+    new method __defaultAdaptIdx(idx, aux) {
+        return idx;
+    }
+
+    new method setAdaptAux(func, idxFn = None) {
         this.__adaptAux = func;
+
+        if idxFn is not None {
+            this.__adaptIdx = idxFn;
+        } else {
+            this.__adaptIdx = this.__defaultAdaptIdx;
+        }
     }
 
     new method resetAdaptAux() {
         this.__adaptAux = this.__defaultAdaptAux;
+        this.__adaptIdx = this.__defaultAdaptIdx;
     }
 
     new method __getWaveformFromIdx(i, adapted) {
@@ -658,8 +670,8 @@ new class SortingVisualizer {
                     aux      = [];
 
         for i in range(len(hList)) {
-            if hList[i].aux {
-                aux.append(hList[i].idx);
+            if hList[i].aux is not None {
+                aux.append(this.__adaptIdx(hList[i].idx, hList[i].aux));
             } else {
                 internal.append(hList[i].idx);
             }
@@ -917,13 +929,12 @@ new class SortingVisualizer {
         
         for i = a; i < b; i++ {
             new dynamic sTime = default_timer();
+            this.__visual.fastDraw(this.array, [i], color);
 
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
 
                 this.graphics.playWaveforms([this.__getWaveformFromIdx(HighlightPair(i, False), None)]);
-
-                this.__visual.fastDraw(this.array, [i], color);
 
                 if len(this.__forceLoadedIndices) != 0 {
                     if i <= this.__forceLoadedIndices[-1] {
@@ -1097,6 +1108,9 @@ new class SortingVisualizer {
             this.renderStats();
         }
 
+        this.resetAux();
+        this.resetAdaptAux();
+
         new str f = formatException(e);
         IO.out(f, IO.endl);
         this.__gui.userWarn("Exception occurred", f);
@@ -1140,7 +1154,7 @@ new class SortingVisualizer {
             new Value item = Value(0);
             item.idx = i;
             item.stabIdx = i;
-            item.setAux(True);
+            item.setAux(result);
             result.append(item);
         }
 

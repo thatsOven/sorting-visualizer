@@ -130,7 +130,7 @@ runAllSort(1024, "LSD Radix Sort",     4, 4);
 runAllSort(1024, "MSD Radix Sort",     4, 4);
 runAllSort(1024, "American Flag Sort", 4, 128);
 runAllSort(1024, "Feature Sort",       3);
-runAllSort(2048, "Static Sort",        5);
+runAllSort(1024, "Static Sort",        3);
 
 
 ct = "Impractical Sorts";

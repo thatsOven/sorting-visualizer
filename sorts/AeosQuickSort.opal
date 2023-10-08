@@ -200,6 +200,14 @@ new class AeosQuickSort {
         return array + this.indices;
     }
 
+    new method __adaptIdx(idx, aux) {
+        if aux is this.indices {
+            return idx + len(this.aux);
+        }
+
+        return idx;
+    }
+
     new method sort(array, a, b) {
         if b - a < 16 {
             insertionSort(array, a, b);
@@ -213,7 +221,7 @@ new class AeosQuickSort {
         this.aux     = sortingVisualizer.createValueArray(sqrt);
         this.indices = sortingVisualizer.createValueArray((b - a) // sqrt);
         sortingVisualizer.setAux(this.aux);
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
+        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
 
         this.sortRec(array, a, b, sqrt, 0);
     }

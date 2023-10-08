@@ -929,12 +929,30 @@ new class HeliumSort {
         return array + this.indices + this.keys;
     }
 
+    new method __bufIdxKeysAdaptIdx(idx, aux) {
+        if aux is this.buffer {
+            return idx;
+        } elif aux is this.indices {
+            return idx + len(this.buffer);
+        } 
+
+        return idx + len(this.buffer) + len(this.indices);
+    }
+
     new method __bufIdxAdapt(array) {
         return array + this.indices;
     }
 
     new method __bufKeysAdapt(array) {
         return array + this.keys;
+    }
+
+    new method __bufIdxOrKeysAdaptIdx(idx, aux) {
+        if aux is this.buffer {
+            return idx;
+        }
+            
+        return idx + len(this.buffer);
     }
 
     new method sort(array, a, b, mem) {
@@ -981,7 +999,7 @@ new class HeliumSort {
             this.keys    = sortingVisualizer.createValueArray(keySize);
             this.buffer  = sortingVisualizer.createValueArray(mem - 2 * keySize);
             sortingVisualizer.setAux(this.buffer);
-            sortingVisualizer.setAdaptAux(this.__bufIdxKeysAdapt);
+            sortingVisualizer.setAdaptAux(this.__bufIdxKeysAdapt, this.__bufIdxKeysAdaptIdx);
 
             this.blockLen = sqrtn;
             this.bufLen = 0;
@@ -1012,7 +1030,7 @@ new class HeliumSort {
                 this.indices = sortingVisualizer.createValueArray(keySize);
                 this.buffer  = sortingVisualizer.createValueArray(mem - keySize);
                 sortingVisualizer.setAux(this.buffer);
-                sortingVisualizer.setAdaptAux(this.__bufIdxAdapt);
+                sortingVisualizer.setAdaptAux(this.__bufIdxAdapt, this.__bufIdxOrKeysAdaptIdx);
 
                 this.keyLen = keysFound;
                 this.keyPos = a;
@@ -1026,7 +1044,7 @@ new class HeliumSort {
                 this.keys   = sortingVisualizer.createValueArray(keySize);
                 this.buffer = sortingVisualizer.createValueArray(mem - keySize);
                 sortingVisualizer.setAux(this.buffer);
-                sortingVisualizer.setAdaptAux(this.__bufKeysAdapt);
+                sortingVisualizer.setAdaptAux(this.__bufKeysAdapt, this.__bufIdxOrKeysAdaptIdx);
 
                 this.bufLen = 0;
                 this.bufPos = -1;

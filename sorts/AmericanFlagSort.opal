@@ -8,11 +8,19 @@ new class AmericanFlagSort {
             this.buckets = buckets;
         }
 
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
+        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
     }
 
     new method __adaptAux(array) {
         return this.count + array;
+    }
+
+    new method __adaptIdx(idx, aux) {
+        if aux is this.count {
+            return idx;
+        }
+
+        return idx + len(this.count);
     }
 
     new method sorter(array, a, b, d) {

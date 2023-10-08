@@ -42,6 +42,16 @@ new class LibrarySort {
         return array + this.cnts + this.locs;
     }
 
+    new method __adaptIdx(idx, aux) {
+        if aux is this.temp {
+            return idx;
+        } elif aux is this.cnts {
+            return idx + len(this.temp);
+        }
+
+        return idx + len(this.temp) + len(this.cnts);
+    }
+
     new method sort(array, length) {
         if length < 32 {
             binaryInsertionSort(array, 0, length);
@@ -53,15 +63,15 @@ new class LibrarySort {
 
         for maxLevel = j; maxLevel * this.R < length; maxLevel *= this.R {}
 
-        new list temp = sortingVisualizer.createValueArray(length);
-        this.cnts     = sortingVisualizer.createValueArray(maxLevel + 2);
-        this.locs     = sortingVisualizer.createValueArray(length - maxLevel);
-        sortingVisualizer.setAux(temp);
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
+        this.temp = sortingVisualizer.createValueArray(length);
+        this.cnts = sortingVisualizer.createValueArray(maxLevel + 2);
+        this.locs = sortingVisualizer.createValueArray(length - maxLevel);
+        sortingVisualizer.setAux(this.temp);
+        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
 
         for i = j, k = 0; i < length; i++ {
             if this.R * j == i {
-                this.rebalance(array, temp, j, i);
+                this.rebalance(array, this.temp, j, i);
                 j = i;
                 k = 0;
             }
@@ -74,7 +84,7 @@ new class LibrarySort {
             k++;
         }
 
-        this.rebalance(array, temp, j, length);
+        this.rebalance(array, this.temp, j, length);
     }
 }
 
