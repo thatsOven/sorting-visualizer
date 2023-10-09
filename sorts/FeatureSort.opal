@@ -28,11 +28,13 @@ new class FeatureSort {
     }
 
     new method __adaptIdx(idx, aux) {
-        for i in range(idx) {
-            idx += len(this.aux[i]);
-        }
+        for rAux in this.aux {
+            if rAux is aux {
+                return idx;
+            }
 
-        return idx;
+            idx += len(rAux);
+        }
     }
 
     new method sort(array, a, b) {

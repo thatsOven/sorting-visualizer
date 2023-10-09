@@ -33,11 +33,13 @@ new class RadixSort {
     }
 
     new method adaptIdxLSD(idx, aux) {
-        for i in range(idx) {
-            idx += len(this.aux[i]);
-        }
+        for rAux in this.aux {
+            if rAux is aux {
+                return idx;
+            }
 
-        return idx;
+            idx += len(rAux);
+        }
     }
 
     new method transcribe(array, a, aux, empty = True) {

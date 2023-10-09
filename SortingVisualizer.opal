@@ -12,7 +12,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION        = "2023.10.8",
+new str VERSION        = "2023.10.9",
         THREAD_VERSION = "1.0";
 
 import math, random, time, os, numpy, sys, 
@@ -762,22 +762,34 @@ new class SortingVisualizer {
 
         this.__gui.renderScreen(subprocess.Popen([
             "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt", 
-            "-c:v", "libx264", "-pix_fmt", "yuvj420p", str(this.__iVideo).zfill(FRAME_DIGS) + ".mp4",
+            "-c:v", "libx264", "-pix_fmt", "yuvj420p", "tmp.mp4",
         ]), "Compressing frames...");
+        
+        io.wavfile.write("audio.wav", FREQUENCY_SAMPLE, this.__audio);
+        this.__audio    = None;
+        this.__audioPtr = 0;
 
-        os.remove("input.txt");
+        this.__gui.renderScreen(subprocess.Popen([
+            "ffmpeg", "-i", "tmp.mp4", "-i", "audio.wav",
+            "-c:v", "copy", "-map", "0:v", "-map", "1:a",
+            "-y", str(this.__iVideo).zfill(FRAME_DIGS) + ".mp4"
+        ]), "Adding audio...");
+
         this.__iVideo++;
+        
         return cwd;
     }
 
-    new method __imgSave() {
+    $macro imgSave
         image.save(this.graphics.screen, FRAME_NAME);
         this.__currFrame++;
+    $end
 
-        if this.__currFrame == MAX_UNCOMPRESSED_FRAMES {
+    $macro checkCompress
+        if this.__currFrame >= MAX_UNCOMPRESSED_FRAMES {
             os.chdir(this.__videoGen());
         }
-    }
+    $end
 
     $macro mixAudio(d)
         if this.__audio is None {
@@ -825,8 +837,10 @@ new class SortingVisualizer {
         $call mixAudio(t)
 
         for i = 0; i < t; i += 1.0 / RENDER_FRAMERATE {
-            this.__imgSave();
+            $call imgSave
         }
+
+        $call checkCompress
     }
 
     new method __renderedMultiHighlight(hList) {
@@ -884,8 +898,10 @@ new class SortingVisualizer {
                 }
 
                 for i = 0; i < tSleep; i += 1.0 / RENDER_FRAMERATE {
-                    this.__imgSave();
+                    $call imgSave
                 }
+
+                $call checkCompress
                 
                 if lazy {
                     this.__visual.fastDraw(this.array, set(hList + this.__forceLoadedIndices), None);
@@ -1001,8 +1017,10 @@ new class SortingVisualizer {
                 }
 
                 for j = 0; j < tSleep; j += 1.0 / RENDER_FRAMERATE {
-                    this.__imgSave();
+                    $call imgSave
                 }
+
+                $call checkCompress
             }
 
             this.__speedCounter++;
@@ -1304,17 +1322,8 @@ new class SortingVisualizer {
 
             this.__gui.renderScreen(subprocess.Popen([
                 "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt", 
-                "-c:v", "libx264", "-pix_fmt", "yuvj420p", "tmp.mp4",
+                "-c:v", "libx264", "-pix_fmt", "yuvj420p", "output.mp4",
             ]), "Merging videos...");
-
-            io.wavfile.write("audio.wav", FREQUENCY_SAMPLE, this.__audio);
-            this.__audio = None;
-
-            this.__gui.renderScreen(subprocess.Popen([
-                "ffmpeg", "-i", "tmp.mp4", "-i", "audio.wav",
-                "-c:v", "copy", "-map", "0:v", "-map", "1:a",
-                "-y", "output.mp4"
-            ]), "Adding audio...");
 
             os.chdir(cwd);
             shutil.copy(os.path.join(SortingVisualizer.IMAGE_BUF, "output.mp4"), cwd);

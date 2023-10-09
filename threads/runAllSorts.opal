@@ -61,7 +61,7 @@ ct = "Tree Sorts";
 runAllSort(512,  "Tree Sort",        5, killers = {
     "Linear":    ["Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth"],
     "Quadratic": ["Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth"],
-    "Quintic":   ["Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth"],
+    "Quintic":   ["Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", "Random"],
     "Sine Wave": ["Reversed", "Reversed Sawtooth", "No shuffle", "Sawtooth"]
 });
 runAllSort(2048, "Max Heap Sort",   15);
