@@ -1178,7 +1178,13 @@ new class SortingVisualizer {
         if this.settings["show-aux"] and not this.__enteredAuxMode {
             this.__enteredAuxMode = True;
             new dynamic adapted = this.__adaptAux(this.aux);
+
             this.getAuxMax(adapted);
+
+            if this.settings["lazy-aux"] {
+                this.auxMax = max(this.auxMax, this.arrayMax);
+            }
+
             this.__visual.onAuxOn(len(adapted));
             this.drawFullArray();
         }

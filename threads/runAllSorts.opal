@@ -97,6 +97,7 @@ runAllSort(1024, "Dual Pivot Quick",       4, killers = centerKillers);
 runAllSort(2048, "Median-Of-16 A. Quick", 10);
 runAllSort(2048, "PDQ Sort",              10); 
 runAllSort(1024, "Aeos Quick",             3);
+runAllSort(1024, "Log Sort",               3, 0);
 
 
 ct = "Merge Sorts";
