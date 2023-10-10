@@ -88,7 +88,7 @@ new dict centerKillers = {
 runAllSort(1024, "LL Quick Sort", 4, pivotSelections.index("First"), {
     "Linear":    ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"], 
     "Quadratic": ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"], 
-    "Quintic":   ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"],
+    "Quintic":   ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle", "Random"],
     "Sine Wave": ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"],
 });
 runAllSort(1024, "LR Quick Sort",          4, pivotSelections.index("Middle"), centerKillers);
