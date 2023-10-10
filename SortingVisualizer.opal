@@ -478,7 +478,9 @@ new class SortingVisualizer {
 
             for unique in stabilityCheck {
                 if this.checkSorted(stabilityCheck[unique], lambda x : x.stabIdx) != len(stabilityCheck[unique]) - 1 {
-                    this.sweep(currentIdx, len(this.array), (255, 255, 0));
+                    this.sweep(currentIdx, len(this.array), (255, 255, 0), 
+                        other = [x for x in range(currentIdx)]
+                    );
 
                     return ArrayState.SORTED;
                 }
@@ -492,7 +494,9 @@ new class SortingVisualizer {
         } else {
             new int p = min(sUntil, eq);
             this.sweep(0,               p, (0, 255, 0));
-            this.sweep(p, len(this.array), (255, 0, 0));
+            this.sweep(p, len(this.array), (255, 0, 0), 
+                other = [x for x in range(p)]
+            );
 
             if eq != len(this.array) - 1 {
                 if sUntil != len(this.array) - 1 {
@@ -932,7 +936,7 @@ new class SortingVisualizer {
         this.internalHighlight(HighlightPair(index, aux));
     }
 
-    new method sweep(a, b, color, s = None) {
+    new method sweep(a, b, color, s = None, other = None) {
         if s is None {
             s = a;
         }
@@ -970,9 +974,13 @@ new class SortingVisualizer {
         this.__checking = False;
     }
 
-    new method __renderedSweep(a, b, color, s = None) {
+    new method __renderedSweep(a, b, color, s = None, other = None) {
         if s is None {
             s = a;
+        }
+
+        if other is None {
+            other = [];
         }
 
         this.renderStats();
@@ -995,7 +1003,6 @@ new class SortingVisualizer {
                 this.__visual.fastDraw(this.array, [i], color);
             } else {
                 hList.append(i);
-                this.__visual.draw(this.array, hList, color);
             }
 
             if this.__speedCounter >= this.__speed {
@@ -1009,6 +1016,7 @@ new class SortingVisualizer {
                         this.renderStats();
                     }
                 } else {
+                    this.__visual.draw(this.array, hList + other, color);
                     this.renderStats();
                 }
 
