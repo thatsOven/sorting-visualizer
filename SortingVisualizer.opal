@@ -985,7 +985,7 @@ new class SortingVisualizer {
         this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
         new dynamic hList = [];
         if s != a {
-            hList += [i for i in range(a, s)];
+            hList += [i for i in range(s, a)];
         }
 
         for i = a; i < b; i++ {
