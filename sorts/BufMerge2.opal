@@ -70,7 +70,7 @@ new class BufMerge2 {
         }
     }
 
-    new method mergeWithStatBufferBW(array, a0, b0, a1, b1, buf) {
+    new classmethod mergeWithStatBufferBW(array, a0, b0, a1, b1, buf) {
         new int l = b0  - 1,
                 r = b1  - 1,
                 o = buf - 1;
@@ -94,7 +94,7 @@ new class BufMerge2 {
         }
     }
 
-    new method gallopMerge(array, a0, b0, a1, b1, buf) {
+    new classmethod gallopMerge(array, a0, b0, a1, b1, buf) {
         new int l = b0  - 1,
                 r = b1  - 1,
                 o = buf - 1;
@@ -120,7 +120,7 @@ new class BufMerge2 {
         }
     }
 
-    new method mergeWithScrollingBufferFW(array, a, m, b) {
+    new classmethod mergeWithScrollingBufferFW(array, a, m, b) {
         new int o = a - (m - a),
                 l = a,
                 r = m;
@@ -144,7 +144,7 @@ new class BufMerge2 {
         }
     }
 
-    new method mergeWithScrollingBufferBW(array, a, m, b) {
+    new classmethod mergeWithScrollingBufferBW(array, a, m, b) {
         new int l = m - 1,
                 r = b - 1,
                 o = r + m - a;

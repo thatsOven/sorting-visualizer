@@ -12,7 +12,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION        = "2023.10.10",
+new str VERSION        = "2023.10.11",
         THREAD_VERSION = "1.0";
 
 import math, random, time, os, numpy, sys, 
@@ -62,7 +62,7 @@ $include os.path.join(HOME_DIR, "moduleClasses.opal")
 $include os.path.join(HOME_DIR, "threadBuilder", "ThreadCommand.opal")
 
 enum ArrayState {
-    UNSORTED, SORTED, STABLY_SORTED, CONTENTS_CHANGED, UNSORTED_AND_CHANGED
+    UNSORTED, SORTED, STABLY_SORTED, CONTENTS_CHANGED
 }
 
 new class VisualizerException: Exception {}
@@ -498,14 +498,10 @@ new class SortingVisualizer {
                 other = [x for x in range(p)]
             );
 
-            if eq != len(this.array) - 1 {
-                if sUntil != len(this.array) - 1 {
-                    return ArrayState.UNSORTED_AND_CHANGED;
-                } else {
-                    return ArrayState.CONTENTS_CHANGED;
-                }
-            } else {
+            if sUntil != len(this.array) - 1 {
                 return ArrayState.UNSORTED;
+            } else {    
+                return ArrayState.CONTENTS_CHANGED;
             }
         }
     }
@@ -521,10 +517,6 @@ new class SortingVisualizer {
             case ArrayState.UNSORTED {
                 this.setCurrentlyRunning("The list was not sorted", "");
                 IO.out(sortName, " has failed\n");
-            }
-            case ArrayState.UNSORTED_AND_CHANGED {
-                this.setCurrentlyRunning("The list was not sorted and its original contents were changed", "");
-                IO.out(sortName, " has failed (unsorted + contents changed)\n");
             }
             case ArrayState.CONTENTS_CHANGED {
                 this.setCurrentlyRunning("The list's original contents were changed", "");

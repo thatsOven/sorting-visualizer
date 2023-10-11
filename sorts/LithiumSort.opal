@@ -23,7 +23,7 @@
  
 use blockSwap, backwardBlockSwap, compareValues,
     compareIntToValue, insertToRight, lrBinarySearch, 
-    binaryInsertionSort, log2;
+    binaryInsertionSort, log2, BufMerge2;
 
 new class LithiumBitArray: BitArray {
     new method swap(a, b) {
@@ -132,6 +132,65 @@ new class LithiumSort {
 
         for ; r >= this.bufPos; o--, r-- {
             array[o].swap(array[r]);
+        }
+    }
+
+    new classmethod shift(array, a, m, b, left) {
+        if left {
+            if m == b {
+                return;
+            }
+
+            while m > a {
+                b--; m--;
+                array[b].swap(array[m]);
+            }
+        } else {
+            if (m == a) {
+                return;
+            }
+
+            for ; m < b; a++, m++ {
+                array[a].swap(array[m]);
+            }
+        }
+    }
+
+    new method dualMergeFW(array, a, m, b, r) {
+        new int i = a,
+                j = m,
+                k = a - r;
+
+        for ; k < i && i < m; k++ {
+            if array[i] <= array[j] {
+                array[k].swap(array[i]);
+                i++;
+            } else {
+                array[k].swap(array[j]);
+                j++;
+            }
+        }
+
+        if k < i {
+            this.shift(array, j - r, j, b, False);
+        } else {
+            new int i2 = m - 1,
+                    j2 = b - 1;
+            k = i2 + b - j;
+
+            for ; i2 >= i && j2 >= j; k-- {
+                if array[i2] > array[j2] {
+                    array[k].swap(array[i2]);
+                    i2--;
+                } else {
+                    array[k].swap(array[j2]);
+                    j2--;
+                }
+            }
+
+            for ; j2 >= j; k--, j2-- {
+                array[k].swap(array[j2]);
+            }
         }
     }
 
@@ -506,19 +565,41 @@ new class LithiumSort {
     }
 
     new method lithiumLoop(array, a, b) {
-        new int r = LithiumSort.RUN_SIZE;
+        new int r = LithiumSort.RUN_SIZE,
+                e = b - this.keyLen;
         while r <= this.bufLen {
             new int twoR = r * 2;
-            for i = a; i < b - twoR; i += twoR {
-                this.mergeWithBufferBW(array, i, i + r, i + twoR, True);
+            for i = a; i < e - twoR; i += twoR {}
+
+            if i + r < e {
+                BufMerge2.mergeWithScrollingBufferBW(array, i, i + r, e);
+            } else {
+                this.shift(array, i, e, e + r, True);
             }
 
-            if i + r < b {
-                this.mergeWithBufferBW(array, i, i + r, b, True);
+            for i -= twoR; i >= a; i -= twoR {
+                BufMerge2.mergeWithScrollingBufferBW(array, i, i + r, i + twoR);
+            }
+
+            new int oldR = r;
+            r = twoR;
+            twoR *= 2;
+
+            for i = a + oldR; i + twoR < e + oldR; i += twoR {
+                this.dualMergeFW(array, i, i + r, i + twoR, oldR);
+            }
+
+            if i + r < e + oldR {
+                this.dualMergeFW(array, i, i + r, e + oldR, oldR);
+            } else {
+                this.shift(array, i - oldR, i, e + oldR, False);
             }
 
             r = twoR;
         }
+
+        b = e;
+        e += this.keyLen;
 
         new bool strat3 = this.blockLen == 0;
 
@@ -625,7 +706,7 @@ new class LithiumSort {
         }
 
         this.sortRuns(array, a, b - keysFound);
-        this.lithiumLoop(array, a, b - keysFound);
+        this.lithiumLoop(array, a, b);
     }
 }
 
