@@ -102,23 +102,23 @@ runAllSort(1024, "Log Sort",               3, 0);
 
 ct = "Merge Sorts";
 runAllSort(1024, "Merge Sort",            8);
-runAllSort(1024, "Bottom Up Merge",       5);
+runAllSort(1024, "Bottom Up Merge",       4);
 runAllSort(256,  "Lazy Stable",           4, rotations.index("Gries-Mills"));
 runAllSort(1024, "Adaptive Rotate Merge", 5, [128, rotations.index("Helium")]);
 runAllSort(1024, "Uranium Sort",          2, rotations.index("Helium"));
 runAllSort(1024, "Tim Sort",              5);
 runAllSort(2048, "Andrey's Merge",        8);
-runAllSort(2048, "Buf Merge 2",           5, rotations.index("Helium"));
+runAllSort(2048, "Buf Merge 2",           3, rotations.index("Helium"));
 
 
 ct = "Block Merge Sorts";
 runAllSort(2048, "Wiki Sort",     7, [0, rotations.index("Triple Reversal")]);
 runAllSort(2048, "Grail Sort",    7, [0, rotations.index("Gries-Mills")]);
 runAllSort(2048, "Helium Sort",   3, [0, rotations.index("Helium")]);
-runAllSort(1024, "Hydrogen Sort", 4, rotations.index("Helium"));
+runAllSort(1024, "Hydrogen Sort", 2, rotations.index("Helium"));
 runAllSort(2048, "Kota Sort",     7, rotations.index("Cycle Reverse"));
-runAllSort(1024, "Ecta Sort",     4);
-runAllSort(2048, "Lithium Sort",  5, rotations.index("Helium"));
+runAllSort(1024, "Ecta Sort",     3);
+runAllSort(2048, "Lithium Sort",  4, rotations.index("Helium"));
 
 
 ct = "Partition Sorts";
@@ -136,5 +136,5 @@ runAllSort(1024, "Static Sort",        3);
 
 ct = "Impractical Sorts";
 runAllSort(64, "Stooge Sort", 7);
-runAllSort(5,    "Bogo Sort", 1);
-runAllSort(5,    "Bozo Sort", 1);
+runAllSort(5,    "Bogo Sort", 0.5);
+runAllSort(5,    "Bozo Sort", 0.5);
