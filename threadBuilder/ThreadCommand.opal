@@ -9,7 +9,7 @@ new class ThreadCommand {
     new method compile() {
         match this.__mode {
             case "DISTRIBUTION" {
-                return "this.runDistribution(" + str(this.__lengthC) + ", " + str(this.__id)  + ", " + str(this.__unique) + ")\n";
+                return "this.runDistribution(" + str(this.__lengthC) + ", " + str(this.__unique) + ", " + str(this.__id) + ")\n";
             }
             case "VISUAL" {
                 return "this.setVisual(" + str(this.__id) + ")\n";
@@ -45,7 +45,7 @@ new class ThreadCommand {
     }
 
     new method __str__() {
-        new str name;
+        new str mode = this.__mode, name;
 
         match this.__mode {
             case "DISTRIBUTION" {
@@ -64,15 +64,19 @@ new class ThreadCommand {
                 name = "SET | " + str(this.__id);
             }
             case "AUTOVALUE_PUSH" {
+                mode = "AUTOVALUE";
                 name = "PUSH | " + str(this.__id);
             }
             case "AUTOVALUE_POP" {
+                mode = "AUTOVALUE";
                 name = "POP";
             }
             case "SPEED_RESET" {
+                mode = "SPEED";
                 name = "RESET";
             }
             case "AUTOVALUES_RESET" {
+                mode = "AUTOVALUES";
                 name = "RESET";
             }
             case "DEFINE" | "VERSION" {
@@ -80,6 +84,6 @@ new class ThreadCommand {
             }
         }
 
-        return this.__mode + ": " + name;
+        return mode + ": " + name;
     }
 }

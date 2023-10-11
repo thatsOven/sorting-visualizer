@@ -31,11 +31,14 @@ new class GUI {
         this.__buildSortSel();
 
         this.__sv.graphics.simpleText(f"thatsOven's Sorting Visualizer v{VERSION}", GUI.TEXT_OFFS);
+        this.saveBackground();
+    }
+
+    new method saveBackground() {
+        this.__background = this.__sv.graphics.screen.copy();
     }
 
     new method __loop(fn, fn0 = lambda *a: None) {
-        this.__background = this.__sv.graphics.screen.copy();
-
         while True {
             new dynamic delta = this.__clock.tick(GUI.FPS) / 1000.0;
 

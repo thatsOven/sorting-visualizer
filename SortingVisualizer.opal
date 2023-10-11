@@ -12,8 +12,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION        = "2023.10.11",
-        THREAD_VERSION = "1.0";
+new str VERSION = "2023.10.11";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil;
@@ -756,6 +755,7 @@ new class SortingVisualizer {
 
         this.__currFrame = 0;
 
+        this.__gui.saveBackground();
         this.__gui.renderScreen(subprocess.Popen([
             "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt", 
             "-c:v", "libx264", "-pix_fmt", "yuvj420p", "tmp.mp4",
@@ -1093,6 +1093,7 @@ new class SortingVisualizer {
 
     new method getUserInput(message = "", default = "", type_ = int) {
         if this.__autoUserValues.isEmpty() {
+            this.__gui.saveBackground();
             new dynamic res = this.__gui.userInputDialog(this.__currentlyRunning, message, type_, default);
             
             if this.__prepared {
@@ -1108,6 +1109,7 @@ new class SortingVisualizer {
 
     new method getUserSelection(content, message = "") {
         if this.__autoUserValues.isEmpty() {
+            this.__gui.saveBackground();
             new dynamic res = this.__gui.selection(this.__currentlyRunning, message, content);
             
             if this.__prepared {
@@ -1122,6 +1124,7 @@ new class SortingVisualizer {
     }
 
     new method userWarn(message) {
+        this.__gui.saveBackground();
         this.__gui.userWarn(this.__currentlyRunning, message);
     }
 
@@ -1136,6 +1139,7 @@ new class SortingVisualizer {
 
         new str f = formatException(e);
         IO.out(f, IO.endl);
+        this.__gui.saveBackground();
         this.__gui.userWarn("Exception occurred", f);
     }
 
@@ -1236,8 +1240,8 @@ new class SortingVisualizer {
         new str version = defLines[0][2:].strip(),
                 mode    = defLines[1][1:].strip();
 
-        if version != THREAD_VERSION {
-            this.__gui.userWarn("Error - Incompatible", "This thread was built with an older version of the thread builder.");
+        if version != VERSION {
+            this.__gui.userWarn("Error - Incompatible", "This thread was built with an older version of this sorting visualizer.");
             return False;
         }
 
@@ -1320,6 +1324,7 @@ new class SortingVisualizer {
 
             this.__iVideo = 0;
 
+            this.__gui.saveBackground();
             this.__gui.renderScreen(subprocess.Popen([
                 "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt", 
                 "-c:v", "libx264", "-pix_fmt", "yuvj420p", "output.mp4",
@@ -1378,6 +1383,7 @@ new class SortingVisualizer {
             match sel {
                 case 0 {
                     do opt == 0 {
+                        this.__gui.saveBackground();
                         new dict runOpts = this.__gui.runSort();
 
                         try {
@@ -1392,6 +1398,7 @@ new class SortingVisualizer {
 
                         this.__finalizeRender();
 
+                        this.__gui.saveBackground();
                         new int opt = this.__gui.selection("Done", "Continue?", [
                             "Yes",
                             "No"
@@ -1413,6 +1420,7 @@ new class SortingVisualizer {
                     match sel {
                         case 0 {
                             this.__selectThread("Thread", True, True);
+                            this.__finalizeRender();
                         }
                         case 1 {
                             $include os.path.join(HOME_DIR, "threadBuilder", "ThreadBuilder.opal")
@@ -1429,6 +1437,7 @@ new class SortingVisualizer {
 
 main {
     sys.setrecursionlimit(65536);
+    os.chdir(HOME_DIR);
 
     new SortingVisualizer sortingVisualizer = SortingVisualizer();
 

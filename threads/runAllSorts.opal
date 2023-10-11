@@ -108,7 +108,7 @@ runAllSort(1024, "Adaptive Rotate Merge", 5, [128, rotations.index("Helium")]);
 runAllSort(1024, "Uranium Sort",          2, rotations.index("Helium"));
 runAllSort(1024, "Tim Sort",              5);
 runAllSort(2048, "Andrey's Merge",        8);
-runAllSort(2048, "Buf Merge 2",           7, rotations.index("Helium"));
+runAllSort(2048, "Buf Merge 2",           5, rotations.index("Helium"));
 
 
 ct = "Block Merge Sorts";

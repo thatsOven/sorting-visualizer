@@ -20,7 +20,7 @@ new method __builderEvaluator(title, msg, sel, commands, macros, modes) {
         case 0 {
             new dict sortSel = this.__gui.sortSelection();
 
-            command = ThreadCommand(modes[mode], sortSel["sort"], sortSel["category"]);
+            command = ThreadCommand(modes[mode], sortSel["sort"], this.categories[sortSel["category"]]);
         }
         case 1 {
             new int shufSel = this.__gui.selection(title + " builder", "Select shuffle:", [shuf.name for shuf in this.shuffles]);
