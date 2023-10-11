@@ -1130,12 +1130,11 @@ new class SortingVisualizer {
 
     new method __reportException(e) {
         if this.__prepared {
+            this.resetAux();
+            this.resetAdaptAux();
             this.drawFullArray();
             this.renderStats();
         }
-
-        this.resetAux();
-        this.resetAdaptAux();
 
         new str f = formatException(e);
         IO.out(f, IO.endl);
