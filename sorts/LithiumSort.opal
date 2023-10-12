@@ -20,6 +20,23 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
+
+# Lithium Sort
+# 
+# A conceptually optimal in-place block merge sorting algorithm.
+# This algorithm introduces some ideas, that in conjunction with a heavier usage of
+# scrolling buffers, code optimizations and other tricks (like the ones in Holy GrailSort),
+# minimizes moves and comparisons for every step of the in-place block merge sorting procedure.
+# 
+# Time complexity: O(n log n) best/average/worst
+# Space complexity: O(1)
+# Stable: Yes
+# 
+# Special thanks to aphitorite for creating the kota merging algorithm, which enables
+# strategy 1's block merging routine to be optimal; the dualMerge routine, which simplifies
+# the rest of the code as well as improving performance; the buffer redistribution algorithm, 
+# found in Adaptive Grailsort; the smarter block selection algorithm, used in the blockSelect
+# routine, and part of the code for some of the other routines.
  
 use blockSwap, backwardBlockSwap, compareValues,
     compareIntToValue, insertToRight, lrBinarySearch, 
@@ -647,9 +664,25 @@ new class LithiumSort {
 
         this.firstMerge(array, a, a + r, b, strat3);
 
-        new int e = b + this.keyLen;
         binaryInsertionSort(array, b, e);
-        this.mergeInPlaceBW(array, a, b, e, True);
+        
+        r = lrBinarySearch(array, a, b, array[e - 1], False);
+        this.rotate(array, r, b, e);
+
+        new int d = b - r;
+        e -= d;
+        b -= d;
+
+        new int b0 = b + (e - b) // 2;
+        r = lrBinarySearch(array, a, b, array[b0 - 1], False);
+        this.rotate(array, r, b, b0);
+
+        d   = b - r;
+        b0 -= d;
+        b  -= d;
+
+        this.mergeInPlaceBW(array, b0, b0 + d, e, True);
+        this.mergeInPlaceBW(array, a, b, b0, True);
     }
 
     new method inPlaceMergeSort(array, a, b) {
