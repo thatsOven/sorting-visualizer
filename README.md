@@ -11,6 +11,7 @@ To properly run the visualizer, you will need to install these Python modules:
 pygame_gui
 scipy
 perlin_noise
+sf2_loader
 ```
 To use render mode, ffmpeg needs to be properly installed on your system.
 
@@ -181,7 +182,7 @@ new function myDistribution(array, length) {
 }
 ```
 ## Adding visual styles
-To add a visual style, a class needs to be created an inherit from the `Visual` class. That way, visuals are automatically added. Said file needs to be added in the `visuals` folder.  Example:
+To add a visual style, a class needs to be created and inherit from the `Visual` class. That way, visuals are automatically added. Said file needs to be added in the `visuals` folder.  Example:
 ```
 new class MyVisual: Visual {
 	new method __init__() {
@@ -210,4 +211,17 @@ The class also provides three methods that get called in specific scenarios and 
 - `fastDrawAux(array: list[Value], indices: list[int], color: Optional[tuple[int, int, int]])`: like `fastDraw`, but draws the aux array. By default, it just calls `drawAux`
 
 The `graphicsUtils.opal` file contains some presets for common visual styles.
+## Adding sound systems
+To add a sound system, a class needs to be created and inherit from the `Sound` class. The file needs to be added in the `sounds` folder. Example:
+```
+new class MySound: Sound {
+	new method __init__() {
+		super.__init__("Visual name");
+	}
+}
+```
+The `Sound` class contains an abstract method:
+- `play(value: int | float, max_: int | float, sample: numpy.array) -> numpy.array`: generates the sound sample to be played based on the array value. The original sample should be left untouched.
 
+The class also provides a method:
+- `prepare()`: it gets called when the visualizer has to prepare the sound system. Usually used to requests or load settings if it needs any, or precompute data. By default, it does nothing.
