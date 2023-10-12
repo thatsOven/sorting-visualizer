@@ -216,7 +216,7 @@ To add a sound system, a class needs to be created and inherit from the `Sound` 
 ```
 new class MySound: Sound {
 	new method __init__() {
-		super.__init__("Visual name");
+		super.__init__("Sound name");
 	}
 }
 ```
