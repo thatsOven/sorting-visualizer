@@ -12,15 +12,17 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION = "2023.10.11";
+new str VERSION = "2023.10.12";
 
 import math, random, time, os, numpy, sys, 
-       pygame_gui, json, subprocess, shutil;
+       pygame_gui, json, subprocess, shutil,
+       builtins;
 package timeit:      import default_timer;
 package functools:   import total_ordering;
 package traceback:   import format_exception;
-package pygame_gui:  import UIManager, elements;
+package pygame_gui:  import UIManager, elements, windows;
 package pygame:      import Rect, image;
+package sf2_loader:  import sf2_loader;
 package pygame.time: import Clock;
 package scipy:       import signal, io;
 use exec, getattr, eval;
@@ -53,6 +55,10 @@ new function getVideoDuration(file) {
     ).stdout);
 }
 
+new function compare(a, b) {
+    return (a > b) - (a < b);
+}
+
 new dynamic sortingVisualizer = None;
 
 $include os.path.join(HOME_DIR, "GUI.opal")
@@ -68,7 +74,8 @@ new class VisualizerException: Exception {}
 
 new class SortingVisualizer {
     new str SETTINGS_FILE = os.path.join(HOME_DIR, "config.json"),
-            IMAGE_BUF     = os.path.join(HOME_DIR, "frames");
+            IMAGE_BUF     = os.path.join(HOME_DIR, "frames"),
+            SOUND_CONFIG  = os.path.join(HOME_DIR, "sounds", "config");
 
     new method __init__() {
         this.array = [];
@@ -77,7 +84,9 @@ new class SortingVisualizer {
 
         this.distributions = [];
         this.shuffles      = [];
-        this.visuals       = [];
+
+        this.visuals = [];
+        this.sounds  = [];
 
         this.sorts      = {};
         this.categories = [];
@@ -88,6 +97,7 @@ new class SortingVisualizer {
         this.__fontSize = round(((RESOLUTION.x / 1280.0) + (RESOLUTION.y / 720.0)) * 11);
 
         this.__visual = None;
+        this.__sound  = None;
         this.graphics = Graphics(
             RESOLUTION, caption = "thatsOven's Sorting Visualizer", 
             font = "Times New Roman", fontSize = this.__fontSize, 
@@ -104,12 +114,10 @@ new class SortingVisualizer {
         this.__adaptAux       = this.__defaultAdaptAux;
         this.__adaptIdx       = this.__defaultAdaptIdx;
         this.__oldAuxLen      = 0;
-
-        this.__speed        = 1;
-        this.__speedCounter = 0;
-        this.__sleep        = 0;
-        this.__tmpSleep     = 0;
-        this.__dFramesPerc  = "0%";
+        
+        this.__tmpSleep   = 0;
+        this.__unitSample = this.__makeSample(UNIT_SAMPLE_DURATION);
+        this.resetSpeed();
 
         this.__currentlyRunning = "";
         this.__currentCategory  = "";
@@ -129,10 +137,7 @@ new class SortingVisualizer {
         this.__audioPtr      = 0;
         this.__audio         = None;
 
-        this.__unitSample  = this.__makeSample(UNIT_SAMPLE_DURATION);
-        this.__currSample  = this.__unitSample;
-        this.__soundSample = this.__unitSample;
-        this.__audioChs    = this.graphics.getAudioChs()[2];
+        this.__audioChs = this.graphics.getAudioChs()[2];
 
         this.__loadSettings();
 
@@ -289,7 +294,7 @@ new class SortingVisualizer {
 
         new float t = length / unique;
         for i in range(length) {
-            this.array[i] = Value(int(t * int(this.array[i] / t) + t // 2));
+            this.array[i] = Value(int(t * (this.array[i] // t) + t // 2));
             this.array[i].stabIdx = i;
             this.array[i].idx     = i;
         }
@@ -355,6 +360,55 @@ new class SortingVisualizer {
         return this.__runSDModule("rotation", this.__getRotationById, this.rotations, id, name, Rotation);
     }
 
+    new method __getVSModule(mess, array, id, name) {
+        if id is None and name is None {
+            throw VisualizerException(f"Not enough information to start {mess}");
+        }
+
+        if id is None {
+            new int a = 0,
+                    b = len(array),
+                    id, cmp;
+    
+            while a < b {
+                id = a + (b - a) / 2;
+
+                cmp = compare(name, array[id].name);
+                if cmp == 0 {
+                    return array[id];
+                }
+
+                if cmp < 0 {
+                    b = id;
+                } else {
+                    a = id + 1;
+                }
+            }
+
+            throw VisualizerException(f"Invalid {mess} name");
+        } elif name is None {
+            if id in range(0, len(array)) {
+                return array[id];
+            } else {
+                throw VisualizerException(f"Invalid {mess} ID");
+            }
+        }
+    }
+
+    new method _setSound(id = None, name = None) {
+        this.__sound = this.__getVSModule("sound", this.sounds, id, name);
+        this.__sound.prepare();
+    }
+
+    new method _refreshSoundConf() {
+        this.__sound.prepare();
+    }
+
+    new method setVisual(id = None, name = None) {
+        this.__visual = this.__getVSModule("visual style", this.visuals, id, name);
+        this.__prepared = False;
+    }
+
     new method __runSortById(category, id) {
         this.resetStats();
         this.__currentlyRunning = this.sorts[category][id].name;
@@ -398,14 +452,7 @@ new class SortingVisualizer {
         }
     }
 
-    new method setVisual(id) {
-        if id in range(0, len(this.visuals)) {
-            this.__visual = this.visuals[id];
-            this.__prepared = False;
-        } else {
-            throw VisualizerException(f'Invalid visual ID "{id}"');
-        }
-    }
+    
 
     new method generateArray(selectedDistributionIdx, selectedShuffleIdx, length, unique) {
         this.runDistribution(length, unique, id = selectedDistributionIdx);
@@ -571,6 +618,10 @@ new class SortingVisualizer {
         this.rotations.append(rot);
     }
 
+    new method addSound(snd) {
+        this.sounds.append(snd);
+    }
+
     new method renderStats() {
         if not this.settings["show-text"] {
             return;
@@ -644,9 +695,9 @@ new class SortingVisualizer {
         new dynamic tmp;
 
         if i.aux and this.aux is not None {
-            tmp = 200.0 * signal.square(2.0 * numpy.pi * ((450.0 + (adapted[i.idx].value * (500.0 / this.auxMax)))) * this.__soundSample);
+            tmp = this.__sound.play(adapted[i.idx].value, this.auxMax, this.__soundSample);
         } else {
-            tmp = 200.0 * signal.square(2.0 * numpy.pi * ((450.0 + (this.array[i.idx].value * (500.0 / this.arrayMax)))) * this.__soundSample);
+            tmp = this.__sound.play(this.array[i.idx].value, this.arrayMax, this.__soundSample);
         }
 
         if this.__audioChs > 1 {
@@ -1335,6 +1386,16 @@ new class SortingVisualizer {
         }
     }
 
+    new method _makeSoundConfFolder() {
+        if !os.path.exists(SortingVisualizer.SOUND_CONFIG) {
+            os.mkdir(SortingVisualizer.SOUND_CONFIG);
+        }
+    }
+
+    new method fileDialog(allowed = None, initPath = None) {
+        return this.__gui.fileDialog(allowed, initPath);
+    }
+
     new method run() {
         this.graphics.event(QUIT)(lambda _: quit());
 
@@ -1343,6 +1404,8 @@ new class SortingVisualizer {
         Utils.Iterables.stableSort(this.visuals);
         Utils.Iterables.stableSort(this.categories);
         Utils.Iterables.stableSort(this.pivotSelections);
+        Utils.Iterables.stableSort(this.rotations);
+        Utils.Iterables.stableSort(this.sounds);
 
         for list_ in this.sorts {
             Utils.Iterables.stableSort(this.sorts[list_]);
@@ -1352,7 +1415,15 @@ new class SortingVisualizer {
         threadShuf.func = this.__threadShuf;
         this.addShuffle(threadShuf);
 
+        try {
+            this._makeSoundConfFolder();
+        } catch Exception as e {
+            this.__gui.userWarn("Error", f"Unable to create sound configuration folder. Exception:\n{formatException(e)}");
+            quit;
+        }
+
         this.__gui.setSv(this);
+        this._setSound(name = this.settings["sound"]);
 
         while True {
             if this.settings["render"] {
@@ -1360,7 +1431,7 @@ new class SortingVisualizer {
                     try {
                         os.mkdir(SortingVisualizer.IMAGE_BUF);
                     } catch Exception as e {
-                        this.__gui.userWarn("Error", f"Unable to create image buffer folder. Exception:\n{e}");
+                        this.__gui.userWarn("Error", f"Unable to create image buffer folder. Exception:\n{formatException(e)}");
                         quit;
                     }
                 }
@@ -1390,11 +1461,11 @@ new class SortingVisualizer {
                             this.generateArray(runOpts["distribution"], runOpts["shuffle"], runOpts["array-size"], runOpts["unique"]);
                             this.setSpeed(runOpts["speed"]);
                             this.runSort(this.categories[runOpts["category"]], id = runOpts["sort"]);
-                            this.__resetShufThread();
                         } catch Exception as e {
                             this.__reportException(e);
                         } 
 
+                        this.__resetShufThread();
                         this.__finalizeRender();
 
                         this.__gui.saveBackground();
@@ -1449,6 +1520,28 @@ main {
     for visual in dir(Visuals) {
         if !visual.startswith("_") {
             getattr(Visuals, visual)();
+        }
+    }
+
+    namespace Sounds {
+        $includeDirectory os.path.join(HOME_DIR, "sounds")
+    }
+
+    new dynamic defaultIsInstance = builtins.isinstance;
+
+    new function _customIsinstance(instance, cls) {
+        if type(instance) is Sounds._FakeMPNote {
+            return True;
+        }
+
+        return defaultIsInstance(instance, cls);
+    }
+
+    builtins.isinstance = _customIsinstance;
+
+    for sound in dir(Sounds) {
+        if !sound.startswith("_") {
+            getattr(Sounds, sound)();
         }
     }
 

@@ -190,3 +190,23 @@ new class Rotation {
         return this.name < other.name;
     }
 }
+
+@total_ordering;
+abstract: new class Sound {
+    new method __init__(name) {
+        this.name = name;
+        sortingVisualizer.addSound(this);
+    }
+
+    new method prepare() {}
+
+    abstract: new method play(value, max_, sample);
+
+    new method __eq__(other) {
+        return this.name == other.name;
+    }
+
+    new method __lt__(other) {
+        return this.name < other.name;
+    }
+}

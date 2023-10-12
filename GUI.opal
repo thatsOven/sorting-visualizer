@@ -49,7 +49,8 @@ new class GUI {
 
                 if event.type in (
                     pygame_gui.UI_BUTTON_PRESSED, 
-                    pygame_gui.UI_DROP_DOWN_MENU_CHANGED
+                    pygame_gui.UI_DROP_DOWN_MENU_CHANGED,
+                    pygame_gui.UI_FILE_DIALOG_PATH_PICKED
                 ) {
                     new dynamic res = fn(event);
                     if res is not None {
@@ -653,7 +654,8 @@ new class GUI {
                     internalInfoSettingValue = this.__sv.settings["internal-info"],
                     showAuxSettingValue      = this.__sv.settings["show-aux"],
                     lazyAuxSettingValue      = this.__sv.settings["lazy-aux"],
-                    lazyRenderSettingValue   = this.__sv.settings["lazy-render"];
+                    lazyRenderSettingValue   = this.__sv.settings["lazy-render"],
+                    soundSettingValue        = this.__sv.settings["sound"];
 
         new dynamic settingsPanel = elements.UIPanel(
             Rect(
@@ -674,7 +676,7 @@ new class GUI {
         );
         new dynamic showTextSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(showTextSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 40, 100, 20),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 40, 100, 20),
             this.__manager, settingsPanel 
         );
 
@@ -684,7 +686,7 @@ new class GUI {
         );
         new dynamic showAuxSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(showAuxSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 70, 100, 20),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 70, 100, 20),
             this.__manager, settingsPanel 
         );
 
@@ -694,7 +696,7 @@ new class GUI {
         );
         new dynamic internalInfoSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(internalInfoSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 100, 100, 20),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 100, 100, 20),
             this.__manager, settingsPanel 
         );
 
@@ -704,7 +706,7 @@ new class GUI {
         );
         new dynamic renderSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(renderSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 130, 100, 20),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 130, 100, 20),
             this.__manager, settingsPanel 
         );
 
@@ -714,7 +716,7 @@ new class GUI {
         );
         new dynamic lazyAuxSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(lazyAuxSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 160, 100, 20),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 160, 100, 20),
             this.__manager, settingsPanel 
         );
 
@@ -724,8 +726,30 @@ new class GUI {
         );
         new dynamic lazyRenderSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(lazyRenderSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x * 2 - 140, GUI.OFFS.y + 190, 100, 20),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 190, 100, 20),
             this.__manager, settingsPanel 
+        );
+
+        elements.UILabel(
+            Rect(GUI.OFFS.x, GUI.OFFS.y + 220, 250, 20), 
+            "Sounds", this.__manager, settingsPanel
+        );
+        new dynamic soundSetting = elements.ui_drop_down_menu.UIDropDownMenu(
+            [x.name for x in this.__sv.sounds], str(soundSettingValue),
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 250, GUI.OFFS.y + 220, 250, 20),
+            this.__manager, settingsPanel 
+        );
+
+        new dynamic soundRefreshButton = elements.UIButton(
+            Rect(GUI.OFFS.x, GUI.OFFS.y + 250, 250, 30),           
+            "Refresh sound config", this.__manager, settingsPanel, 
+            tool_tip_text = "Performs the sound initialization process. Used to change sound specific settings"
+        );
+
+        new dynamic soundDeleteConf = elements.UIButton(
+            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 250, GUI.OFFS.y + 250, 250, 30),       
+            "Delete sound config", this.__manager, settingsPanel, 
+            tool_tip_text = "Deletes sounds settings"
         );
 
         new dynamic settingsBackButton = elements.UIButton(
@@ -743,7 +767,8 @@ new class GUI {
         new function __internal(event) {
             external showTextSettingValue, showAuxSettingValue, 
                      internalInfoSettingValue, renderSettingValue,
-                     lazyAuxSettingValue, lazyRenderSettingValue;
+                     lazyAuxSettingValue, lazyRenderSettingValue,
+                     soundSettingValue;
 
             if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED {
                 new bool val = event.text == "True";
@@ -767,24 +792,48 @@ new class GUI {
                     case lazyRenderSetting {
                         lazyRenderSettingValue = val;
                     }
+                    case soundSetting {
+                        soundSettingValue = event.text;
+                    }
                 }
             } elif event.type == pygame_gui.UI_BUTTON_PRESSED {
                 match:() event.ui_element {
                     case settingsBackButton {
                         return 1;
                     }
+                    case soundRefreshButton {
+                        this.__sv._refreshSoundConf();
+                        this.userWarn("Success", "Sound configuration was reset");
+                    }
+                    case soundDeleteConf {
+                        try {
+                            shutil.rmtree(SortingVisualizer.SOUND_CONFIG);
+                            this.__sv._makeSoundConfFolder();
+                        } catch Exception as e {
+                            this.userWarn("Error", f"Unable to delete sound settings or restore folder. Exception:\n{e}");
+                        } success {
+                            this.userWarn("Success", "Sound settings deleted");
+                        }
+                    }
                     case settingsSaveButton {
+                        new dynamic oldSound = this.__sv.settings["sound"];
+
                         this.__sv.settings = {
                             "show-text":     showTextSettingValue,
                             "show-aux":      showAuxSettingValue,
                             "internal-info": internalInfoSettingValue,
                             "render":        renderSettingValue,
                             "lazy-aux":      lazyAuxSettingValue,
-                            "lazy-render":   lazyRenderSettingValue
+                            "lazy-render":   lazyRenderSettingValue,
+                            "sound":         soundSettingValue
                         };
 
                         try {
                             this.__sv._writeSettings();
+
+                            if oldSound != soundSettingValue {
+                                this.__sv._setSound(name = soundSettingValue);
+                            }
                         } catch Exception as e {
                             this.userWarn("Error", f"An error occurred while saving your settings:\n{e}");
                             return;
@@ -800,18 +849,6 @@ new class GUI {
         this.__loop(__internal);
         settingsPanel.kill();
     }
-
-    $macro outputBytesConvertAndWrite
-        for line in lines {
-            if line && type(line) is bytes {
-                try {
-                    line = line.decode("utf-8");
-                } ignore UnicodeDecodeError; success {
-                    console.add_output_line_to_log(line, False);
-                }
-            }
-        }
-    $end
 
     new method renderScreen(process, message) {
         new dynamic panel = elements.UIPanel(
@@ -840,5 +877,33 @@ new class GUI {
         if process.returncode != 0 {
             throw VisualizerException("ffmpeg exited with a non-zero return code");
         }
+    }
+
+    new method fileDialog(allowed = None, initPath = None) {
+        if allowed is None {
+            allowed = {""};
+        }
+
+        new dynamic win = windows.ui_file_dialog.UIFileDialog(
+            Rect(
+                RESOLUTION.x // 2 - GUI.WIN_SIZE.x // 2, 
+                RESOLUTION.y // 2 - GUI.WIN_SIZE.y // 2, 
+                GUI.WIN_SIZE.x, GUI.WIN_SIZE.y
+            ), this.__manager, "Select file",
+            allowed, initPath
+        );
+        win.set_blocking(True);
+        win.on_close_window_button_pressed = lambda *a: None;
+        win.set_position((RESOLUTION // 2 - GUI.WIN_SIZE // 2).toList(2));
+        
+        new function __internal(event) {
+            if event.type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED {
+                return event.text;
+            }
+        }
+
+        new dynamic tmp = this.__loop(__internal);
+        win.kill();
+        return tmp;
     }
 }
