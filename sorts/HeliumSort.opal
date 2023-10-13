@@ -987,6 +987,10 @@ new class HeliumSort {
         if mem >= sqrtn + 2 * keySize || mem == -2 {
             if mem == -2 {
                 mem = sqrtn + 2 * keySize;
+            } elif mem != sqrtn + 2 * keySize {
+                for ; sqrtn + 2 * n // sqrtn <= mem; sqrtn *= 2 {}
+                sqrtn //= 2;
+                keySize = n // sqrtn;
             }
 
             if this.checkSortedIdx(array, a, b) == b {
@@ -1015,6 +1019,10 @@ new class HeliumSort {
         if mem >= sqrtn + keySize || mem == -3 {
             if mem == -3 {
                 mem = sqrtn + keySize;
+            } elif mem != sqrtn + keySize {
+                for ; sqrtn + n // sqrtn <= mem; sqrtn *= 2 {}
+                sqrtn //= 2;
+                keySize = n // sqrtn;
             }
 
             new dynamic keysFound = this.findKeys(array, a, b, keySize);
@@ -1060,6 +1068,10 @@ new class HeliumSort {
         if mem >= sqrtn || mem == -4 {
             if mem == -4 {
                 mem = sqrtn;
+            } elif mem != sqrtn {
+                for ; sqrtn <= mem; sqrtn *= 2 {}
+                sqrtn //= 2;
+                keySize = n // sqrtn;
             }
 
             new dynamic keysFound = this.findKeys(array, a, b, keySize);
