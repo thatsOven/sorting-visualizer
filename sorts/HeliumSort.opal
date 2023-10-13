@@ -998,8 +998,8 @@ new class HeliumSort {
             this.indices = sortingVisualizer.createValueArray(keySize);
             this.keys    = sortingVisualizer.createValueArray(keySize);
             this.buffer  = sortingVisualizer.createValueArray(mem - 2 * keySize);
-            sortingVisualizer.setAux(this.buffer);
             sortingVisualizer.setAdaptAux(this.__bufIdxKeysAdapt, this.__bufIdxKeysAdaptIdx);
+            sortingVisualizer.setAux(this.buffer);
 
             this.blockLen = sqrtn;
             this.bufLen = 0;
@@ -1029,8 +1029,8 @@ new class HeliumSort {
 
                 this.indices = sortingVisualizer.createValueArray(keySize);
                 this.buffer  = sortingVisualizer.createValueArray(mem - keySize);
-                sortingVisualizer.setAux(this.buffer);
                 sortingVisualizer.setAdaptAux(this.__bufIdxAdapt, this.__bufIdxOrKeysAdaptIdx);
+                sortingVisualizer.setAux(this.buffer);
 
                 this.keyLen = keysFound;
                 this.keyPos = a;
@@ -1043,8 +1043,8 @@ new class HeliumSort {
 
                 this.keys   = sortingVisualizer.createValueArray(keySize);
                 this.buffer = sortingVisualizer.createValueArray(mem - keySize);
-                sortingVisualizer.setAux(this.buffer);
                 sortingVisualizer.setAdaptAux(this.__bufKeysAdapt, this.__bufIdxOrKeysAdaptIdx);
+                sortingVisualizer.setAux(this.buffer);
 
                 this.bufLen = 0;
                 this.bufPos = -1;

@@ -289,8 +289,8 @@ new class ShelfSort {
         this.scratch  = sortingVisualizer.createValueArray(scratchSize);
         this.indicesA = sortingVisualizer.createValueArray(scratchSize);
         this.indicesB = sortingVisualizer.createValueArray(scratchSize);
-        sortingVisualizer.setAux(this.scratch);
         sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
+        sortingVisualizer.setAux(this.scratch);
 
         new int sortedZoneSize = ShelfSort.SMALL_SORT, runLen, i;
         for ; sortedZoneSize < scratchSize // 2; sortedZoneSize *= 2 {

@@ -76,6 +76,7 @@ new class FeatureSort {
     "Distribution Sorts",
     "Feature Sort",
     "Feature Sort",
+    usesDynamicAux = True
 );
 new function featureSortRun(array) {
     FeatureSort().sort(array, 0, len(array));

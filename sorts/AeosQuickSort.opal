@@ -220,8 +220,8 @@ new class AeosQuickSort {
 
         this.aux     = sortingVisualizer.createValueArray(sqrt);
         this.indices = sortingVisualizer.createValueArray((b - a) // sqrt);
-        sortingVisualizer.setAux(this.aux);
         sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
+        sortingVisualizer.setAux(this.aux);
 
         this.sortRec(array, a, b, sqrt, 0);
     }

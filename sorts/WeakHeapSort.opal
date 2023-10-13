@@ -60,7 +60,8 @@ new class WeakHeapSort {
 @Sort(
     "Tree Sorts",
     "Weak Heap Sort",
-    "Weak Heap Sort"
+    "Weak Heap Sort",
+    usesDynamicAux = True
 );
 new function weakHeapSortRun(array) {
     WeakHeapSort(array, len(array)).sort();

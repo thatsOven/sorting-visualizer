@@ -66,8 +66,8 @@ new class LibrarySort {
         this.temp = sortingVisualizer.createValueArray(length);
         this.cnts = sortingVisualizer.createValueArray(maxLevel + 2);
         this.locs = sortingVisualizer.createValueArray(length - maxLevel);
-        sortingVisualizer.setAux(this.temp);
         sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
+        sortingVisualizer.setAux(this.temp);
 
         for i = j, k = 0; i < length; i++ {
             if this.R * j == i {

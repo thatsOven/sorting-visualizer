@@ -82,7 +82,8 @@ new class AmericanFlagSort {
 @Sort(
     "Distribution Sorts",
     "American Flag Sort",
-    "American Flag Sort"
+    "American Flag Sort",
+    usesDynamicAux = True
 );
 new function americanFlagSortRun(array) {
     AmericanFlagSort().sort(array, 0, len(array));

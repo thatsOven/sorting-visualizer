@@ -110,10 +110,11 @@ new class SortingVisualizer {
         this.arrayMax = 1.0;
         this.auxMax   = 1.0;
 
-        this.__enteredAuxMode = False;
-        this.__adaptAux       = this.__defaultAdaptAux;
-        this.__adaptIdx       = this.__defaultAdaptIdx;
-        this.__oldAuxLen      = 0;
+        this.__auxMode    = False;
+        this.__dynamicAux = False;
+        this.__adaptAux   = this.__defaultAdaptAux;
+        this.__adaptIdx   = this.__defaultAdaptIdx;
+        this.__oldAuxLen  = 0;
         
         this.__tmpSleep   = 0;
         this.__unitSample = this.__makeSample(UNIT_SAMPLE_DURATION);
@@ -311,6 +312,7 @@ new class SortingVisualizer {
 
     new method __runShuffleById(id, placeHolder, ndPlaceHolder) {
         this.resetStats();
+        this.__dynamicAux       = this.shuffles[id].dynAux;
         this.__currentlyRunning = this.shuffles[id].name;
         this.__currentCategory  = "Shuffles";
 
@@ -411,6 +413,7 @@ new class SortingVisualizer {
 
     new method __runSortById(category, id) {
         this.resetStats();
+        this.__dynamicAux       = this.sorts[category][id].dynAux;
         this.__currentlyRunning = this.sorts[category][id].name;
         this.__currentCategory  = category;
 
@@ -727,7 +730,7 @@ new class SortingVisualizer {
     }
 
     $macro auxSect
-        if !this.settings["lazy-aux"] {
+        if this.__dynamicAux && !this.settings["lazy-aux"] {
             new int length = len(adapted);
 
             if this.__oldAuxLen != length {
@@ -1247,8 +1250,8 @@ new class SortingVisualizer {
     new method setAux(array) {
         this.aux = array;
 
-        if this.settings["show-aux"] and not this.__enteredAuxMode {
-            this.__enteredAuxMode = True;
+        if this.settings["show-aux"] and not this.__auxMode {
+            this.__auxMode = True;
             new dynamic adapted = this.__adaptAux(this.aux);
 
             this.getAuxMax(adapted);
@@ -1264,7 +1267,8 @@ new class SortingVisualizer {
 
     new method resetAux() {
         this.aux = None;
-        this.__enteredAuxMode = False;
+        this.__dynamicAux = False;
+        this.__auxMode    = False;
         this.__visual.onAuxOff();
     }
 

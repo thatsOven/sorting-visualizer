@@ -60,7 +60,8 @@ new function staticSort(array, a, b) {
 @Sort(
     "Distribution Sorts",
     "Static Sort [Utils.Iterables.fastSort]",
-    "Static Sort"
+    "Static Sort",
+    usesDynamicAux = True
 );
 new function staticSortRun(array) {
     staticSort(array, 0, len(array));

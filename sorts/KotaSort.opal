@@ -363,6 +363,8 @@ new function kotaSortRun(array) {
         )
     ).indexedFn;
 
+    new dynamic oldRotate = KotaSort.rotate;
     KotaSort.rotate = rotate;
     KotaSort.sort(array, 0, len(array));
+    KotaSort.rotate = oldRotate;
 }

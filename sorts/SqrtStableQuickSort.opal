@@ -230,8 +230,8 @@ new class SqrtStableQuickSort {
         this.zeros = sortingVisualizer.createValueArray(sqrt);
         this.ones  = sortingVisualizer.createValueArray(sqrt);
         this.keys  = sortingVisualizer.createValueArray(((b - a - 1) // sqrt) + 1);
-        sortingVisualizer.setAux(this.zeros);
         sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
+        sortingVisualizer.setAux(this.zeros);
 
         this.quickSorter(array, a, b, 2 * math.log2(b - a));
     }
@@ -256,6 +256,8 @@ new function sqrtStableQuickSortRun(array) {
         )
     ).indexedFn;
     
+    new dynamic oldRotate = SqrtStableQuickSort.rotate;
     SqrtStableQuickSort.rotate = rotate;
     SqrtStableQuickSort.sort(array, 0, len(array));
+    SqrtStableQuickSort.rotate = oldRotate;
 }

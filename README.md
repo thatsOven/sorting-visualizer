@@ -70,7 +70,7 @@ The visualizer provides two methods for manual highlighting:
 ## Working with auxiliary arrays
 To create a new array, the visualizer provides  `sortingVisualizer.createValueArray(length: int) -> list[Value]`, which is pre-filled with already configured `Value`s. To select an auxiliary array for visualization, `sortingVisualizer.setAux(array: list)` can be used, and `sortingVisualizer.resetAux()` can be used to remove it. The visualizer though, can only display one auxiliary array at a time. For this reason, it provides other two methods:
 - `sortingVisualizer.setInvisibleArray(array: list[Value])`: disables all highlights from the given array. Basically, sets all the `Value`'s indices to `None`;
-- `sortingVisualizer.setAdaptAux(fn, idxFn = None)`: sets a function to "adapt" the aux array for visualization. It can merge more arrays together, effectively providing multiple-aux visualization, or visualization of multidimensional lists. An "index function" can be defined to correctly adjust the highlighted indices to the adapted auxiliary array. The visualizer also provides `sortingVisualizer.resetAdaptAux()` to reset the adaptation to default. It's not mandatory to call, but it can be useful.
+- `sortingVisualizer.setAdaptAux(fn, idxFn = None)`: sets a function to "adapt" the aux array for visualization. It can merge more arrays together, effectively providing multiple-aux visualization, or visualization of multidimensional lists. An "index function" can be defined to correctly adjust the highlighted indices to the adapted auxiliary array. The visualizer also provides `sortingVisualizer.resetAdaptAux()` to reset the adaptation to default. It's not mandatory to call, but it can be useful. `setAdaptAux` must be called before `setAux`, for graphics computation purposes.
 ## Using rotations and pivot selections provided by the visualizer
 To fetch a specific rotation or pivot selection algorithm, `sortingVisualizer.getPivotSelection(id: Optional[int] = None, name: Optional[str] = None)` and `sortingVisualizer.getRotation(id: Optional[int] = None, name: Optional[str] = None)` can be used. You can either pass the name of the algorithm to the function, like this:
 ```
@@ -131,6 +131,7 @@ or, in Python:
 def myShuffle(array):
     ... # your code here
 ```
+An optional boolean argument called `usesDynamicAux` can be set if the shuffle uses an auxiliary array which is not static in size or maximum element, or is composed of items that don't belong in the main array. It is `False` by default.
 ## Adding new sorts
 Like shuffles, adding sorts is very simple.  `.opal` or `.py` files need to be added to the `sorts` folder, and they have to provide a run function:
 ```
@@ -143,6 +144,7 @@ new function mySort(array) {
     # your code here
 }
 ```
+Like in shuffles, the sort class provides a `usesDynamicAux` argument for the same purpose.
 ## Adding new pivot selections
 Pivot selections are algorithms used to select a pivot in partitioning sorts that require one. The visualizer provides a set of pivot selections for those algorithms to use, and the user can pick the one they prefer to experiment with. The process to adding one is very similar to adding a shuffle. The file needs to be added in the `pivotSelection` folder, and provide a run function:
 ```

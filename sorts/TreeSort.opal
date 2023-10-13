@@ -62,7 +62,8 @@ new class TreeSort {
 @Sort(
     "Tree Sorts",
     "Tree Sort",
-    "Tree Sort"
+    "Tree Sort",
+    usesDynamicAux = True
 );
 new function treeSortRun(array) {
     TreeSort().sort(array);

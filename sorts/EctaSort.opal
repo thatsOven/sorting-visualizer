@@ -218,8 +218,8 @@ new class EctaSort {
 
         this.buf  = sortingVisualizer.createValueArray(bufLen);
         this.tags = sortingVisualizer.createValueArray(tLen);
-        sortingVisualizer.setAux(this.buf);
         sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
+        sortingVisualizer.setAux(this.buf);
 
         for ; 4 * j <= bufLen; j *= 4 {
             for i = a; i + 2 * j < b; i += 4 * j {

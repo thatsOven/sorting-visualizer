@@ -2,17 +2,19 @@ package copy: import deepcopy;
 
 @total_ordering;
 new class Sort {
-    new method __init__(category, name, listName, enabled = True) {
+    new method __init__(category, name, listName, usesDynamicAux = False, enabled = True) {
         this.category = category;
         this.name     = name;
         this.listName = listName;
+        this.dynAux   = usesDynamicAux;
         this.enabled  = enabled;
-        this.func     = None;
+
+        this.func = None;
     }
 
     new method __call__(func) {
         if this.enabled {
-            new Sort sort = Sort(this.category, this.name, this.listName);
+            new Sort sort = Sort(this.category, this.name, this.listName, this.dynAux);
             sort.func = deepcopy(func);
             del func;
             sortingVisualizer.addSort(sort);
@@ -32,13 +34,15 @@ new class Sort {
 
 @total_ordering;
 new class Shuffle {
-    new method __init__(name) {
-        this.name = name;
+    new method __init__(name, usesDynamicAux = False) {
+        this.name   = name;
+        this.dynAux = usesDynamicAux;
+
         this.func = None;
     }
 
     new method __call__(func) {
-        new Shuffle shuffle = Shuffle(this.name);
+        new Shuffle shuffle = Shuffle(this.name, this.dynAux);
         shuffle.func = deepcopy(func);
         del func;
         sortingVisualizer.addShuffle(shuffle);

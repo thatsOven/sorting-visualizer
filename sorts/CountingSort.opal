@@ -17,8 +17,8 @@ new class CountingSort {
 
         this.counts = sortingVisualizer.createValueArray(max_ + 1);
         this.output = sortingVisualizer.createValueArray(b - a);
-        sortingVisualizer.setAux(this.counts);
         sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
+        sortingVisualizer.setAux(this.counts);
 
         arrayCopy(array, a, this.output, 0, b - a);
 
@@ -42,7 +42,8 @@ new class CountingSort {
 @Sort(
     "Distribution Sorts",
     "Counting Sort",
-    "Counting Sort"
+    "Counting Sort",
+    usesDynamicAux = True
 );
 new function countingSortRun(array) {
     CountingSort().sort(array, 0, len(array));

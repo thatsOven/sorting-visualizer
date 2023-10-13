@@ -991,6 +991,7 @@ new function grailSortRun(array) {
         )
     ).lengthFn;
 
+    new dynamic oldRotate = GrailSort.grailRotate;
     GrailSort.grailRotate = rotate;
 
     match mode {
@@ -1006,6 +1007,8 @@ new function grailSortRun(array) {
             grailSortStaticOOP(array, 0, len(array));
         }
     }
+
+    GrailSort.grailRotate = oldRotate;
 }
 
 @Sort(
