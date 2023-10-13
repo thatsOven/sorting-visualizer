@@ -13,14 +13,11 @@ new class LineVisual: Visual {
         if sortingVisualizer.graphics.resolution.x >= length {
             if sortingVisualizer.graphics.resolution.x == length {
                 this.lineSize = 1;
-                this.dotSize  = 1;
             } else {
                 this.lineSize = math.ceil(sortingVisualizer.graphics.resolution.x / float(length));
-                this.dotSize  = sortingVisualizer.graphics.resolution.x // length;
             }
         } else {
             this.lineSize = 1;
-            this.dotSize  = 1;
         }
     }
 
@@ -51,6 +48,8 @@ new class LineVisual: Visual {
 }
 
 new class BaseCircleVisual: Visual {
+    new float ANGLE_TOL = math.radians(0.2);
+
     new method prepare() {
         static: new int length = len(sortingVisualizer.array);
 
@@ -81,7 +80,7 @@ new class BaseCircleVisual: Visual {
         if 360 == length {
             this.angleStep = math.radians(1.0);
         } else {
-            this.angleStep = math.radians(360.0 / length);
+            this.angleStep = max(BaseCircleVisual.ANGLE_TOL, math.radians(360.0 / length));
         }
     }
 
@@ -105,7 +104,7 @@ new class BaseCircleVisual: Visual {
         if 360 == length {
             this.auxAngleStep = math.radians(1.0);
         } else {
-            this.auxAngleStep = math.radians(360.0 / length);
+            this.auxAngleStep = max(BaseCircleVisual.ANGLE_TOL, math.radians(360.0 / length));
         }
     }
 }
@@ -119,7 +118,12 @@ new class CircleVisual: BaseCircleVisual {
         this.angles = {};
         this.points = {};
         for i in range(length) {
-            new dynamic angle = Utils.translate(i, 0, length, this.circleStart, this.circleEnd);
+            new dynamic angle = (
+                Utils.translate(
+                    i, 0, length, this.circleStart, 
+                    this.circleEnd
+                ) // this.angleStep
+            ) * this.angleStep;
 
             this.angles[i] = angle;
 
@@ -145,7 +149,12 @@ new class CircleVisual: BaseCircleVisual {
         this.auxAngles = {};
         this.auxPoints = {};
         for i in range(length) {
-            new dynamic angle = Utils.translate(i, 0, length, this.circleStart, this.circleEnd);
+            new dynamic angle = (
+                Utils.translate(
+                    i, 0, length, this.circleStart, 
+                    this.circleEnd
+                ) // this.auxAngleStep
+            ) * this.auxAngleStep;
 
             this.auxAngles[i] = angle;
 

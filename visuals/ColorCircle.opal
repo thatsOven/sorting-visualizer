@@ -20,7 +20,10 @@ new class ColorCircle: CircleVisual {
     }
 
     new method draw(array, indices, color) {
-        new dynamic drawn = {}, angle, pos, posEnd; 
+        static: new bint mark;
+
+        new dynamic drawn  = {}, 
+                    oldIdx = 0, angle, pos, posEnd;
 
         for idx in range(len(array)) {
             angle = this.angles[idx];
@@ -33,11 +36,20 @@ new class ColorCircle: CircleVisual {
 
             pos, posEnd = this.points[angle];
 
-            if idx in indices && color is not None {
-                sortingVisualizer.graphics.polygon([
-                    this.circleCenter, pos, posEnd
-                ], color);
-            } else {
+            mark = True;
+            if color is not None {
+                for i in indices {
+                    if i in range(oldIdx, idx) {
+                        mark = False;
+                        sortingVisualizer.graphics.polygon([
+                            this.circleCenter, pos, posEnd
+                        ], color);
+                        break;
+                    }
+                }
+            }
+
+            if mark {
                 if array[idx].value < 0 {
                     sortingVisualizer.graphics.polygon([
                         this.circleCenter, pos, posEnd
@@ -48,6 +60,8 @@ new class ColorCircle: CircleVisual {
                     ], hsvToRgb(array[idx].value * this.colorConstant));
                 }
             }
+
+            oldIdx = idx;
         }
 
         del drawn;
