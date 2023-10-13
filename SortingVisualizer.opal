@@ -12,7 +12,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION = "2023.10.12";
+new str VERSION = "2023.10.13";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -720,7 +720,7 @@ new class SortingVisualizer {
 
         for i in range(len(hList)) {
             if hList[i].aux is not None {
-                aux.append(this.__adaptIdx(hList[i].idx, hList[i].aux));
+                aux.append(hList[i].idx);
             } else {
                 internal.append(hList[i].idx);
             }
@@ -757,6 +757,15 @@ new class SortingVisualizer {
                 
                 new bool aux = this.settings["show-aux"] and this.aux is not None;
                 new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
+
+                if aux && this.__adaptIdx is not this.__defaultAdaptIdx {
+                    for i in range(len(hList)) {
+                        if hList[i].aux is not None {
+                            hList[i].idx = this.__adaptIdx(hList[i].idx, hList[i].aux);
+                        }
+                    }
+                }
+                
                 $call playSound(hList, adapted)
 
                 if aux {
@@ -815,6 +824,7 @@ new class SortingVisualizer {
             "-c:v", "libx264", "-pix_fmt", "yuvj420p", "tmp.mp4",
         ]), "Compressing frames...");
         
+        this.__audio = this.__audio[:round(this.__audioPtr)];
         io.wavfile.write("audio.wav", FREQUENCY_SAMPLE, this.__audio);
         this.__audio    = None;
         this.__audioPtr = 0;
@@ -868,7 +878,7 @@ new class SortingVisualizer {
                 this.__audio = numpy.concatenate((
                     this.__audio, currWave
                 ));
-            }    
+            }
         }
 
         for t = 1.0 / RENDER_FRAMERATE; t < d; t += 1.0 / RENDER_FRAMERATE {}
@@ -906,6 +916,14 @@ new class SortingVisualizer {
                 
                 new bool aux = this.settings["show-aux"] and this.aux is not None;
                 new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
+
+                if aux && this.__adaptIdx is not this.__defaultAdaptIdx {
+                    for i in range(len(hList)) {
+                        if hList[i].aux is not None {
+                            hList[i].idx = this.__adaptIdx(hList[i].idx, hList[i].aux);
+                        }
+                    }
+                }
 
                 new dynamic tSleep = max(1.0 / RENDER_FRAMERATE, this.__sleep + this.__tmpSleep);
                 this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
@@ -1387,12 +1405,24 @@ new class SortingVisualizer {
             os.chdir(cwd);
             shutil.copy(os.path.join(SortingVisualizer.IMAGE_BUF, "output.mp4"), cwd);
             shutil.rmtree(SortingVisualizer.IMAGE_BUF);
+            this.__makeImageBufFolder();
         }
     }
 
     new method _makeSoundConfFolder() {
         if !os.path.exists(SortingVisualizer.SOUND_CONFIG) {
             os.mkdir(SortingVisualizer.SOUND_CONFIG);
+        }
+    }
+
+    new method __makeImageBufFolder() {
+        if !os.path.exists(SortingVisualizer.IMAGE_BUF) {
+            try {
+                os.mkdir(SortingVisualizer.IMAGE_BUF);
+            } catch Exception as e {
+                this.__gui.userWarn("Error", f"Unable to create image buffer folder. Exception:\n{formatException(e)}");
+                quit;
+            }
         }
     }
 
@@ -1431,15 +1461,7 @@ new class SortingVisualizer {
 
         while True {
             if this.settings["render"] {
-                if !os.path.exists(SortingVisualizer.IMAGE_BUF) {
-                    try {
-                        os.mkdir(SortingVisualizer.IMAGE_BUF);
-                    } catch Exception as e {
-                        this.__gui.userWarn("Error", f"Unable to create image buffer folder. Exception:\n{formatException(e)}");
-                        quit;
-                    }
-                }
-
+                this.__makeImageBufFolder();
                 this.internalMultiHighlight = this.__renderedMultiHighlight;
                 this.sweep                  = this.__renderedSweep;
             } else {
