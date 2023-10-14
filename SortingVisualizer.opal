@@ -755,13 +755,24 @@ new class SortingVisualizer {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
                 
-                new bool aux = this.settings["show-aux"] and this.aux is not None;
+                static: new bint aux = this.settings["show-aux"] and this.aux is not None;
                 new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
 
-                if aux && this.__adaptIdx is not this.__defaultAdaptIdx {
+                if this.settings["show-aux"] {
+                    if aux && this.__adaptIdx is not this.__defaultAdaptIdx {
+                        for i in range(len(hList)) {
+                            if hList[i].aux is not None {
+                                hList[i].idx = this.__adaptIdx(hList[i].idx, hList[i].aux);
+                            }
+                        }
+                    }
+                } else {
+                    static: new int length = len(this.array);
+
                     for i in range(len(hList)) {
                         if hList[i].aux is not None {
-                            hList[i].idx = this.__adaptIdx(hList[i].idx, hList[i].aux);
+                            hList[i].idx = hList[i].idx % length;
+                            hList[i].aux = None;
                         }
                     }
                 }
@@ -914,13 +925,24 @@ new class SortingVisualizer {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
                 
-                new bool aux = this.settings["show-aux"] and this.aux is not None;
+                static: new bint aux = this.settings["show-aux"] and this.aux is not None;
                 new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
 
-                if aux && this.__adaptIdx is not this.__defaultAdaptIdx {
+                if this.settings["show-aux"] {
+                    if aux && this.__adaptIdx is not this.__defaultAdaptIdx {
+                        for i in range(len(hList)) {
+                            if hList[i].aux is not None {
+                                hList[i].idx = this.__adaptIdx(hList[i].idx, hList[i].aux);
+                            }
+                        }
+                    }
+                } else {
+                    static: new int length = len(this.array);
+
                     for i in range(len(hList)) {
                         if hList[i].aux is not None {
-                            hList[i].idx = this.__adaptIdx(hList[i].idx, hList[i].aux);
+                            hList[i].idx = hList[i].idx % length;
+                            hList[i].aux = None;
                         }
                     }
                 }

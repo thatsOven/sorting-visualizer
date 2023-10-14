@@ -18,7 +18,7 @@ new class WhiteBarGraph: LineVisual {
 
         if len(array) > sortingVisualizer.graphics.resolution.x {
             new dynamic oldIdx = 0;
-            repeat sortingVisualizer.graphics.resolution.x {
+            unchecked: repeat sortingVisualizer.graphics.resolution.x {
                 idx = int(Utils.translate(
                     pos.x, 0, sortingVisualizer.graphics.resolution.x, 
                     0, len(array)
@@ -86,32 +86,91 @@ new class WhiteBarGraph: LineVisual {
     }
 
     new method drawAux(array, indices, color) {
-        new dynamic drawn = {};
+        new dynamic pos = this.auxResolution.copy(),
+                    end = pos.copy(), idx;
+        pos.x = 0;
+        end.x = 0;
 
-        for idx in range(len(array)) {
-            new dynamic pos = this.auxResolution.copy(), lineEnd;
+        if len(array) > this.auxResolution.x {
+            new dynamic oldIdx = 0;
+            unchecked: repeat this.auxResolution.x {
+                idx = int(Utils.translate(
+                    pos.x, 0, this.auxResolution.x, 
+                    0, len(array)
+                ));
 
-            pos.x = Utils.translate(idx, 0, len(array), 0, this.auxResolution.x // this.auxLineSize) * this.auxLineSize + (this.auxLineSize // 2);
+                end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
-            if pos.x in drawn {
-                continue;
-            } else {
-                drawn[pos.x] = None;
+                for i in indices {
+                    if i in range(oldIdx, idx) {
+                        sortingVisualizer.graphics.line(pos, end, color, 1);
+                        break;
+                    }
+                } else {
+                    sortingVisualizer.graphics.line(pos, end, (255, 255, 255), 1);
+                }
+
+                pos.x++;
+                end.x++;
+                oldIdx = idx;
             }
+        } else {
+            for idx in range(len(array)) {
+                end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
-            lineEnd = pos - Vector(0, int(array[idx].value * this.auxLineLengthConst));
-            
-            if idx in indices {
-                sortingVisualizer.graphics.line(pos, lineEnd,           color, this.auxLineSize);
-            } else {
-                sortingVisualizer.graphics.line(pos, lineEnd, (255, 255, 255), this.auxLineSize);
+                if idx in indices {
+                    sortingVisualizer.graphics.line(pos, end, color, this.auxLineSize);
+                } else {
+                    sortingVisualizer.graphics.line(pos, end, (255, 255, 255), this.auxLineSize);
+                }
+
+                pos.x += this.auxLineSize;
+                end.x += this.auxLineSize;
             }
+        }
+        
+        sortingVisualizer.graphics.line(Vector(0, this.auxResolution.y), this.auxResolution, (0, 0, 255), 2);
+    }
 
-            sortingVisualizer.graphics.line(lineEnd, Vector(pos.x, 0), (0, 0, 0), this.auxLineSize);
+    new method fastDrawAux(array, indices, color) {
+        new dynamic pos = this.auxResolution.copy(),
+                    end = pos.copy(), idx;
+        pos.x = 0;
+        end.x = 0;
+
+        if len(array) > this.auxResolution.x {
+            unchecked: repeat this.auxResolution.x {
+                idx = int(Utils.translate(
+                    pos.x, 0, this.auxResolution.x, 
+                    0, len(array)
+                ));
+
+                end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
+
+                if idx in indices {
+                    sortingVisualizer.graphics.line(pos, end, color, 1);
+                } else {
+                    sortingVisualizer.graphics.line(pos, end, (255, 255, 255), 1);
+                }
+                    
+                pos.x++;
+                end.x++;
+            }
+        } else {
+            for idx in range(len(array)) {
+                end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
+
+                if idx in indices {
+                    sortingVisualizer.graphics.line(pos, end, color, this.auxLineSize);
+                } else {
+                    sortingVisualizer.graphics.line(pos, end, (255, 255, 255), this.auxLineSize);
+                }
+
+                pos.x += this.auxLineSize;
+                end.x += this.auxLineSize;
+            }
         }
 
-        del drawn;
-        
         sortingVisualizer.graphics.line(Vector(0, this.auxResolution.y), this.auxResolution, (0, 0, 255), 2);
     }
 }
