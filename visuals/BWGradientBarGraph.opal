@@ -61,6 +61,12 @@ new class BWGradientBarGraph: LineVisual {
             }
         } else {
             for idx in range(len(array)) {
+                pos.x = int(Utils.translate(
+                    idx, 0, len(array), 
+                    0, sortingVisualizer.graphics.resolution.x
+                ));
+                end.x = pos.x;
+
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
 
                 if idx in indices {
@@ -72,9 +78,6 @@ new class BWGradientBarGraph: LineVisual {
                         sortingVisualizer.graphics.line(pos, end, [40 + int(array[idx].value * this.colorConstant)] * 3, this.lineSize);
                     }
                 }
-
-                pos.x += this.lineSize;
-                end.x += this.lineSize;
             }
         }
     }
@@ -148,6 +151,11 @@ new class BWGradientBarGraph: LineVisual {
             }
         } else {
             for idx in range(len(array)) {
+                pos.x = int(Utils.translate(
+                    idx, 0, len(array), 
+                    0, sortingVisualizer.graphics.resolution.x
+                ));
+                end.x = pos.x;
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
@@ -159,9 +167,6 @@ new class BWGradientBarGraph: LineVisual {
                         sortingVisualizer.graphics.line(pos, end, [40 + int(array[idx].value * this.auxColorConstant)] * 3, this.auxLineSize);
                     }
                 }
-
-                pos.x += this.auxLineSize;
-                end.x += this.auxLineSize;
             }
         }
 
@@ -198,6 +203,12 @@ new class BWGradientBarGraph: LineVisual {
             }
         } else {
             for idx in range(len(array)) {
+                pos.x = int(Utils.translate(
+                    idx, 0, len(array), 
+                    0, sortingVisualizer.graphics.resolution.x
+                ));
+                end.x = pos.x;
+
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
@@ -209,9 +220,6 @@ new class BWGradientBarGraph: LineVisual {
                         sortingVisualizer.graphics.line(pos, end, [40 + int(array[idx].value * this.auxColorConstant)] * 3, this.auxLineSize);
                     }
                 }
-
-                pos.x += this.auxLineSize;
-                end.x += this.auxLineSize;
             }
         }
 

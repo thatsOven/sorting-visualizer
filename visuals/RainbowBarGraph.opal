@@ -61,6 +61,12 @@ new class RainbowBarGraph: LineVisual {
             }
         } else {
             for idx in range(len(array)) {
+                pos.x = int(Utils.translate(
+                    idx, 0, len(array), 
+                    0, sortingVisualizer.graphics.resolution.x
+                ));
+                end.x = pos.x;
+
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
 
                 if idx in indices {
@@ -72,9 +78,6 @@ new class RainbowBarGraph: LineVisual {
                         sortingVisualizer.graphics.line(pos, end, hsvToRgb(array[idx].value * colorConstant), this.lineSize);
                     }
                 }
-
-                pos.x += this.lineSize;
-                end.x += this.lineSize;
             }
         }
     }
@@ -149,6 +152,12 @@ new class RainbowBarGraph: LineVisual {
             }
         } else {
             for idx in range(len(array)) {
+                pos.x = int(Utils.translate(
+                    idx, 0, len(array), 
+                    0, sortingVisualizer.graphics.resolution.x
+                ));
+                end.x = pos.x;
+
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
@@ -160,9 +169,6 @@ new class RainbowBarGraph: LineVisual {
                         sortingVisualizer.graphics.line(pos, end, hsvToRgb(array[idx].value * this.auxColorConstant), this.auxLineSize);
                     }
                 }
-
-                pos.x += this.auxLineSize;
-                end.x += this.auxLineSize;
             }
         }
         
@@ -199,6 +205,12 @@ new class RainbowBarGraph: LineVisual {
             }
         } else {
             for idx in range(len(array)) {
+                pos.x = int(Utils.translate(
+                    idx, 0, len(array), 
+                    0, sortingVisualizer.graphics.resolution.x
+                ));
+                end.x = pos.x;
+
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
@@ -210,9 +222,6 @@ new class RainbowBarGraph: LineVisual {
                         sortingVisualizer.graphics.line(pos, end, hsvToRgb(array[idx].value * this.auxColorConstant), this.auxLineSize);
                     }
                 }
-
-                pos.x += this.auxLineSize;
-                end.x += this.auxLineSize;
             }
         }
 

@@ -57,6 +57,12 @@ new class ScrambledRainbowBarGraph: LineVisual {
             }
         } else {
             for idx in range(len(array)) {
+                pos.x = int(Utils.translate(
+                    idx, 0, len(array), 
+                    0, sortingVisualizer.graphics.resolution.x
+                ));
+                end.x = pos.x;
+
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
 
                 if idx in indices {
@@ -64,9 +70,6 @@ new class ScrambledRainbowBarGraph: LineVisual {
                 } else {
                     sortingVisualizer.graphics.line(pos, end, hsvToRgb(array[idx].stabIdx * colorConstant), this.lineSize);
                 }
-
-                pos.x += this.lineSize;
-                end.x += this.lineSize;
             }
         }
     }
@@ -132,6 +135,12 @@ new class ScrambledRainbowBarGraph: LineVisual {
             }
         } else {
             for idx in range(len(array)) {
+                pos.x = int(Utils.translate(
+                    idx, 0, len(array), 
+                    0, sortingVisualizer.graphics.resolution.x
+                ));
+                end.x = pos.x;
+
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
@@ -139,9 +148,6 @@ new class ScrambledRainbowBarGraph: LineVisual {
                 } else {
                     sortingVisualizer.graphics.line(pos, end, hsvToRgb(array[idx].stabIdx * this.auxColorConstant), this.auxLineSize);
                 }
-
-                pos.x += this.auxLineSize;
-                end.x += this.auxLineSize;
             }
         }
         
@@ -174,6 +180,12 @@ new class ScrambledRainbowBarGraph: LineVisual {
             }
         } else {
             for idx in range(len(array)) {
+                pos.x = int(Utils.translate(
+                    idx, 0, len(array), 
+                    0, sortingVisualizer.graphics.resolution.x
+                ));
+                end.x = pos.x;
+
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
@@ -181,9 +193,6 @@ new class ScrambledRainbowBarGraph: LineVisual {
                 } else {
                     sortingVisualizer.graphics.line(pos, end, hsvToRgb(array[idx].stabIdx * this.auxColorConstant), this.auxLineSize);
                 }
-
-                pos.x += this.auxLineSize;
-                end.x += this.auxLineSize;
             }
         }
 
