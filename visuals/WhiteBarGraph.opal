@@ -91,6 +91,9 @@ new class WhiteBarGraph: LineVisual {
     new method drawAux(array, indices, color) {
         new dynamic pos = this.auxResolution.copy(),
                     end = pos.copy(), idx;
+
+        sortingVisualizer.graphics.fastRectangle(Vector(), pos, (0, 0, 0));
+
         pos.x = 0;
         end.x = 0;
 
@@ -143,6 +146,8 @@ new class WhiteBarGraph: LineVisual {
                     end = pos.copy(), idx;
         pos.x = 0;
         end.x = 0;
+
+        sortingVisualizer.graphics.fastRectangle(Vector(), pos, (0, 0, 0));
 
         if len(array) > this.auxResolution.x {
             unchecked: repeat this.auxResolution.x {

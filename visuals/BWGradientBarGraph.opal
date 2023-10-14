@@ -119,6 +119,9 @@ new class BWGradientBarGraph: LineVisual {
     new method drawAux(array, indices, color) {
         new dynamic pos = this.auxResolution.copy(),
                     end = pos.copy(), idx;
+        
+        sortingVisualizer.graphics.fastRectangle(Vector(), pos, (0, 0, 0));
+
         pos.x = 0;
         end.x = 0;
 
@@ -176,6 +179,9 @@ new class BWGradientBarGraph: LineVisual {
     new method fastDrawAux(array, indices, color) {
         new dynamic pos = this.auxResolution.copy(),
                     end = pos.copy(), idx;
+
+        sortingVisualizer.graphics.fastRectangle(Vector(), pos, (0, 0, 0));
+
         pos.x = 0;
         end.x = 0;
 
