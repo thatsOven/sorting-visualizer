@@ -20,3 +20,28 @@ new function shuffleRandom(array, a, b) {
 new function randomShuffle(array) {
     shuffleRandom(array, 0, len(array));
 }
+
+@Shuffle("Few random");
+new function fewRandomShuffle(array) {
+    unchecked: repeat max(len(array) // 20, 1) {
+        array[random.randint(0, len(array))].swap(array[random.randint(0, len(array))]);
+    }
+}
+
+@Shuffle("Final Merge Pass");
+new function finalMergeShuffle(array) {
+    new int count = 2;
+
+    new list temp = sortingVisualizer.createValueArray(len(array));
+    sortingVisualizer.setAux(temp);
+
+    new int k = 0;
+    for j = 0; j < count; j++ {
+        for i = j; i < len(array); i += count, k++ {
+            temp[k].write(array[i]);
+        }
+    }
+
+    arrayCopy(temp, 0, array, 0, len(array));
+}
+

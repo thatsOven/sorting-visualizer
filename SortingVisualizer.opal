@@ -528,7 +528,7 @@ new class SortingVisualizer {
             for unique in stabilityCheck {
                 if this.checkSorted(stabilityCheck[unique], lambda x : x.stabIdx) != len(stabilityCheck[unique]) - 1 {
                     this.sweep(currentIdx, len(this.array), (255, 255, 0), 
-                        other = [x for x in range(currentIdx)]
+                        other = [x for x in range(currentIdx)] if this.settings["render"] else None
                     );
 
                     return ArrayState.SORTED;
@@ -544,7 +544,7 @@ new class SortingVisualizer {
             new int p = min(sUntil, eq);
             this.sweep(0,               p, (0, 255, 0));
             this.sweep(p, len(this.array), (255, 0, 0), 
-                other = [x for x in range(p)]
+                other = [x for x in range(p)] if this.settings["render"] else None
             );
 
             if sUntil != len(this.array) - 1 {
@@ -731,7 +731,7 @@ new class SortingVisualizer {
 
     $macro auxSect
         if this.__dynamicAux && !this.settings["lazy-aux"] {
-            new int length = len(adapted);
+            length = len(adapted);
 
             if this.__oldAuxLen != length {
                 this.__visual.onAuxOn(length);
@@ -751,11 +751,16 @@ new class SortingVisualizer {
         hList = [x for x in hList if x is not None];
         hList = [x for x in hList if x.idx is not None];
 
+        static {
+            new int length;
+            new bint aux;
+        }
+
         if len(hList) != 0 {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
                 
-                static: new bint aux = this.settings["show-aux"] and this.aux is not None;
+                aux = this.settings["show-aux"] and this.aux is not None;
                 new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
 
                 if this.settings["show-aux"] {
@@ -767,7 +772,7 @@ new class SortingVisualizer {
                         }
                     }
                 } else {
-                    static: new int length = len(this.array);
+                    length = len(this.array);
 
                     for i in range(len(hList)) {
                         if hList[i].aux is not None {
@@ -921,11 +926,16 @@ new class SortingVisualizer {
 
         this.graphics.updateEvents();
 
+        static {
+            new int  length;
+            new bint aux;
+        }
+
         if len(hList) != 0 {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
                 
-                static: new bint aux = this.settings["show-aux"] and this.aux is not None;
+                aux = this.settings["show-aux"] and this.aux is not None;
                 new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
 
                 if this.settings["show-aux"] {
@@ -937,7 +947,7 @@ new class SortingVisualizer {
                         }
                     }
                 } else {
-                    static: new int length = len(this.array);
+                    length = len(this.array);
 
                     for i in range(len(hList)) {
                         if hList[i].aux is not None {
