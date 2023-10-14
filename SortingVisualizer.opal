@@ -12,7 +12,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION = "2023.10.13";
+new str VERSION = "2023.10.14";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -422,6 +422,8 @@ new class SortingVisualizer {
         } else {
             time.sleep(1.25);
         }
+
+        this.drawFullArray();
 
         this.sorts[category][id].func(this.array);
 
@@ -879,8 +881,15 @@ new class SortingVisualizer {
                     zeros = zeros.astype(numpy.int16);
                 }
 
-                if round(this.__audioPtr) + len(currWave) < len(this.__audio) {
-                    this.__audio += numpy.concatenate((zeros, currWave));
+                if round(this.__audioPtr) + len(currWave) <= len(this.__audio) {
+                    new dynamic fillerZeros = numpy.zeros(len(this.__audio) - len(currWave) - round(this.__audioPtr));
+                    if this.__audioChs > 1 {
+                        fillerZeros = numpy.repeat(fillerZeros.reshape(fillerZeros.size, 1), this.__audioChs, axis = 1).astype(numpy.int16);
+                    } else {
+                        fillerZeros = fillerZeros.astype(numpy.int16);
+                    }
+
+                    this.__audio += numpy.concatenate((zeros, currWave, fillerZeros));
                 } else {
                     new dynamic size = len(this.__audio) - round(this.__audioPtr);
 
