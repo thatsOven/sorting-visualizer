@@ -59,8 +59,8 @@ new class ScrambledRainbowBarGraph: LineVisual {
             for idx in range(len(array)) {
                 pos.x = int(Utils.translate(
                     idx, 0, len(array), 
-                    0, sortingVisualizer.graphics.resolution.x
-                ));
+                    0, sortingVisualizer.graphics.resolution.x // this.lineSize
+                )) * this.lineSize + (this.lineSize // 2);
                 end.x = pos.x;
 
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
@@ -137,8 +137,8 @@ new class ScrambledRainbowBarGraph: LineVisual {
             for idx in range(len(array)) {
                 pos.x = int(Utils.translate(
                     idx, 0, len(array), 
-                    0, sortingVisualizer.graphics.resolution.x
-                ));
+                    0, sortingVisualizer.graphics.resolution.x // this.auxLineSize
+                )) * this.auxLineSize + (this.auxLineSize // 2);
                 end.x = pos.x;
 
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
@@ -182,8 +182,8 @@ new class ScrambledRainbowBarGraph: LineVisual {
             for idx in range(len(array)) {
                 pos.x = int(Utils.translate(
                     idx, 0, len(array), 
-                    0, sortingVisualizer.graphics.resolution.x
-                ));
+                    0, sortingVisualizer.graphics.resolution.x // this.auxLineSize
+                )) * this.auxLineSize + (this.auxLineSize // 2);
                 end.x = pos.x;
 
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
