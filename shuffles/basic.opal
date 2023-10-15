@@ -24,7 +24,7 @@ new function randomShuffle(array) {
 @Shuffle("Few random");
 new function fewRandomShuffle(array) {
     unchecked: repeat max(len(array) // 20, 1) {
-        array[random.randint(0, len(array))].swap(array[random.randint(0, len(array))]);
+        array[random.randint(0, len(array) - 1)].swap(array[random.randint(0, len(array) - 1)]);
     }
 }
 
