@@ -44,10 +44,15 @@ runAllSort(256,  "Bin. Double Insert", 5);
 runAllSort(256,  "Merge Insert",       5);
 runAllSort(512,  "Shell Sort",         3);
 runAllSort(1024, "Library Sort",       8, killers = {
-    "Linear":    ["Reversed", "Reversed Sawtooth"], 
-    "Quadratic": ["Reversed", "Reversed Sawtooth"], 
-    "Quintic":   ["Reversed", "Reversed Sawtooth"], 
-    "Sine Wave": ["Reversed", "Reversed Sawtooth", "No shuffle", "Sawtooth"]
+    "Linear":    ["Reversed", "Reversed Sawtooth", "Partitioned"], 
+    "Quadratic": ["Reversed", "Reversed Sawtooth", "Partitioned"], 
+    "Quintic":   ["Reversed", "Reversed Sawtooth", "Partitioned", "Final Merge Pass", "Real Final Merge"], 
+    "Sine Wave": [
+        "Reversed", "Reversed Sawtooth", "No shuffle", "Sawtooth", 
+        "Partitioned", "Final Merge Pass", "Noisy", "Real Final Merge",
+        "Scrambled Tail", "Scrambled Head"
+    ],
+    "Perlin Noise": ["Partitioned", "Real Final Merge"]
 });
 
 
@@ -59,10 +64,31 @@ runAllSort(64,   "Cycle Sort",       3);
 
 ct = "Tree Sorts";
 runAllSort(512,  "Tree Sort",        5, killers = {
-    "Linear":    ["Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth"],
-    "Quadratic": ["Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth"],
-    "Quintic":   ["Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", "Random"],
-    "Sine Wave": ["Reversed", "Reversed Sawtooth", "No shuffle", "Sawtooth"]
+    "Linear": [
+        "Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", 
+        "Few Random", "Final Merge Pass", "Real Final Merge", "Noisy",
+        "Scrambled Tail", "Scrambled Head", "Sorted"
+    ],
+    "Quadratic": [
+        "Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", 
+        "Few Random", "Final Merge Pass", "Real Final Merge", "Noisy",
+        "Scrambled Tail", "Scrambled Head", "Sorted"
+    ],
+    "Quintic":   [
+        "Random", "Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", 
+        "Few Random", "Final Merge Pass", "Real Final Merge", "Noisy",
+        "Scrambled Tail", "Scrambled Head", "Sorted"
+    ],
+    "Sine Wave": [
+        "Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", 
+        "Few Random", "Final Merge Pass", "Real Final Merge", "Noisy",
+        "Scrambled Tail", "Scrambled Head", "Sorted"
+    ],
+    "Perlin Noise": [
+        "Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", 
+        "Few Random", "Final Merge Pass", "Real Final Merge", "Noisy",
+        "Scrambled Tail", "Scrambled Head", "Sorted"
+    ],
 });
 runAllSort(2048, "Max Heap Sort",   15);
 runAllSort(2048, "Poplar Heap",     10);
@@ -86,10 +112,23 @@ new dict centerKillers = {
 };
 
 runAllSort(1024, "LL Quick Sort", 4, pivotSelections.index("First"), {
-    "Linear":    ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"], 
-    "Quadratic": ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"], 
-    "Quintic":   ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle", "Random"],
-    "Sine Wave": ["Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle"],
+    "Linear": [
+        "Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle", 
+        "Sorted", "Few Random", "Noisy", "Scrambled Tail"
+    ], 
+    "Quadratic": [
+        "Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle", 
+        "Sorted", "Few Random", "Noisy", "Scrambled Tail"
+    ],
+    "Quintic": [
+        "Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle", 
+        "Sorted", "Few Random", "Noisy", "Scrambled Tail"
+    ],
+    "Sine Wave": [
+        "Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle", 
+        "Sorted", "Few Random", "Final Merge Pass", "Scrambled Head"
+    ],
+    "Perlin Noise": ["Sorted"]
 });
 runAllSort(1024, "LR Quick Sort",          4, pivotSelections.index("Middle"), centerKillers);
 runAllSort(1024, "Stackless Quick",        4, pivotSelections.index("Median of three"), centerKillers);

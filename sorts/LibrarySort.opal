@@ -92,7 +92,8 @@ new class LibrarySort {
 @Sort(
     "Insertion Sorts",
     "Library Sort",
-    "Library Sort"
+    "Library Sort",
+    usesDynamicAux = True
 );
 new function librarySortRun(array) {
     LibrarySort().sort(array, len(array));
