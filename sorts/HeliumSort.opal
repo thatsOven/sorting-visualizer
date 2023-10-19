@@ -65,7 +65,8 @@
 
 use reverse, arrayCopy, blockSwap, backwardBlockSwap, 
     compareValues, compareIntToValue, insertToLeft,
-    checkMergeBounds, lrBinarySearch, binaryInsertionSort;
+    checkMergeBounds, lrBinarySearch, binaryInsertionSort,
+    bidirArrayCopy;
 
 new class HeliumSort {
     new int RUN_SIZE           = 32,
@@ -75,21 +76,10 @@ new class HeliumSort {
             MIN_REV_RUN_SIZE   = 8,
             SMALL_MERGE        = 16;
 
-    new method __init__(rot = None) {
+    new method __init__() {
         this.buffer  = None;
         this.indices = None;
         this.keys    = None;
-
-        if rot is None {
-            this.rotate = sortingVisualizer.getRotation(
-                id = sortingVisualizer.getUserSelection(
-                    [r.name for r in sortingVisualizer.rotations],
-                    "Select rotation algorithm (default: Helium)"
-                )
-            ).indexedFn;
-        } else {
-            this.rotate = sortingVisualizer.getRotation(name = rot).indexedFn;
-        }
     }
 
     new method reverseRuns(array, a, b) {
@@ -119,6 +109,48 @@ new class HeliumSort {
         }
 
         return b;
+    }
+
+    new method rotate(array, a, m, b) {
+        static: new int rl   = b - m,
+                        ll   = m - a,
+                        min_ = 1 if this.buffer is None else (
+                            len(this.buffer) if 
+                                min(len(this.buffer), ll, rl) > HeliumSort.SMALL_MERGE
+                            else 1
+                        );
+
+        while ll > min_ and rl > min_ {
+            if rl < ll {
+                blockSwap(array, a, m, rl);
+                a  += rl;
+                ll -= rl;
+            } else {
+                b  -= ll;
+                rl -= ll;
+                backwardBlockSwap(array, a, b, ll);
+            }
+        }
+
+        if min_ == 1 {
+            if rl == 1 {
+                insertToLeft(array, m, a);
+            } elif ll == 1 {
+                insertToRight(array, a, b - 1);
+            }
+            
+            return;
+        }
+        
+        if rl < ll {
+            bidirArrayCopy(array, m, this.buffer, 0, rl);
+            bidirArrayCopy(array, a, array, b - ll, ll);
+            bidirArrayCopy(this.buffer, 0, array, a, rl);
+        } else {
+            bidirArrayCopy(array, a, this.buffer, 0, ll);
+            bidirArrayCopy(array, m, array, a, rl);
+            bidirArrayCopy(this.buffer, 0, array, b - ll, ll);
+        }
     }
 
     new method findKeysUnsorted(array, a, p, b, q, to) {
@@ -239,7 +271,7 @@ new class HeliumSort {
 
     new method mergeInPlace(array, a, m, b, left = True, check = True) {
         if check {
-            if checkMergeBounds(array, a, m, b) {
+            if checkMergeBounds(array, a, m, b, this.rotate) {
                 return;
             }
 
@@ -303,7 +335,7 @@ new class HeliumSort {
     }
 
     new method mergeWithBuffer(array, a, m, b, buf, left = True) {
-        if checkMergeBounds(array, a, m, b) {
+        if checkMergeBounds(array, a, m, b, this.rotate) {
             return;
         }
 
@@ -377,7 +409,7 @@ new class HeliumSort {
     }
 
     new method mergeOOP(array, a, m, b, left = True) {
-        if checkMergeBounds(array, a, m, b) {
+        if checkMergeBounds(array, a, m, b, this.rotate) {
             return;
         }
 
@@ -441,21 +473,6 @@ new class HeliumSort {
         return this.optiSmartMerge(array, a, m, b, buf, True);
     }
 
-    new method keyBlockSwapCycle(array, a, kA, kB, blockLen) {
-        blockSwap(array, a + kA * blockLen, a + kB * blockLen, blockLen);
-        this.indices[kA].swap(this.indices[kB]);
-    }
-
-    new method keyBlockSwapCycleInPlace(array, a, stKey, kA, kB, blockLen) {
-        this.keyBlockSwapCycle(array, a, kA, kB, blockLen);
-        array[kA + stKey].swap(array[kB + stKey]);
-    }
-
-    new method keyBlockSwapCycleOOP(array, a, kA, kB, blockLen) {
-        this.keyBlockSwapCycle(array, a, kA, kB, blockLen);
-        this.keys[kA].swap(this.keys[kB]);
-    }
-
     new method getBlocksIndices(array, a, leftBlocks, rightBlocks, blockLen) {
         new int l = 0,
                 m = leftBlocks,
@@ -467,32 +484,44 @@ new class HeliumSort {
             if array[a + (l + 1) * blockLen - 1] <= 
                array[a + (r + 1) * blockLen - 1] 
             {
-                this.indices[l].write(o);
+                this.indices[o].write(l);
                 l++;
             } else {
-                this.indices[r].write(o);
+                this.indices[o].write(r);
                 r++;
             }
         }
 
         for ; l < m; o++, l++ {
-            this.indices[l].write(o);
+            this.indices[o].write(l);
         }
 
         for ; r < b; o++, r++ {
-            this.indices[r].write(o);
+            this.indices[o].write(r);
         }
     }
 
     new method blockCycleInPlace(array, stKey, a, leftBlocks, rightBlocks, blockLen) {
         new int total = leftBlocks + rightBlocks;
         for i = 0; i < total; i++ {
-            for cmpCnt = 0; cmpCnt < total && this.indices[i] != i; cmpCnt++ {
-                this.keyBlockSwapCycleInPlace(array, a, stKey, i, this.indices[i].readInt(), blockLen);
-            }
+            if this.indices[i] != i {
+                arrayCopy(array, a + i * blockLen, this.buffer, 0, blockLen);
+                new int j     = i,
+                        next  = this.indices[i].readInt();
+                new Value key = array[stKey + i].copy();
 
-            if cmpCnt >= total - 1 {
-                break;
+                do {
+                    bidirArrayCopy(array, a + next * blockLen, array, a + j * blockLen, blockLen);
+                    array[stKey + j].write(array[stKey + next]);
+                    this.indices[j].write(j);
+
+                    j = next;
+                    next = this.indices[next].readInt();
+                } while next != i;
+
+                arrayCopy(this.buffer, 0, array, a + j * blockLen, blockLen);
+                array[stKey + j].write(key);
+                this.indices[j].write(j);
             }
         }
     }
@@ -500,12 +529,24 @@ new class HeliumSort {
     new method blockCycleOOP(array, a, leftBlocks, rightBlocks, blockLen) {
         new int total = leftBlocks + rightBlocks;
         for i = 0; i < total; i++ {
-            for cmpCnt = 0; cmpCnt < total && this.indices[i] != i; cmpCnt++ {
-                this.keyBlockSwapCycleOOP(array, a, i, this.indices[i].readInt(), blockLen);
-            }
+            if this.indices[i] != i {
+                arrayCopy(array, a + i * blockLen, this.buffer, 0, blockLen);
+                new int j     = i,
+                        next  = this.indices[i].readInt();
+                new Value key = this.keys[i].copy();
 
-            if cmpCnt >= total - 1 {
-                break;
+                do {
+                    bidirArrayCopy(array, a + next * blockLen, array, a + j * blockLen, blockLen);
+                    this.keys[j].write(this.keys[next]);
+                    this.indices[j].write(j);
+
+                    j = next;
+                    next = this.indices[next].readInt();
+                } while next != i;
+
+                arrayCopy(this.buffer, 0, array, a + j * blockLen, blockLen);
+                this.keys[j].write(key);
+                this.indices[j].write(j);
             }
         }
     }
@@ -684,7 +725,7 @@ new class HeliumSort {
     }
 
     new method hydrogenCombine(array, a, m, b) {
-        if checkMergeBounds(array, a, m, b) {
+        if checkMergeBounds(array, a, m, b, this.rotate) {
             return;
         }
 
@@ -723,7 +764,7 @@ new class HeliumSort {
     }
 
     new method heliumCombine(array, a, m, b) {
-        if checkMergeBounds(array, a, m, b) {
+        if checkMergeBounds(array, a, m, b, this.rotate) {
             return;
         }
 

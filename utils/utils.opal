@@ -147,6 +147,14 @@ new function reverseArrayCopy(fromArray, fromIndex, toArray, toIndex, length) {
     }
 }
 
+new function bidirArrayCopy(fromArray, fromIndex, toArray, toIndex, length) {
+    if fromArray != toArray || toIndex < fromIndex {
+        arrayCopy(fromArray, fromIndex, toArray, toIndex, length);
+    } else {
+        reverseArrayCopy(fromArray, fromIndex, toArray, toIndex, length);
+    }
+}
+
 new function blockSwap(array, a, b, len) {
     for i = 0; i < len; i++ {
         array[a + i].swap(array[b + i]);

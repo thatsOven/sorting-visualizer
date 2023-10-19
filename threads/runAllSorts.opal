@@ -153,7 +153,7 @@ runAllSort(2048, "Buf Merge 2",           3, rotations.index("Helium"));
 ct = "Block Merge Sorts";
 runAllSort(2048, "Wiki Sort",     7, [0, rotations.index("Triple Reversal")]);
 runAllSort(2048, "Grail Sort",    7, [0, rotations.index("Gries-Mills")]);
-runAllSort(2048, "Helium Sort",   3, [0, rotations.index("Helium")]);
+runAllSort(2048, "Helium Sort",   3, 0);
 runAllSort(1024, "Hydrogen Sort", 2, rotations.index("Helium"));
 runAllSort(2048, "Kota Sort",     7, rotations.index("Cycle Reverse"));
 runAllSort(1024, "Ecta Sort",     3);
