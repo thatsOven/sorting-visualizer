@@ -64,9 +64,14 @@ For array operations that don't work properly with the `Value` class, the visual
 - `sortingVisualizer.write(array: list, i: int, val)`;
 - `sortingVisualizer.swap(array: list, a: int, b: int)`.
 ## Manual highlights
-The visualizer provides two methods for manual highlighting:
+The visualizer provides four methods for manual highlighting:
 - `sortingVisualizer.highlight(index: int, aux: bool = False)`: highlights the given index;
 - `sortingVisualizer.multiHighlight(indices: list[int], aux: bool = False)`: highlights a list of indices.
+- `sortingVisualizer.highlightAdvanced(index: HighlightInfo)`: highlights a `HighlightInfo` object;
+- `sortingVisualizer.multiHighlightAdvanced(indices: list[HighlightInfo])`: highlights a list of `HighlightInfo` objects.
+
+An `HighlightInfo` object contains more information for each highlight. Internally, the visualizer also generates those when calling the non-advanced variants of highlights. They are composed like this:
+`record HighlightInfo(index: int, aux: list[Value] | None = None, color: tuple[int, int, int] | None = None);`
 ## Working with auxiliary arrays
 To create a new array, the visualizer provides  `sortingVisualizer.createValueArray(length: int) -> list[Value]`, which is pre-filled with already configured `Value`s. To select an auxiliary array for visualization, `sortingVisualizer.setAux(array: list)` can be used, and `sortingVisualizer.resetAux()` can be used to remove it. The visualizer though, can only display one auxiliary array at a time. For this reason, it provides other two methods:
 - `sortingVisualizer.setInvisibleArray(array: list[Value])`: disables all highlights from the given array. Basically, sets all the `Value`'s indices to `None`;
@@ -202,15 +207,15 @@ new class MyVisual: Visual {
 - `outOfText`: a boolean that indicates whether the visual draws over text. If it doesn't (True), the visualizer will draw a black rectangle under the text, to refresh it.
 
 The `Visual` class contains two abstract methods: 
-- `draw(array: list[Value], indices: list[int], color: Optional[tuple[int, int, int]])`: draws the main array. `indices` contains the list of highlighted indices. `color` contains either a color, or `None`, in which case the visual should draw those indices like they're not highlighted;
-- `drawAux(array: list[Value], indices: list[int], color: Optional[tuple[int, int, int]])`: like `draw`, but draws the aux array.
+- `draw(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: draws the main array. `indices` contains the list of highlighted indices, each mapped to a color. If the mapped color is `None` the visual should draw those indices like they're not highlighted;
+- `drawAux(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: like `draw`, but draws the aux array.
 
 The class also provides three methods that get called in specific scenarios and can be overrided. By default, they do nothing:
 - `prepare()`: precomputes data for the visual style;
 - `onAuxOn(length)`: gets called when aux is turned on or constants are to recompute. Useful to prepare data;
 - `onAuxOff()`: gets called when aux mode is turned off. Useful to restore old values.
-- `fastDraw(array: list[Value], indices: list[int], color: Optional[tuple[int, int, int]])`: like `draw`, but it can contain a lower quality version of the visual style which is less expensive to compute. By default, it just calls `draw`.
-- `fastDrawAux(array: list[Value], indices: list[int], color: Optional[tuple[int, int, int]])`: like `fastDraw`, but draws the aux array. By default, it just calls `drawAux`
+- `fastDraw(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: like `draw`, but it can contain a lower quality version of the visual style which is less expensive to compute. By default, it just calls `draw`.
+- `fastDrawAux(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: like `fastDraw`, but draws the aux array. By default, it just calls `drawAux`
 
 The `graphicsUtils.opal` file contains some presets for common visual styles.
 ## Adding sound systems

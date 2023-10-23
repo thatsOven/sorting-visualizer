@@ -19,9 +19,7 @@ new class ColorCircle: CircleVisual {
         this.auxColorConstant = 1.0 / sortingVisualizer.auxMax;
     }
 
-    new method draw(array, indices, color) {
-        static: new bint mark;
-
+    new method draw(array, indices) {
         new dynamic drawn  = {}, 
                     oldIdx = 0, angle, pos, posEnd;
 
@@ -36,20 +34,14 @@ new class ColorCircle: CircleVisual {
 
             pos, posEnd = this.points[angle];
 
-            mark = True;
-            if color is not None {
-                for i in indices {
-                    if i in range(oldIdx, idx) {
-                        mark = False;
-                        sortingVisualizer.graphics.polygon([
-                            this.circleCenter, pos, posEnd
-                        ], color);
-                        break;
-                    }
+            for i in indices {
+                if indices[i] is not None and i in range(oldIdx, idx) {
+                    sortingVisualizer.graphics.polygon([
+                        this.circleCenter, pos, posEnd
+                    ], indices[i]);
+                    break;
                 }
-            }
-
-            if mark {
+            } else {
                 if array[idx].value < 0 {
                     sortingVisualizer.graphics.polygon([
                         this.circleCenter, pos, posEnd
@@ -67,7 +59,7 @@ new class ColorCircle: CircleVisual {
         del drawn;
     }
     
-    new method fastDraw(array, indices, color) {
+    new method fastDraw(array, indices) {
         new dynamic drawn = {}, angle, pos, posEnd; 
 
         for idx in indices {
@@ -81,7 +73,7 @@ new class ColorCircle: CircleVisual {
 
             pos, posEnd = this.points[angle];
 
-            if color is None {
+            if indices[idx] is None {
                 if array[idx].value < 0 {
                     sortingVisualizer.graphics.polygon([
                         this.circleCenter, pos, posEnd
@@ -94,14 +86,14 @@ new class ColorCircle: CircleVisual {
             } else {
                 sortingVisualizer.graphics.polygon([
                     this.circleCenter, pos, posEnd
-                ], color);
+                ], indices[idx]);
             }
         }
 
         del drawn;
     }
 
-    new method drawAux(array, indices, color) {
+    new method drawAux(array, indices) {
         new dynamic drawn  = {}, 
                     oldIdx = 0, angle, pos, posEnd;
 
@@ -120,7 +112,7 @@ new class ColorCircle: CircleVisual {
                 if i in range(oldIdx, idx) {
                     sortingVisualizer.graphics.polygon([
                         this.auxCircleCenter, pos, posEnd
-                    ], color);
+                    ], indices[i]);
                     break;
                 }
             } else {
@@ -139,7 +131,7 @@ new class ColorCircle: CircleVisual {
         }
     }
 
-    new method fastDrawAux(array, indices, color) {
+    new method fastDrawAux(array, indices) {
         new dynamic drawn = {}, angle, pos, posEnd;
 
         for idx in range(len(array)) {
@@ -156,7 +148,7 @@ new class ColorCircle: CircleVisual {
             if idx in indices {
                 sortingVisualizer.graphics.polygon([
                     this.auxCircleCenter, pos, posEnd
-                ], color);
+                ], indices[idx]);
             } else {
                 if array[idx].value < 0 {
                     sortingVisualizer.graphics.polygon([

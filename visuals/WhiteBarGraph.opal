@@ -6,11 +6,7 @@ new class WhiteBarGraph: LineVisual {
         );
     }
 
-    new method draw(array, indices, color) {
-        if color is None {
-            color = (255, 255, 255);
-        }
-
+    new method draw(array, indices) {
         new dynamic pos = sortingVisualizer.graphics.resolution.copy(),
                     end = pos.copy(), idx;
         pos.x = 0;
@@ -27,8 +23,8 @@ new class WhiteBarGraph: LineVisual {
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
 
                 for i in indices {
-                    if i in range(oldIdx, idx) {
-                        sortingVisualizer.graphics.line(pos, end, color, 1);
+                    if indices[i] is not None && i in range(oldIdx, idx) {
+                        sortingVisualizer.graphics.line(pos, end, indices[i], 1);
                         break;
                     }
                 } else {
@@ -50,7 +46,7 @@ new class WhiteBarGraph: LineVisual {
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
 
                 if idx in indices {
-                    sortingVisualizer.graphics.line(pos, end, color, this.lineSize);
+                    sortingVisualizer.graphics.line(pos, end, indices[idx], this.lineSize);
                 } else {
                     sortingVisualizer.graphics.line(pos, end, (255, 255, 255), this.lineSize);
                 }
@@ -58,11 +54,7 @@ new class WhiteBarGraph: LineVisual {
         }
     }
 
-    new method fastDraw(array, indices, color) {
-        if color is None {
-            color = (255, 255, 255);
-        }
-
+    new method fastDraw(array, indices) {
         new dynamic drawn = {};
 
         for idx in indices {
@@ -81,14 +73,19 @@ new class WhiteBarGraph: LineVisual {
 
             lineEnd = pos - Vector(0, int(array[idx].value * this.lineLengthConst));
             
-            sortingVisualizer.graphics.line(    pos,          lineEnd,     color, this.lineSize);
+            if indices[idx] is None {
+                sortingVisualizer.graphics.line(pos, lineEnd, (255, 255, 255), this.lineSize);
+            } else {
+                sortingVisualizer.graphics.line(pos, lineEnd, indices[idx], this.lineSize);
+            }
+            
             sortingVisualizer.graphics.line(lineEnd, Vector(pos.x, 0), (0, 0, 0), this.lineSize);
         }
 
         del drawn;
     }
 
-    new method drawAux(array, indices, color) {
+    new method drawAux(array, indices) {
         new dynamic pos = this.auxResolution.copy(),
                     end = pos.copy(), idx;
 
@@ -109,7 +106,7 @@ new class WhiteBarGraph: LineVisual {
 
                 for i in indices {
                     if i in range(oldIdx, idx) {
-                        sortingVisualizer.graphics.line(pos, end, color, 1);
+                        sortingVisualizer.graphics.line(pos, end, indices[i], 1);
                         break;
                     }
                 } else {
@@ -131,7 +128,7 @@ new class WhiteBarGraph: LineVisual {
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
-                    sortingVisualizer.graphics.line(pos, end, color, this.auxLineSize);
+                    sortingVisualizer.graphics.line(pos, end, indices[idx], this.auxLineSize);
                 } else {
                     sortingVisualizer.graphics.line(pos, end, (255, 255, 255), this.auxLineSize);
                 }
@@ -141,7 +138,7 @@ new class WhiteBarGraph: LineVisual {
         sortingVisualizer.graphics.line(Vector(0, this.auxResolution.y), this.auxResolution, (0, 0, 255), 2);
     }
 
-    new method fastDrawAux(array, indices, color) {
+    new method fastDrawAux(array, indices) {
         new dynamic pos = this.auxResolution.copy(),
                     end = pos.copy(), idx;
 
@@ -160,7 +157,7 @@ new class WhiteBarGraph: LineVisual {
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
-                    sortingVisualizer.graphics.line(pos, end, color, 1);
+                    sortingVisualizer.graphics.line(pos, end, indices[idx], 1);
                 } else {
                     sortingVisualizer.graphics.line(pos, end, (255, 255, 255), 1);
                 }
@@ -179,7 +176,7 @@ new class WhiteBarGraph: LineVisual {
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
-                    sortingVisualizer.graphics.line(pos, end, color, this.auxLineSize);
+                    sortingVisualizer.graphics.line(pos, end, indices[idx], this.auxLineSize);
                 } else {
                     sortingVisualizer.graphics.line(pos, end, (255, 255, 255), this.auxLineSize);
                 }

@@ -12,7 +12,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION = "2023.10.20";
+new str VERSION = "2023.10.23";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -129,9 +129,10 @@ new class SortingVisualizer {
         this.__autoUserValues = Queue();
         this.__shufThread     = None;
 
-        this.__forceLoadedIndices = [];
+        this.__forceLoadedIndices     = {};
+        this.__forceLoadedIndicesList = [];
         
-        this.__rtHighlightFn = this.internalMultiHighlight;
+        this.__rtHighlightFn = this.multiHighlightAdvanced;
         this.__rtSweepFn     = this.sweep;
         this.__currFrame     = 0;
         this.__iVideo        = 0;
@@ -228,19 +229,23 @@ new class SortingVisualizer {
 
     new method drawFullArray() {
         this.graphics.fill((0, 0, 0));
-        this.__visual.draw(this.array, [i for i in range(len(this.array))], None);
+        if this.settings["render"] && !this.settings["lazy-render"] {
+            this.__visual.draw(this.array, {});
+        } else {
+            this.__visual.fastDraw(this.array, {i: None for i in range(len(this.array))});
+        }
     }
 
     new method __getSizes() {
         this.getMax();
         this.__visual.prepare();
         this.__prepared = True;
-        this.__forceLoadedIndices = [];
+        this.__forceLoadedIndices     = {};
+        this.__forceLoadedIndicesList = [];
 
         new int worstCaseTextWidth;
 
         if this.settings["render"] && !this.settings["lazy-render"] {
-            this.__forceLoadedIndices = [];
             return;
         } else {
             match this.__visual.refresh {
@@ -248,12 +253,10 @@ new class SortingVisualizer {
                     if this.settings["show-text"] {
                         worstCaseTextWidth = round(35 * (this.__fontSize / 2.25));
                     } else {
-                        this.__forceLoadedIndices = [];
                         return;
                     }
                 }
                 case RefreshMode.NOREFRESH {
-                    this.__forceLoadedIndices = [];
                     return;
                 }
                 case RefreshMode.FULL {
@@ -261,7 +264,8 @@ new class SortingVisualizer {
                 }
             }
 
-            this.__forceLoadedIndices = [i for i in range(round(Utils.translate(worstCaseTextWidth, 0, this.graphics.resolution.x, 0, len(this.array))))];
+            this.__forceLoadedIndices     = {i: None for i in range(round(Utils.translate(worstCaseTextWidth, 0, this.graphics.resolution.x, 0, len(this.array))))};
+            this.__forceLoadedIndicesList = sorted([x for x in this.__forceLoadedIndices]);
         }
     }
 
@@ -457,8 +461,6 @@ new class SortingVisualizer {
         }
     }
 
-    
-
     new method generateArray(selectedDistributionIdx, selectedShuffleIdx, length, unique) {
         this.runDistribution(length, unique, id = selectedDistributionIdx);
         this.runShuffle(id = selectedShuffleIdx);
@@ -530,13 +532,21 @@ new class SortingVisualizer {
             for unique in stabilityCheck {
                 if this.checkSorted(stabilityCheck[unique], lambda x : x.stabIdx) != len(stabilityCheck[unique]) - 1 {
                     this.sweep(currentIdx, len(this.array), (255, 255, 0), 
-                        other = [x for x in range(currentIdx)] if this.settings["render"] else None
+                        hList = (
+                            {x: (0, 0, 255) for x in range(currentIdx)} | 
+                            {x: (0, 255, 0) for x in range(currentIdx, len(this.array))}
+                        ) if this.settings["render"] else None
                     );
 
                     return ArrayState.SORTED;
                 }
 
-                this.sweep(currentIdx, currentIdx + len(stabilityCheck[unique]), (0, 0, 255), 0);
+                this.sweep(currentIdx, currentIdx + len(stabilityCheck[unique]), (0, 0, 255), 
+                    hList = (
+                        {x: (0, 0, 255) for x in range(currentIdx)} | 
+                        {x: (0, 255, 0) for x in range(currentIdx, len(this.array))}
+                    ) if this.settings["render"] else None
+                );
                 currentIdx += len(stabilityCheck[unique]);
             }
 
@@ -546,7 +556,7 @@ new class SortingVisualizer {
             new int p = min(sUntil, eq);
             this.sweep(0,               p, (0, 255, 0));
             this.sweep(p, len(this.array), (255, 0, 0), 
-                other = [x for x in range(p)] if this.settings["render"] else None
+                hList = {x: (0, 255, 0) for x in range(currentIdx)} if this.settings["render"] else None
             );
 
             if sUntil != len(this.array) - 1 {
@@ -717,14 +727,22 @@ new class SortingVisualizer {
     $end
 
     new method __partitionIndices(hList) {
-        new dynamic internal = [],
-                    aux      = [];
+        new dynamic internal = {},
+                    aux      = {};
 
         for i in range(len(hList)) {
             if hList[i].aux is not None {
-                aux.append(hList[i].idx);
+                if hList[i].color is None {
+                    aux[hList[i].idx] = this.__visual.highlightColor;
+                } else {
+                    aux[hList[i].idx] = hList[i].color;
+                }
             } else {
-                internal.append(hList[i].idx);
+                if hList[i].color is None {
+                    internal[hList[i].idx] = this.__visual.highlightColor;
+                } else {
+                    internal[hList[i].idx] = hList[i].color;
+                }
             }
         }
 
@@ -748,7 +766,7 @@ new class SortingVisualizer {
         }
     $end
 
-    new method internalMultiHighlight(hList) {
+    new method multiHighlightAdvanced(hList) {
         new dynamic sTime = default_timer();
         hList = [x for x in hList if x is not None];
         hList = [x for x in hList if x.idx is not None];
@@ -790,21 +808,25 @@ new class SortingVisualizer {
                     new dynamic auxList;
                     hList, auxList = this.__partitionIndices(hList);
                 } else {
-                    hList = [x.idx for x in hList];
+                    hList = this.__partitionIndices(hList)[0];
                 }
 
-                this.__visual.fastDraw(this.array, hList, this.__visual.highlightColor);
+                this.__visual.fastDraw(this.array, hList);
 
                 if aux {
                     $call auxSect
-                    this.__visual.fastDrawAux(adapted, auxList, this.__visual.highlightColor);
+                    this.__visual.fastDrawAux(adapted, auxList);
                 }
 
                 this.renderStats();
 
                 $call update
 
-                this.__visual.fastDraw(this.array, set(hList + this.__forceLoadedIndices), None);
+                for highlight in hList {
+                    hList[highlight] = None;
+                }
+
+                this.__visual.fastDraw(this.array, hList | this.__forceLoadedIndices);
                 this.__soundSample = this.__currSample;
 
                 new dynamic tTime = max(this.__sleep + this.__tmpSleep, MIN_SLEEP) - default_timer() + sTime;
@@ -814,7 +836,13 @@ new class SortingVisualizer {
                 
                 this.__tmpSleep = 0;
             } else {
-                this.__visual.fastDraw(this.array, this.__partitionIndices(hList)[0], None);
+                hList = this.__partitionIndices(hList)[0];
+
+                for highlight in hList {
+                    hList[highlight] = None;
+                }
+
+                this.__visual.fastDraw(this.array, hList);
             }
         } elif this.__speedCounter >= this.__speed {
             this.__speedCounter = 0;
@@ -928,7 +956,7 @@ new class SortingVisualizer {
         $call checkCompress
     }
 
-    new method __renderedMultiHighlight(hList) {
+    new method __renderedHighlight(hList) {
         hList = [x for x in hList if x is not None];
         hList = [x for x in hList if x.idx is not None];
         new dynamic lazy = this.settings["lazy-render"];
@@ -980,23 +1008,23 @@ new class SortingVisualizer {
                     new dynamic auxList;
                     hList, auxList = this.__partitionIndices(hList);
                 } else {
-                    hList = [x.idx for x in hList];
+                    hList = this.__partitionIndices(hList)[0];
                 }
 
                 if lazy {
-                    this.__visual.fastDraw(this.array, hList, this.__visual.highlightColor);
+                    this.__visual.fastDraw(this.array, hList);
                 } else {
                     this.graphics.fill((0, 0, 0));
-                    this.__visual.draw(this.array, hList, this.__visual.highlightColor);
+                    this.__visual.draw(this.array, hList);
                 }
                 
                 if aux {
                     $call auxSect
 
                     if lazy {
-                        this.__visual.fastDrawAux(adapted, auxList, this.__visual.highlightColor);
+                        this.__visual.fastDrawAux(adapted, auxList);
                     } else {
-                        this.__visual.drawAux(adapted, auxList, this.__visual.highlightColor);
+                        this.__visual.drawAux(adapted, auxList);
                     }
                 }
 
@@ -1013,13 +1041,23 @@ new class SortingVisualizer {
                 $call checkCompress
                 
                 if lazy {
-                    this.__visual.fastDraw(this.array, set(hList + this.__forceLoadedIndices), None);
+                    for highlight in hList {
+                        hList[highlight] = None;
+                    }
+
+                    this.__visual.fastDraw(this.array, hList | this.__forceLoadedIndices);
                 }
                 
                 this.__tmpSleep = 0;
             } else {
                 if lazy {
-                    this.__visual.fastDraw(this.array, this.__partitionIndices(hList)[0], None);
+                    hList = this.__partitionIndices(hList)[0];
+
+                    for highlight in hList {
+                        hList[highlight] = None;
+                    }
+
+                    this.__visual.fastDraw(this.array, hList);
                 }
             }
         } elif this.__speedCounter >= this.__speed {
@@ -1029,23 +1067,19 @@ new class SortingVisualizer {
         this.__speedCounter++;
     }
 
-    new method internalHighlight(index) {
-        this.internalMultiHighlight([index]);
+    new method highlightAdvanced(hInfo) {
+        this.multiHighlightAdvanced([hInfo]);
     }
 
     new method multiHighlight(hList, aux = False) {
-        this.internalMultiHighlight([HighlightPair(x, aux) for x in hList]);
+        this.multiHighlightAdvanced([HighlightInfo(x, aux, None) for x in hList]);
     }
 
     new method highlight(index, aux = False) {
-        this.internalHighlight(HighlightPair(index, aux));
+        this.highlightAdvanced(HighlightInfo(index, aux, None));
     }
 
-    new method sweep(a, b, color, s = None, other = None) {
-        if s is None {
-            s = a;
-        }
-
+    new method sweep(a, b, color, hList = None) {
         this.renderStats();
         this.__checking = True;
 
@@ -1054,14 +1088,14 @@ new class SortingVisualizer {
         
         for i = a; i < b; i++ {
             new dynamic sTime = default_timer();
-            this.__visual.fastDraw(this.array, [i], color);
+            this.__visual.fastDraw(this.array, {i: color});
 
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
 
-                this.graphics.playWaveforms([this.__getWaveformFromIdx(HighlightPair(i, False), None)]);
+                this.graphics.playWaveforms([this.__getWaveformFromIdx(HighlightInfo(i, None, color), None)]);
 
-                if len(this.__forceLoadedIndices) != 0 && i <= this.__forceLoadedIndices[-1] {
+                if len(this.__forceLoadedIndices) != 0 && i <= this.__forceLoadedIndicesList[-1] {
                     this.renderStats();
                 }
             
@@ -1079,13 +1113,9 @@ new class SortingVisualizer {
         this.__checking = False;
     }
 
-    new method __renderedSweep(a, b, color, s = None, other = None) {
-        if s is None {
-            s = a;
-        }
-
-        if other is None {
-            other = [];
+    new method __renderedSweep(a, b, color, hList = None) {
+        if hList is None {
+            hList = {};
         }
 
         this.renderStats();
@@ -1096,32 +1126,30 @@ new class SortingVisualizer {
         new dynamic lazy = this.settings["lazy-render"];
         new dynamic tSleep = max(1.0 / RENDER_FRAMERATE, this.__sleep);
         this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
-        new dynamic hList = [];
-        if s != a {
-            hList += [i for i in range(s, a)];
-        }
 
         for i = a; i < b; i++ {
             this.graphics.updateEvents();
+
+            new dynamic hInfo = HighlightInfo(i, None, color);
             
             if lazy {
-                this.__visual.fastDraw(this.array, [i], color);
+                this.__visual.fastDraw(this.array, {i: color});
             } else {
-                hList.append(i);
+                hList[i] = color;
             }
 
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
 
-                new dynamic currWave = this.__getWaveformFromIdx(HighlightPair(i, False), None);
+                new dynamic currWave = this.__getWaveformFromIdx(hInfo, None);
                 $call mixAudio(tSleep)
                 
                 if lazy {
-                    if len(this.__forceLoadedIndices) != 0 && i <= this.__forceLoadedIndices[-1] {
+                    if len(this.__forceLoadedIndices) != 0 && i <= this.__forceLoadedIndicesList[-1] {
                         this.renderStats();
                     }
                 } else {
-                    this.__visual.draw(this.array, hList + other, color);
+                    this.__visual.draw(this.array, hList);
                     this.renderStats();
                 }
 
@@ -1503,10 +1531,10 @@ new class SortingVisualizer {
         while True {
             if this.settings["render"] {
                 this.__makeImageBufFolder();
-                this.internalMultiHighlight = this.__renderedMultiHighlight;
+                this.multiHighlightAdvanced = this.__renderedHighlight;
                 this.sweep                  = this.__renderedSweep;
             } else {
-                this.internalMultiHighlight = this.__rtHighlightFn;
+                this.multiHighlightAdvanced = this.__rtHighlightFn;
                 this.sweep                  = this.__rtSweepFn;
             }
 
