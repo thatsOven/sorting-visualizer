@@ -304,9 +304,7 @@ new class SortingVisualizer {
             this.array[i].idx     = i;
         }
 
-        this.getMax();
-        this.__visual.prepare();
-        this.__prepared = True;
+        this.__getSizes();
         this.drawFullArray();
     }
 
@@ -319,8 +317,6 @@ new class SortingVisualizer {
         this.__dynamicAux       = this.shuffles[id].dynAux;
         this.__currentlyRunning = this.shuffles[id].name;
         this.__currentCategory  = "Shuffles";
-
-        this.__getSizes();
 
         this.setSpeed(len(this.array) / 128.0);
 
@@ -556,7 +552,7 @@ new class SortingVisualizer {
             new int p = min(sUntil, eq);
             this.sweep(0,               p, (0, 255, 0));
             this.sweep(p, len(this.array), (255, 0, 0), 
-                hList = {x: (0, 255, 0) for x in range(currentIdx)} if this.settings["render"] else None
+                hList = {x: (0, 255, 0) for x in range(p)} if this.settings["render"] else None
             );
 
             if sUntil != len(this.array) - 1 {
