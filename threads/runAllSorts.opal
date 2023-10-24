@@ -122,7 +122,7 @@ runAllSort(1024, "LL Quick Sort", 4, pivotSelections.index("First"), {
     ],
     "Quintic": [
         "Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle", 
-        "Sorted", "Few Random", "Noisy", "Scrambled Tail"
+        "Sorted", "Few Random", "Noisy", "Scrambled Tail", "Random"
     ],
     "Sine Wave": [
         "Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle", 
