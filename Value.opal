@@ -1,4 +1,4 @@
-new record HighlightInfo(idx: int, aux: list[Value] | None = None, color: tuple[int, int, int] | None = None);
+new record HighlightInfo(idx, aux = None, color = None);
 
 @Typing.mode(Typing.check);
 new class Value {
