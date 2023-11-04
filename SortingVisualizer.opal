@@ -12,7 +12,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION = "2023.10.24";
+new str VERSION = "2023.11.4";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -211,7 +211,7 @@ new class SortingVisualizer {
     new method delay(dTime) {
         new dynamic s = (dTime * max(this.__sleep, 0.001)) / this.__speed - this.__sleep;
         this.__speedCounter = this.__speed;
-        this.__soundSample  = this.__makeSample(s);
+        this.__soundSample  = this.__makeSample(max(s, UNIT_SAMPLE_DURATION));
         this.__tmpSleep     = s;
     }
 
@@ -762,6 +762,27 @@ new class SortingVisualizer {
         }
     $end
 
+    $macro adaptIndices
+        if this.settings["show-aux"] {
+            if aux && this.__adaptIdx is not this.__defaultAdaptIdx {
+                for i in range(len(hList)) {
+                    if hList[i].aux is not None {
+                        hList[i].idx = this.__adaptIdx(hList[i].idx, hList[i].aux);
+                    }
+                }
+            }
+        } else {
+            length = len(this.array);
+
+            for i in range(len(hList)) {
+                if hList[i].aux is not None {
+                    hList[i].idx = hList[i].idx % length;
+                    hList[i].aux = None;
+                }
+            }
+        }
+    $end
+
     new method multiHighlightAdvanced(hList) {
         new dynamic sTime = default_timer();
         hList = [x for x in hList if x is not None];
@@ -779,25 +800,7 @@ new class SortingVisualizer {
                 aux = this.settings["show-aux"] and this.aux is not None;
                 new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
 
-                if this.settings["show-aux"] {
-                    if aux && this.__adaptIdx is not this.__defaultAdaptIdx {
-                        for i in range(len(hList)) {
-                            if hList[i].aux is not None {
-                                hList[i].idx = this.__adaptIdx(hList[i].idx, hList[i].aux);
-                            }
-                        }
-                    }
-                } else {
-                    length = len(this.array);
-
-                    for i in range(len(hList)) {
-                        if hList[i].aux is not None {
-                            hList[i].idx = hList[i].idx % length;
-                            hList[i].aux = None;
-                        }
-                    }
-                }
-                
+                $call adaptIndices
                 $call playSound(hList, adapted)
 
                 if aux {
@@ -971,24 +974,7 @@ new class SortingVisualizer {
                 aux = this.settings["show-aux"] and this.aux is not None;
                 new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
 
-                if this.settings["show-aux"] {
-                    if aux && this.__adaptIdx is not this.__defaultAdaptIdx {
-                        for i in range(len(hList)) {
-                            if hList[i].aux is not None {
-                                hList[i].idx = this.__adaptIdx(hList[i].idx, hList[i].aux);
-                            }
-                        }
-                    }
-                } else {
-                    length = len(this.array);
-
-                    for i in range(len(hList)) {
-                        if hList[i].aux is not None {
-                            hList[i].idx = hList[i].idx % length;
-                            hList[i].aux = None;
-                        }
-                    }
-                }
+                $call adaptIndices
 
                 new dynamic tSleep = max(1.0 / RENDER_FRAMERATE, this.__sleep + this.__tmpSleep);
                 this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
@@ -1067,11 +1053,11 @@ new class SortingVisualizer {
         this.multiHighlightAdvanced([hInfo]);
     }
 
-    new method multiHighlight(hList, aux = False) {
+    new method multiHighlight(hList, aux = None) {
         this.multiHighlightAdvanced([HighlightInfo(x, aux, None) for x in hList]);
     }
 
-    new method highlight(index, aux = False) {
+    new method highlight(index, aux = None) {
         this.highlightAdvanced(HighlightInfo(index, aux, None));
     }
 
