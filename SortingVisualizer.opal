@@ -211,8 +211,14 @@ new class SortingVisualizer {
     new method delay(dTime) {
         new dynamic s = (dTime * max(this.__sleep, 0.001)) / this.__speed - this.__sleep;
         this.__speedCounter = this.__speed;
-        this.__soundSample  = this.__makeSample(max(s, UNIT_SAMPLE_DURATION));
-        this.__tmpSleep     = s;
+
+        if s > UNIT_SAMPLE_DURATION {
+            this.__soundSample = this.__makeSample(s);
+        } else {
+            this.__soundSample = this.__unitSample;
+        }
+        
+        this.__tmpSleep = max(s, 0);
     }
 
     $macro update
