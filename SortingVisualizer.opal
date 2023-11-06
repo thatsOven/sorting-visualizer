@@ -12,7 +12,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION = "2023.11.4";
+new str VERSION = "2023.11.6";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,

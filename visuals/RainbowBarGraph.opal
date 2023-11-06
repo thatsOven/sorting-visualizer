@@ -149,15 +149,15 @@ new class RainbowBarGraph: LineVisual {
                 oldIdx = idx;
             }
         } else {
-            for i = this.lineSize // 2; i < sortingVisualizer.graphics.resolution.x; i += this.lineSize {
+            for i = this.auxLineSize // 2; i < sortingVisualizer.graphics.resolution.x; i += this.auxLineSize {
                 idx = int(Utils.translate(
-                    i - this.lineSize // 2, 0, sortingVisualizer.graphics.resolution.x, 
+                    i - this.auxLineSize // 2, 0, sortingVisualizer.graphics.resolution.x, 
                     0, len(array)
                 ));
                 
                 pos.x = i;
                 end.x = i;
-                end.y = pos.y - int(array[idx].value * this.lineLengthConst);
+                end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
                     sortingVisualizer.graphics.line(pos, end, indices[idx], this.auxLineSize);
@@ -206,15 +206,15 @@ new class RainbowBarGraph: LineVisual {
                 end.x++;
             }
         } else {
-            for i = this.lineSize // 2; i < sortingVisualizer.graphics.resolution.x; i += this.lineSize {
+            for i = this.auxLineSize // 2; i < sortingVisualizer.graphics.resolution.x; i += this.auxLineSize {
                 idx = int(Utils.translate(
-                    i - this.lineSize // 2, 0, sortingVisualizer.graphics.resolution.x, 
+                    i - this.auxLineSize // 2, 0, sortingVisualizer.graphics.resolution.x, 
                     0, len(array)
                 ));
                 
                 pos.x = i;
                 end.x = i;
-                end.y = pos.y - int(array[idx].value * this.lineLengthConst);
+                end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
                     sortingVisualizer.graphics.line(pos, end, indices[idx], this.auxLineSize);
