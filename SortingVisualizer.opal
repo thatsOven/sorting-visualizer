@@ -1,7 +1,5 @@
 package opal: import *;
 
-new Vector RESOLUTION = Vector(1280, 720);
-
 new int FREQUENCY_SAMPLE        = 48000,
         FRAME_DIGS              = 9,
         NATIVE_FRAMERATE        = 120,
@@ -12,7 +10,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION = "2023.11.6";
+new str VERSION = "2023.11.12";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -21,7 +19,7 @@ package timeit:      import default_timer;
 package functools:   import total_ordering;
 package traceback:   import format_exception;
 package pygame_gui:  import UIManager, elements, windows;
-package pygame:      import Rect, image;
+package pygame:      import Rect, image, display;
 package sf2_loader:  import sf2_loader;
 package pygame.time: import Clock;
 package scipy:       import signal, io;
@@ -94,16 +92,8 @@ new class SortingVisualizer {
         this.pivotSelections = [];
         this.rotations       = [];
 
-        this.__fontSize = round(((RESOLUTION.x / 1280.0) + (RESOLUTION.y / 720.0)) * 11);
-
         this.__visual = None;
         this.__sound  = None;
-        this.graphics = Graphics(
-            RESOLUTION, caption = "thatsOven's Sorting Visualizer", 
-            font = "Times New Roman", fontSize = this.__fontSize, 
-            frequencySample = FREQUENCY_SAMPLE
-        );
-        this.__gui = GUI();
 
         this.resetStats();
 
@@ -139,15 +129,30 @@ new class SortingVisualizer {
         this.__audioPtr      = 0;
         this.__audio         = None;
 
-        this.__audioChs = this.graphics.getAudioChs()[2];
-
         this.__loadSettings();
+
+        this.__initGraphics();
+        this.__gui = GUI();
 
         if this.settings["internal-info"] {
             this.__movingTextSize = Vector(0, this.__fontSize * 20);
         } else {
             this.__movingTextSize = Vector(0, this.__fontSize * 15);
         }
+    }
+
+    new method __initGraphics() {
+        new dynamic res = Vector().fromList(this.settings["resolution"]);
+        this.__fontSize = round(((res.x / 1280.0) + (res.y / 720.0)) * 11);
+
+        this.graphics = Graphics(
+            res, caption = "thatsOven's Sorting Visualizer", 
+            font = "Times New Roman", fontSize = this.__fontSize, 
+            frequencySample = FREQUENCY_SAMPLE
+        );
+
+        this.__audioChs = this.graphics.getAudioChs()[2];
+        this.graphics.event(QUIT)(lambda _: quit());
     }
 
     new method __loadSettings() {
@@ -205,7 +210,7 @@ new class SortingVisualizer {
     }
 
     new method __makeSample(sTime) {
-        return numpy.arange(0, sTime, 1.0 / float(this.graphics.frequencySample));
+        return numpy.arange(0, sTime, 1.0 / float(FREQUENCY_SAMPLE));
     }
 
     new method delay(dTime) {
@@ -1488,8 +1493,6 @@ new class SortingVisualizer {
     }
 
     new method run() {
-        this.graphics.event(QUIT)(lambda _: quit());
-
         Utils.Iterables.stableSort(this.distributions);
         Utils.Iterables.stableSort(this.shuffles);
         Utils.Iterables.stableSort(this.visuals);
@@ -1582,6 +1585,12 @@ new class SortingVisualizer {
                 }
                 case 3 {
                     this.__gui.settings();
+
+                    if this.graphics.resolution.toList(2) != this.settings["resolution"] {
+                        display.quit();
+                        this.__initGraphics();
+                        this.__gui.setSv(this);
+                    }
                 }
             }
         }

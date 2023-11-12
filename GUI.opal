@@ -8,15 +8,12 @@ new function checkType(value, type_) {
 }
 
 new class GUI {
-    new Vector OFFS           = RESOLUTION // 80,
-               WIN_SIZE       = RESOLUTION // 2,
-               SMALL_WIN_SIZE = Vector(RESOLUTION.x // 4, RESOLUTION.y // 6),
-               TEXT_OFFS      = Vector(2, 2);
+    new Vector TEXT_OFFS = Vector(2, 2);
     new int FPS = 60;
 
     new method __init__() {
-        this.__manager = UIManager(RESOLUTION.toList(2));
         this.__clock   = Clock();
+        this.__manager = None;
         this.__sv      = None;
 
         this.__oldCat    = None;
@@ -25,6 +22,12 @@ new class GUI {
 
     new method setSv(sv) {
         this.__sv = sv;
+        this.__manager = UIManager(this.__sv.graphics.resolution.toList(2));
+
+        this.OFFS              = this.__sv.graphics.resolution // 80;
+        this.WIN_SIZE          = this.__sv.graphics.resolution // 2;
+        this.SMALL_WIN_SIZE    = Vector(this.__sv.graphics.resolution.x // 4, this.__sv.graphics.resolution.y // 6);
+        this.SETTINGS_WIN_SIZE = Vector(this.__sv.graphics.resolution.x // 2, this.__sv.graphics.resolution.y * 0.8).getIntCoords();
 
         this.__buildSV();
         this.__buildRunAll();
@@ -77,22 +80,22 @@ new class GUI {
     new method __genericDialog(who, message, type_, default, textInput) {
         new dynamic win = elements.UIWindow(
             Rect(
-                RESOLUTION.x - GUI.WIN_SIZE.x // 2, 
-                RESOLUTION.y - GUI.WIN_SIZE.y // 2, 
-                GUI.WIN_SIZE.x, GUI.WIN_SIZE.y
+                this.__sv.graphics.resolution.x - this.WIN_SIZE.x // 2, 
+                this.__sv.graphics.resolution.y - this.WIN_SIZE.y // 2, 
+                this.WIN_SIZE.x, this.WIN_SIZE.y
             ),
             this.__manager, window_display_title = who
         );
         win.set_blocking(True);
         win.on_close_window_button_pressed = lambda *a: None;
-        win.set_position((RESOLUTION // 2 - GUI.WIN_SIZE // 2).toList(2));
+        win.set_position((this.__sv.graphics.resolution // 2 - this.WIN_SIZE // 2).toList(2));
 
         new dynamic entry;
         if textInput {
             elements.UITextBox(
                 message, Rect(
                     GUI.TEXT_OFFS.x, GUI.TEXT_OFFS.y, 
-                    GUI.WIN_SIZE.x - GUI.TEXT_OFFS.x - 40, 
+                    this.WIN_SIZE.x - GUI.TEXT_OFFS.x - 40, 
                     80
                 ),
                 this.__manager, container = win
@@ -101,7 +104,7 @@ new class GUI {
             entry = elements.UITextEntryLine(
                 Rect(
                     GUI.TEXT_OFFS.x, GUI.TEXT_OFFS.y + 80, 
-                    GUI.WIN_SIZE.x - GUI.TEXT_OFFS.x, 
+                    this.WIN_SIZE.x - GUI.TEXT_OFFS.x, 
                     20
                 ),
                 this.__manager, container = win,
@@ -111,8 +114,8 @@ new class GUI {
             elements.UITextBox(
                 message, Rect(
                     GUI.TEXT_OFFS.x, GUI.TEXT_OFFS.y, 
-                    GUI.WIN_SIZE.x - GUI.TEXT_OFFS.x - 40, 
-                    GUI.WIN_SIZE.y - GUI.TEXT_OFFS.y - 120
+                    this.WIN_SIZE.x - GUI.TEXT_OFFS.x - 40, 
+                    this.WIN_SIZE.y - GUI.TEXT_OFFS.y - 120
                 ),
                 this.__manager, container = win
             );
@@ -122,8 +125,8 @@ new class GUI {
 
         new dynamic button = elements.UIButton(
             Rect(
-                GUI.WIN_SIZE.x // 2 - 60, 
-                GUI.WIN_SIZE.y - 100 - GUI.TEXT_OFFS.y, 
+                this.WIN_SIZE.x // 2 - 60, 
+                this.WIN_SIZE.y - 100 - GUI.TEXT_OFFS.y, 
                 100, 40
             ),
             "OK", this.__manager, win
@@ -160,20 +163,20 @@ new class GUI {
     new method selection(who, message, content) {
         new dynamic win = elements.UIWindow(
             Rect(
-                RESOLUTION.x - GUI.WIN_SIZE.x // 2, 
-                RESOLUTION.y - GUI.WIN_SIZE.y // 2, 
-                GUI.WIN_SIZE.x, GUI.WIN_SIZE.y
+                this.__sv.graphics.resolution.x - this.WIN_SIZE.x // 2, 
+                this.__sv.graphics.resolution.y - this.WIN_SIZE.y // 2, 
+                this.WIN_SIZE.x, this.WIN_SIZE.y
             ),
             this.__manager, window_display_title = who
         );
         win.set_blocking(True);
         win.on_close_window_button_pressed = lambda *a: None;
-        win.set_position((RESOLUTION // 2 - GUI.WIN_SIZE // 2).toList(2));
+        win.set_position((this.__sv.graphics.resolution // 2 - this.WIN_SIZE // 2).toList(2));
 
         elements.UITextBox(
             message, Rect(
                 GUI.TEXT_OFFS.x, GUI.TEXT_OFFS.y, 
-                GUI.WIN_SIZE.x - GUI.TEXT_OFFS.x - 40, 
+                this.WIN_SIZE.x - GUI.TEXT_OFFS.x - 40, 
                 80
             ),
             this.__manager, container = win
@@ -182,8 +185,8 @@ new class GUI {
         new dynamic lst = elements.UISelectionList(
             Rect(
                 GUI.TEXT_OFFS.x, GUI.TEXT_OFFS.y + 80, 
-                GUI.WIN_SIZE.x - GUI.TEXT_OFFS.x - 40, 
-                GUI.WIN_SIZE.y - GUI.TEXT_OFFS.y - 200
+                this.WIN_SIZE.x - GUI.TEXT_OFFS.x - 40, 
+                this.WIN_SIZE.y - GUI.TEXT_OFFS.y - 200
             ),
             content, this.__manager, 
             container = win
@@ -191,8 +194,8 @@ new class GUI {
 
         new dynamic button = elements.UIButton(
             Rect(
-                GUI.WIN_SIZE.x // 2 - 60, 
-                GUI.WIN_SIZE.y - 100 - GUI.TEXT_OFFS.y, 
+                this.WIN_SIZE.x // 2 - 60, 
+                this.WIN_SIZE.y - 100 - GUI.TEXT_OFFS.y, 
                 100, 40
             ),
             "OK", this.__manager, win
@@ -215,42 +218,42 @@ new class GUI {
     new method __buildSortSel() {
         this.__sortSelPanel = elements.UIPanel(
             Rect(
-                GUI.OFFS.x, GUI.OFFS.y, RESOLUTION.x - GUI.OFFS.x * 2, RESOLUTION.y - GUI.OFFS.y * 2
+                this.OFFS.x, this.OFFS.y, this.__sv.graphics.resolution.x - this.OFFS.x * 2, this.__sv.graphics.resolution.y - this.OFFS.y * 2
             ), manager = this.__manager
         );
         this.__sortSelPanel.hide();
 
-        new int listOffs = (RESOLUTION.x - GUI.OFFS.x) // 2,
-                listSize = listOffs - (RESOLUTION.x - GUI.OFFS.x) // 25;
+        new int listOffs = (this.__sv.graphics.resolution.x - this.OFFS.x) // 2,
+                listSize = listOffs - (this.__sv.graphics.resolution.x - this.OFFS.x) // 25;
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 80, listSize, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 80, listSize, 20), 
             "Category", this.__manager, this.__sortSelPanel
         );
         this.__chosenCat  = this.__sv.categories[0];
         this.__sortSelCategories = elements.UISelectionList(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 100, listSize, RESOLUTION.y - GUI.OFFS.y * 2 - 180),
+            Rect(this.OFFS.x, this.OFFS.y + 100, listSize, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 180),
             this.__sv.categories, this.__manager, 
             container = this.__sortSelPanel
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + listOffs, GUI.OFFS.y + 80, listSize, 20), 
+            Rect(this.OFFS.x + listOffs, this.OFFS.y + 80, listSize, 20), 
             "Sort", this.__manager, this.__sortSelPanel
         );
         this.__sorts = [sort.listName for sort in this.__sv.sorts[this.__chosenCat]];
         this.__sortSelSorts = elements.UISelectionList(
-            Rect(GUI.OFFS.x + listOffs, GUI.OFFS.y + 100, listSize, RESOLUTION.y - GUI.OFFS.y * 2 - 180),
+            Rect(this.OFFS.x + listOffs, this.OFFS.y + 100, listSize, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 180),
             this.__sorts, this.__manager, container = this.__sortSelPanel
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + listOffs, GUI.OFFS.y, listSize, 20),
+            Rect(this.OFFS.x + listOffs, this.OFFS.y, listSize, 20),
             "Select sort", this.__manager, this.__sortSelPanel
         );
 
         this.__sortSelButton = elements.UIButton(
-            Rect(GUI.OFFS.x + listOffs, RESOLUTION.y - GUI.OFFS.y * 2 - 60, listSize, 40),
+            Rect(this.OFFS.x + listOffs, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 60, listSize, 40),
             "OK", this.__manager, this.__sortSelPanel, 
         );
     }
@@ -311,101 +314,101 @@ new class GUI {
     new method __buildSV() {
         this.__svPanel = elements.UIPanel(
             Rect(
-                GUI.OFFS.x, GUI.OFFS.y, RESOLUTION.x - GUI.OFFS.x * 2, RESOLUTION.y - GUI.OFFS.y * 2
+                this.OFFS.x, this.OFFS.y, this.__sv.graphics.resolution.x - this.OFFS.x * 2, this.__sv.graphics.resolution.y - this.OFFS.y * 2
             ), manager = this.__manager
         );
         this.__svPanel.hide();
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 20, 100, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 20, 100, 20), 
             "Array length", this.__manager, this.__svPanel
         );
         this.__svArrayLength = elements.UITextEntryLine(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 40, 100, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 40, 100, 20), 
             this.__manager, this.__svPanel, 
             initial_text = '1024'
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + 120, GUI.OFFS.y + 20, 120, 20), 
+            Rect(this.OFFS.x + 120, this.OFFS.y + 20, 120, 20), 
             "Unique amount", this.__manager, this.__svPanel
         );
         this.__svUnique = elements.UITextEntryLine(
-            Rect(GUI.OFFS.x + 120, GUI.OFFS.y + 40, 120, 20), 
+            Rect(this.OFFS.x + 120, this.OFFS.y + 40, 120, 20), 
             this.__manager, this.__svPanel, 
             initial_text = '512'
         );
 
         elements.UILabel(
-            Rect(RESOLUTION.x - GUI.OFFS.x * 2 - 120, GUI.OFFS.y + 20, 100, 20), 
+            Rect(this.__sv.graphics.resolution.x - this.OFFS.x * 2 - 120, this.OFFS.y + 20, 100, 20), 
             "Speed", this.__manager, this.__svPanel
         );
         this.__svSpeed = elements.UITextEntryLine(
-            Rect(RESOLUTION.x - GUI.OFFS.x * 2 - 120, GUI.OFFS.y + 40, 100, 20), 
+            Rect(this.__sv.graphics.resolution.x - this.OFFS.x * 2 - 120, this.OFFS.y + 40, 100, 20), 
             this.__manager, this.__svPanel, 
             initial_text = '1'
         );
 
-        new int listOffs = (RESOLUTION.x - GUI.OFFS.x) // 5,
-                listSize = listOffs - (RESOLUTION.x - GUI.OFFS.x) // 25;
+        new int listOffs = (this.__sv.graphics.resolution.x - this.OFFS.x) // 5,
+                listSize = listOffs - (this.__sv.graphics.resolution.x - this.OFFS.x) // 25;
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 80, listSize, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 80, listSize, 20), 
             "Distribution", this.__manager, this.__svPanel
         );
         this.__distributions = [dist.name for dist in this.__sv.distributions];
         this.__svDistributions = elements.UISelectionList(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 100, listSize, RESOLUTION.y - GUI.OFFS.y * 2 - 180),
+            Rect(this.OFFS.x, this.OFFS.y + 100, listSize, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 180),
             this.__distributions, this.__manager, container = this.__svPanel
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + listOffs, GUI.OFFS.y + 80, listSize, 20), 
+            Rect(this.OFFS.x + listOffs, this.OFFS.y + 80, listSize, 20), 
             "Shuffle", this.__manager, this.__svPanel
         );
         this.__shuffles = [shuf.name for shuf in this.__sv.shuffles];
         this.__svShuffles = elements.UISelectionList(
-            Rect(GUI.OFFS.x + listOffs, GUI.OFFS.y + 100, listSize, RESOLUTION.y - GUI.OFFS.y * 2 - 180),
+            Rect(this.OFFS.x + listOffs, this.OFFS.y + 100, listSize, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 180),
             this.__shuffles, this.__manager, container = this.__svPanel
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + listOffs * 2, GUI.OFFS.y + 80, listSize, 20), 
+            Rect(this.OFFS.x + listOffs * 2, this.OFFS.y + 80, listSize, 20), 
             "Category", this.__manager, this.__svPanel
         );
         this.__svCategories = elements.UISelectionList(
-            Rect(GUI.OFFS.x + listOffs * 2, GUI.OFFS.y + 100, listSize, RESOLUTION.y - GUI.OFFS.y * 2 - 180),
+            Rect(this.OFFS.x + listOffs * 2, this.OFFS.y + 100, listSize, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 180),
             this.__sv.categories, this.__manager, 
             container = this.__svPanel
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + listOffs * 3, GUI.OFFS.y + 80, listSize, 20), 
+            Rect(this.OFFS.x + listOffs * 3, this.OFFS.y + 80, listSize, 20), 
             "Sort", this.__manager, this.__svPanel
         );
         this.__sorts = [sort.listName for sort in this.__sv.sorts[this.__sv.categories[0]]];
         this.__svSorts = elements.UISelectionList(
-            Rect(GUI.OFFS.x + listOffs * 3, GUI.OFFS.y + 100, listSize, RESOLUTION.y - GUI.OFFS.y * 2 - 180),
+            Rect(this.OFFS.x + listOffs * 3, this.OFFS.y + 100, listSize, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 180),
             this.__sorts, this.__manager, container = this.__svPanel
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + listOffs * 4, GUI.OFFS.y + 80, listSize, 20), 
+            Rect(this.OFFS.x + listOffs * 4, this.OFFS.y + 80, listSize, 20), 
             "Visual", this.__manager, this.__svPanel
         );
         this.__visuals = [vis.name for vis in this.__sv.visuals];
         this.__svVisuals = elements.UISelectionList(
-            Rect(GUI.OFFS.x + listOffs * 4, GUI.OFFS.y + 100, listSize, RESOLUTION.y - GUI.OFFS.y * 2 - 180),
+            Rect(this.OFFS.x + listOffs * 4, this.OFFS.y + 100, listSize, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 180),
             this.__visuals, this.__manager, container = this.__svPanel
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + listOffs * 2, GUI.OFFS.y, listSize, 20),
+            Rect(this.OFFS.x + listOffs * 2, this.OFFS.y, listSize, 20),
             "Run Sort", this.__manager, this.__svPanel
         );
 
         this.__svRunButton = elements.UIButton(
-            Rect(GUI.OFFS.x + listOffs * 2, RESOLUTION.y - GUI.OFFS.y * 2 - 60, listSize, 40),            
+            Rect(this.OFFS.x + listOffs * 2, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 60, listSize, 40),            
             "Run", this.__manager, this.__svPanel, 
             tool_tip_text = "Runs the selected sort with the given settings"
         );
@@ -534,61 +537,61 @@ new class GUI {
     new method __buildRunAll() {
         this.__runAllPanel = elements.UIPanel(
             Rect(
-                GUI.OFFS.x, GUI.OFFS.y, RESOLUTION.x - GUI.OFFS.x * 2, RESOLUTION.y - GUI.OFFS.y * 2
+                this.OFFS.x, this.OFFS.y, this.__sv.graphics.resolution.x - this.OFFS.x * 2, this.__sv.graphics.resolution.y - this.OFFS.y * 2
             ), manager = this.__manager
         );
         this.__runAllPanel.hide();
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 20, 100, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 20, 100, 20), 
             "Speed", this.__manager, this.__runAllPanel
         );
         this.__runAllSpeed = elements.UITextEntryLine(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 40, 100, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 40, 100, 20), 
             this.__manager, this.__runAllPanel, 
             initial_text = '1'
         );
 
-        new int listOffs = (RESOLUTION.x - GUI.OFFS.x) // 3,
-                listSize = listOffs - (RESOLUTION.x - GUI.OFFS.x) // 25;
+        new int listOffs = (this.__sv.graphics.resolution.x - this.OFFS.x) // 3,
+                listSize = listOffs - (this.__sv.graphics.resolution.x - this.OFFS.x) // 25;
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 80, listSize, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 80, listSize, 20), 
             "Distribution", this.__manager, this.__runAllPanel
         );
         this.__runAllDistributions = elements.UISelectionList(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 100, listSize, RESOLUTION.y - GUI.OFFS.y * 2 - 180),
+            Rect(this.OFFS.x, this.OFFS.y + 100, listSize, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 180),
             [dist.name for dist in this.__sv.distributions],
             this.__manager, container = this.__runAllPanel
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + listOffs, GUI.OFFS.y + 80, listSize, 20), 
+            Rect(this.OFFS.x + listOffs, this.OFFS.y + 80, listSize, 20), 
             "Shuffle", this.__manager, this.__runAllPanel
         );
         this.__runAllShuffles = elements.UISelectionList(
-            Rect(GUI.OFFS.x + listOffs, GUI.OFFS.y + 100, listSize, RESOLUTION.y - GUI.OFFS.y * 2 - 180),
+            Rect(this.OFFS.x + listOffs, this.OFFS.y + 100, listSize, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 180),
             [shuf.name for shuf in this.__sv.shuffles],
             this.__manager, container = this.__runAllPanel
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + listOffs * 2, GUI.OFFS.y + 80, listSize, 20), 
+            Rect(this.OFFS.x + listOffs * 2, this.OFFS.y + 80, listSize, 20), 
             "Visual", this.__manager, this.__runAllPanel
         );
         this.__runAllVisuals = elements.UISelectionList(
-           Rect(GUI.OFFS.x + listOffs * 2, GUI.OFFS.y + 100, listSize, RESOLUTION.y - GUI.OFFS.y * 2 - 180),
+           Rect(this.OFFS.x + listOffs * 2, this.OFFS.y + 100, listSize, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 180),
             [vis.name for vis in this.__sv.visuals],
             this.__manager, container = this.__runAllPanel
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x + listOffs, GUI.OFFS.y, listSize, 20),
+            Rect(this.OFFS.x + listOffs, this.OFFS.y, listSize, 20),
             "Run all sorts", this.__manager, this.__runAllPanel
         );
 
         this.__runAllButton = elements.UIButton(
-            Rect(GUI.OFFS.x + listOffs, RESOLUTION.y - GUI.OFFS.y * 2 - 60, listSize, 40),
+            Rect(this.OFFS.x + listOffs, this.__sv.graphics.resolution.y - this.OFFS.y * 2 - 60, listSize, 40),
             "Run", this.__manager, this.__runAllPanel, 
             tool_tip_text = "Runs all sorts with the given settings"
         );
@@ -659,107 +662,124 @@ new class GUI {
 
         new dynamic settingsPanel = elements.UIPanel(
             Rect(
-                RESOLUTION.x // 2 - GUI.WIN_SIZE.x // 2, 
-                RESOLUTION.y // 2 - GUI.WIN_SIZE.y // 2, 
-                GUI.WIN_SIZE.x, GUI.WIN_SIZE.y
+                this.__sv.graphics.resolution.x // 2 - this.SETTINGS_WIN_SIZE.x // 2, 
+                this.__sv.graphics.resolution.y // 2 - this.SETTINGS_WIN_SIZE.y // 2, 
+                this.SETTINGS_WIN_SIZE.x, this.SETTINGS_WIN_SIZE.y
             ), manager = this.__manager
         );
 
         elements.UILabel(
-            Rect(GUI.WIN_SIZE.x // 2 - 50, GUI.OFFS.y + 10, 100, 20), 
+            Rect(this.SETTINGS_WIN_SIZE.x // 2 - 50, this.OFFS.y + 10, 100, 20), 
             "Settings", this.__manager, settingsPanel
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 40, 250, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 40, 250, 20), 
             "Show text", this.__manager, settingsPanel
         );
         new dynamic showTextSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(showTextSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 40, 100, 20),
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 100, this.OFFS.y + 40, 100, 20),
             this.__manager, settingsPanel 
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 70, 250, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 70, 250, 20), 
             "Show auxiliary array", this.__manager, settingsPanel
         );
         new dynamic showAuxSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(showAuxSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 70, 100, 20),
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 100, this.OFFS.y + 70, 100, 20),
             this.__manager, settingsPanel 
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 100, 250, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 100, 250, 20), 
             "Show internal information", this.__manager, settingsPanel
         );
         new dynamic internalInfoSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(internalInfoSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 100, 100, 20),
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 100, this.OFFS.y + 100, 100, 20),
             this.__manager, settingsPanel 
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 130, 250, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 130, 250, 20), 
             "Render mode", this.__manager, settingsPanel
         );
         new dynamic renderSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(renderSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 130, 100, 20),
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 100, this.OFFS.y + 130, 100, 20),
             this.__manager, settingsPanel 
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 160, 250, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 160, 250, 20), 
             "Lazy auxiliary visualization", this.__manager, settingsPanel
         );
         new dynamic lazyAuxSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(lazyAuxSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 160, 100, 20),
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 100, this.OFFS.y + 160, 100, 20),
             this.__manager, settingsPanel 
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 190, 250, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 190, 250, 20), 
             "Lazy rendering", this.__manager, settingsPanel
         );
         new dynamic lazyRenderSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             ["True", "False"], str(lazyRenderSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 100, GUI.OFFS.y + 190, 100, 20),
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 100, this.OFFS.y + 190, 100, 20),
             this.__manager, settingsPanel 
         );
 
         elements.UILabel(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 220, 250, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 220, 250, 20),
+            "Window resolution", this.__manager, settingsPanel
+        );
+        new dynamic resolutionXSetting = elements.UITextEntryLine(
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 220, this.OFFS.y + 220, 100, 20),
+            this.__manager, settingsPanel, initial_text = str(this.__sv.graphics.resolution.x)
+        );
+        elements.UILabel(
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 120, this.OFFS.y + 220, 20, 20),
+            "x", this.__manager, settingsPanel
+        );
+        new dynamic resolutionYSetting = elements.UITextEntryLine(
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 100, this.OFFS.y + 220, 100, 20),
+            this.__manager, settingsPanel, initial_text = str(this.__sv.graphics.resolution.y)
+        );
+
+        elements.UILabel(
+            Rect(this.OFFS.x, this.SETTINGS_WIN_SIZE.y - 150, 250, 20), 
             "Sounds", this.__manager, settingsPanel
         );
         new dynamic soundSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             [x.name for x in this.__sv.sounds], str(soundSettingValue),
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 250, GUI.OFFS.y + 220, 250, 20),
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 250, this.SETTINGS_WIN_SIZE.y - 150, 250, 20),
             this.__manager, settingsPanel 
         );
 
         new dynamic soundRefreshButton = elements.UIButton(
-            Rect(GUI.OFFS.x, GUI.OFFS.y + 250, 250, 30),           
+            Rect(this.OFFS.x, this.SETTINGS_WIN_SIZE.y - 120, 250, 30),           
             "Refresh sound config", this.__manager, settingsPanel, 
             tool_tip_text = "Performs the sound initialization process. Used to change sound specific settings"
         );
 
         new dynamic soundDeleteConf = elements.UIButton(
-            Rect(GUI.WIN_SIZE.x - GUI.OFFS.x - 250, GUI.OFFS.y + 250, 250, 30),       
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 250, this.SETTINGS_WIN_SIZE.y - 120, 250, 30),       
             "Delete sound config", this.__manager, settingsPanel, 
             tool_tip_text = "Deletes sounds settings"
         );
 
         new dynamic settingsBackButton = elements.UIButton(
-            Rect(20, GUI.WIN_SIZE.y - 60, 100, 40),            
+            Rect(20, this.SETTINGS_WIN_SIZE.y - 60, 100, 40),            
             "Back", this.__manager, settingsPanel, 
             tool_tip_text = "Goes back to the main menu without saving"
         );
 
         new dynamic settingsSaveButton = elements.UIButton(
-            Rect(GUI.WIN_SIZE.x - 130, GUI.WIN_SIZE.y - 60, 100, 40),            
+            Rect(this.SETTINGS_WIN_SIZE.x - 130, this.SETTINGS_WIN_SIZE.y - 60, 100, 40),            
             "Save", this.__manager, settingsPanel, 
             tool_tip_text = "Saves given settings"
         );
@@ -810,13 +830,39 @@ new class GUI {
                             shutil.rmtree(SortingVisualizer.SOUND_CONFIG);
                             this.__sv._makeSoundConfFolder();
                         } catch Exception as e {
-                            this.userWarn("Error", f"Unable to delete sound settings or restore folder. Exception:\n{e}");
+                            this.userWarn("Error", f"Unable to delete sound settings or restore folder. Exception:\n{formatException(e)}");
                         } success {
                             this.userWarn("Success", "Sound settings deleted");
                         }
                     }
                     case settingsSaveButton {
-                        new dynamic oldSound = this.__sv.settings["sound"];
+                        new dynamic oldSound = this.__sv.settings["sound"],
+                                    resX     = resolutionXSetting.get_text(),
+                                    resY     = resolutionYSetting.get_text();
+
+                        if checkType(resX, int) {
+                            int <- resX;
+
+                            if resX < 1080 {
+                                this.userWarn("Error", "Minimum X resolution is 1080.");
+                                return;
+                            }
+                        } else {
+                            this.userWarn("Error", "Invalid X resolution.");
+                            return;
+                        }
+
+                        if checkType(resY, int) {
+                            int <- resY;
+
+                            if resY < 640 {
+                                this.userWarn("Error", "Minimum Y resolution is 640.");
+                                return;
+                            }
+                        } else {
+                            this.userWarn("Error", "Invalid Y resolution.");
+                            return;
+                        }
 
                         this.__sv.settings = {
                             "show-text":     showTextSettingValue,
@@ -825,7 +871,8 @@ new class GUI {
                             "render":        renderSettingValue,
                             "lazy-aux":      lazyAuxSettingValue,
                             "lazy-render":   lazyRenderSettingValue,
-                            "sound":         soundSettingValue
+                            "sound":         soundSettingValue,
+                            "resolution":    [resX, resY]
                         };
 
                         try {
@@ -835,7 +882,7 @@ new class GUI {
                                 this.__sv._setSound(name = soundSettingValue);
                             }
                         } catch Exception as e {
-                            this.userWarn("Error", f"An error occurred while saving your settings:\n{e}");
+                            this.userWarn("Error", f"An error occurred while saving your settings:\n{formatException(e)}");
                             return;
                         } success {
                             this.userWarn("Success", "Settings saved successfully.");
@@ -853,14 +900,14 @@ new class GUI {
     new method renderScreen(process, message) {
         new dynamic panel = elements.UIPanel(
             Rect(
-                RESOLUTION.x // 2 - GUI.SMALL_WIN_SIZE.x // 2, 
-                RESOLUTION.y // 2 - GUI.SMALL_WIN_SIZE.y // 2, 
-                GUI.SMALL_WIN_SIZE.x, GUI.SMALL_WIN_SIZE.y
+                this.__sv.graphics.resolution.x // 2 - this.SMALL_WIN_SIZE.x // 2, 
+                this.__sv.graphics.resolution.y // 2 - this.SMALL_WIN_SIZE.y // 2, 
+                this.SMALL_WIN_SIZE.x, this.SMALL_WIN_SIZE.y
             ), manager = this.__manager
         );
 
         elements.UILabel(
-            Rect(0, GUI.SMALL_WIN_SIZE.y // 2 - 15, GUI.SMALL_WIN_SIZE.x, 20), 
+            Rect(0, this.SMALL_WIN_SIZE.y // 2 - 15, this.SMALL_WIN_SIZE.x, 20), 
             message, this.__manager, panel
         ).set_text_scale(2);
 
@@ -886,15 +933,15 @@ new class GUI {
 
         new dynamic win = windows.ui_file_dialog.UIFileDialog(
             Rect(
-                RESOLUTION.x // 2 - GUI.WIN_SIZE.x // 2, 
-                RESOLUTION.y // 2 - GUI.WIN_SIZE.y // 2, 
-                GUI.WIN_SIZE.x, GUI.WIN_SIZE.y
+                this.__sv.graphics.resolution.x // 2 - this.WIN_SIZE.x // 2, 
+                this.__sv.graphics.resolution.y // 2 - this.WIN_SIZE.y // 2, 
+                this.WIN_SIZE.x, this.WIN_SIZE.y
             ), this.__manager, "Select file",
             allowed, initPath
         );
         win.set_blocking(True);
         win.on_close_window_button_pressed = lambda *a: None;
-        win.set_position((RESOLUTION // 2 - GUI.WIN_SIZE // 2).toList(2));
+        win.set_position((this.__sv.graphics.resolution // 2 - this.WIN_SIZE // 2).toList(2));
         
         new function __internal(event) {
             if event.type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED {
