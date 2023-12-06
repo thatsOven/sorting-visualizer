@@ -71,7 +71,7 @@ new class UtilsIterablesStableSortMerge {
         }
     }
 
-    new classmethod mergeInPlace(array, a, m, b, check = True) {
+    new method mergeInPlace(array, a, m, b, check = True) {
         if checkMergeBounds(array, a, m, b) {
             return;
         }
