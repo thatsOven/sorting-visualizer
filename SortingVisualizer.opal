@@ -10,7 +10,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION = "2023.11.12";
+new str VERSION = "2023.12.8";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -1278,8 +1278,8 @@ new class SortingVisualizer {
 
     new method getKillerIds(killers, distribution) {
         if this.distributions[distribution].name in killers {
-            new list tmp;
-            tmp = [Utils.Iterables.binarySearch(this.shuffles, Shuffle(killer)) for killer in killers[this.distributions[distribution].name]];
+            new list shuffleNames = [x.name.lower() for x in this.shuffles], tmp;
+            tmp = [Utils.Iterables.binarySearch(shuffleNames, killer.lower()) for killer in killers[this.distributions[distribution].name]];
             return [x for x in tmp if x != -1];
         } else {
             return [];
