@@ -152,7 +152,7 @@ new class SortingVisualizer {
         );
 
         this.__audioChs = this.graphics.getAudioChs()[2];
-        this.graphics.event(QUIT)(lambda _: quit());
+        this.graphics.event(QUIT)(lambda _: sys.exit(0));
     }
 
     new method __loadSettings() {
@@ -1483,7 +1483,7 @@ new class SortingVisualizer {
                 os.mkdir(SortingVisualizer.IMAGE_BUF);
             } catch Exception as e {
                 this.__gui.userWarn("Error", f"Unable to create image buffer folder. Exception:\n{formatException(e)}");
-                quit;
+                sys.exit(1);
             }
         }
     }
@@ -1513,7 +1513,7 @@ new class SortingVisualizer {
             this._makeSoundConfFolder();
         } catch Exception as e {
             this.__gui.userWarn("Error", f"Unable to create sound configuration folder. Exception:\n{formatException(e)}");
-            quit;
+            sys.exit(1);
         }
 
         this.__gui.setSv(this);
