@@ -66,8 +66,7 @@ new class Spiral: BaseCircleVisual {
     }
 
     new method draw(array, indices) {        
-        new dynamic drawn  = {}, 
-                    oldIdx = 0, pos, posEnd, angle, l, end, endStep;
+        new dynamic drawn = {}, pos, posEnd, angle, l, end, endStep;
         
         for idx in range(len(array)) {
             l = array[idx].value * this.lineLengthConst;
@@ -87,22 +86,15 @@ new class Spiral: BaseCircleVisual {
             posEnd = posEnd.getIntCoords();
             posEnd += this.circleCenter;
 
-            for i in indices {
-                if indices[i] is not None && i in range(oldIdx, idx) {
-                    sortingVisualizer.graphics.polygon([
-                        this.circleCenter, pos, posEnd
-                    ], indices[i]);
-                    break;
-                }
-            }
-
-            if mark {
+            if idx in indices && indices[idx] is not None {
+                sortingVisualizer.graphics.polygon([
+                    this.circleCenter, pos, posEnd
+                ], indices[idx]);
+            } else {
                 sortingVisualizer.graphics.polygon([
                     this.circleCenter, pos, posEnd
                 ], (255, 255, 255));
             }
-
-            oldIdx = idx;
         }
 
         del drawn;
@@ -148,8 +140,7 @@ new class Spiral: BaseCircleVisual {
     }
 
     new method drawAux(array, indices) {
-        new dynamic drawn  = {}, 
-                    oldIdx = 0, pos, posEnd, angle, l, end, endStep;
+        new dynamic drawn = {},pos, posEnd, angle, l, end, endStep;
         
         for idx in range(len(array)) {
             l = array[idx].value * this.auxLineLengthConst;
@@ -169,20 +160,15 @@ new class Spiral: BaseCircleVisual {
             posEnd = posEnd.getIntCoords();
             posEnd += this.auxCircleCenter;
 
-            for i in indices {
-                if i in range(oldIdx, idx) {
-                    sortingVisualizer.graphics.polygon([
-                        this.auxCircleCenter, pos, posEnd
-                    ], indices[i]);
-                    break;
-                }
+            if idx in indices && indices[idx] is not None {
+                sortingVisualizer.graphics.polygon([
+                    this.auxCircleCenter, pos, posEnd
+                ], indices[idx]);
             } else {
                 sortingVisualizer.graphics.polygon([
                     this.auxCircleCenter, pos, posEnd
                 ], (255, 255, 255));
             }
-
-            oldIdx = idx;
         }
 
         del drawn;
@@ -247,8 +233,7 @@ new class RainbowSpiral: Spiral {
     }
 
     new method draw(array, indices) {
-        new dynamic drawn  = {}, 
-                    oldIdx = 0, pos, posEnd, angle, l, end, endStep;
+        new dynamic drawn = {}, pos, posEnd, angle, l, end, endStep;
         
         for idx in range(len(array)) {
             l = array[idx].value * this.lineLengthConst;
@@ -268,13 +253,10 @@ new class RainbowSpiral: Spiral {
             posEnd = posEnd.getIntCoords();
             posEnd += this.circleCenter;
 
-            for i in indices {
-                if indices[i] is not None && i in range(oldIdx, idx) {
-                    sortingVisualizer.graphics.polygon([
-                        this.circleCenter, pos, posEnd
-                    ], indices[i]);
-                    break;
-                }
+            if idx in indices && indices[idx] is not None {
+                sortingVisualizer.graphics.polygon([
+                    this.circleCenter, pos, posEnd
+                ], indices[idx]);
             } else {
                 if array[idx].value < 0 {
                     sortingVisualizer.graphics.polygon([
@@ -286,8 +268,6 @@ new class RainbowSpiral: Spiral {
                     ], hsvToRgb(array[idx].value * this.colorConstant));
                 }
             }
-
-            oldIdx = idx;
         }
 
         del drawn;
@@ -339,8 +319,7 @@ new class RainbowSpiral: Spiral {
     }
 
     new method drawAux(array, indices) {
-        new dynamic drawn  = {}, 
-                    oldIdx = 0, pos, posEnd, angle, l;
+        new dynamic drawn = {}, pos, posEnd, angle, l;
 
         sortingVisualizer.graphics.fastCircle(this.auxCircleCenter, this.auxCircleRadius, (0, 0, 0));
 
@@ -362,13 +341,10 @@ new class RainbowSpiral: Spiral {
             posEnd = posEnd.getIntCoords();
             posEnd += this.auxCircleCenter;
 
-            for i in indices {
-                if i in range(oldIdx, idx) {
-                    sortingVisualizer.graphics.polygon([
-                        this.auxCircleCenter, pos, posEnd
-                    ], indices[idx]);
-                    break;
-                }
+            if idx in indices && indices[idx] is not None {
+                sortingVisualizer.graphics.polygon([
+                    this.auxCircleCenter, pos, posEnd
+                ], indices[idx]);
             } else {
                 if array[idx].value < 0 {
                     sortingVisualizer.graphics.polygon([
@@ -380,8 +356,6 @@ new class RainbowSpiral: Spiral {
                     ], hsvToRgb(array[idx].value * this.colorConstant));
                 }
             }
-
-            oldIdx = idx;
         }
 
         del drawn;

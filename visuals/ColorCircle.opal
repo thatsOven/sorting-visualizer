@@ -20,8 +20,7 @@ new class ColorCircle: CircleVisual {
     }
 
     new method draw(array, indices) {
-        new dynamic drawn  = {}, 
-                    oldIdx = 0, angle, pos, posEnd;
+        new dynamic drawn = {}, angle, pos, posEnd;
 
         for idx in range(len(array)) {
             angle = this.angles[idx];
@@ -34,13 +33,10 @@ new class ColorCircle: CircleVisual {
 
             pos, posEnd = this.points[angle];
 
-            for i in indices {
-                if indices[i] is not None and i in range(oldIdx, idx) {
-                    sortingVisualizer.graphics.polygon([
-                        this.circleCenter, pos, posEnd
-                    ], indices[i]);
-                    break;
-                }
+            if idx in indices && indices[idx] is not None {
+                sortingVisualizer.graphics.polygon([
+                    this.circleCenter, pos, posEnd
+                ], indices[idx]);
             } else {
                 if array[idx].value < 0 {
                     sortingVisualizer.graphics.polygon([
@@ -52,8 +48,6 @@ new class ColorCircle: CircleVisual {
                     ], hsvToRgb(array[idx].value * this.colorConstant));
                 }
             }
-
-            oldIdx = idx;
         }
 
         del drawn;
@@ -94,8 +88,7 @@ new class ColorCircle: CircleVisual {
     }
 
     new method drawAux(array, indices) {
-        new dynamic drawn  = {}, 
-                    oldIdx = 0, angle, pos, posEnd;
+        new dynamic drawn = {}, angle, pos, posEnd;
 
         for idx in range(len(array)) {
             angle = this.auxAngles[idx];
@@ -108,13 +101,10 @@ new class ColorCircle: CircleVisual {
 
             pos, posEnd = this.auxPoints[angle];
 
-            for i in indices {
-                if i in range(oldIdx, idx) {
-                    sortingVisualizer.graphics.polygon([
-                        this.auxCircleCenter, pos, posEnd
-                    ], indices[i]);
-                    break;
-                }
+            if idx in indices && indices[idx] is not None {
+                sortingVisualizer.graphics.polygon([
+                    this.auxCircleCenter, pos, posEnd
+                ], indices[idx]);
             } else {
                 if array[idx].value < 0 {
                     sortingVisualizer.graphics.polygon([
@@ -126,8 +116,6 @@ new class ColorCircle: CircleVisual {
                     ], hsvToRgb(array[idx].value * this.auxColorConstant));
                 }
             } 
-
-            oldIdx = idx;
         }
     }
 
