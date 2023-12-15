@@ -20,8 +20,8 @@ new class Spiral: BaseCircleVisual {
                 Utils.translate(
                     i, 0, length, this.circleStart, 
                     this.circleEnd
-                ) // this.angleStep
-            ) * this.angleStep;
+                )
+            );
 
             new dynamic pos, posEnd, end, endStep;
             
@@ -53,8 +53,8 @@ new class Spiral: BaseCircleVisual {
                 Utils.translate(
                     i, 0, length, this.circleStart, 
                     this.circleEnd
-                ) // this.auxAngleStep
-            ) * this.auxAngleStep;
+                )
+            );
 
             new dynamic pos, posEnd;
             

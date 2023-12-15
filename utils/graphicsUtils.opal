@@ -122,8 +122,8 @@ new class CircleVisual: BaseCircleVisual {
                 Utils.translate(
                     i, 0, length, this.circleStart, 
                     this.circleEnd
-                ) // this.angleStep
-            ) * this.angleStep;
+                )
+            );
 
             this.angles[i] = angle;
 
@@ -153,8 +153,8 @@ new class CircleVisual: BaseCircleVisual {
                 Utils.translate(
                     i, 0, length, this.circleStart, 
                     this.circleEnd
-                ) // this.auxAngleStep
-            ) * this.auxAngleStep;
+                )
+            );
 
             this.auxAngles[i] = angle;
 
