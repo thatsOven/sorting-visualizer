@@ -133,7 +133,7 @@ runAllSort(1024, "LL Quick Sort", 4, pivotSelections.index("First"), {
     "Perlin Noise": ["Sorted"]
 });
 runAllSort(1024, "LR Quick Sort",          4, pivotSelections.index("Middle"), centerKillers);
-runAllSort(1024, "Stackless Quick",        4, pivotSelections.index("Median of three"), centerKillers);
+runAllSort(1024, "Stackless Quick",        4, pivotSelections.index("Median of three (unstable)"), centerKillers);
 runAllSort(1024, "Dual Pivot Quick",       4, killers = centerKillers);
 runAllSort(2048, "Median-Of-16 A. Quick", 10);
 runAllSort(2048, "PDQ Sort",              10); 
