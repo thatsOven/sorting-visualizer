@@ -25,7 +25,7 @@ new class RadixSort {
             if result[i].idx is None {
                 result[i].idx = i;
                 result[i].stabIdx = i;
-                result[i].setAux(True);
+                result[i].setAux(result);
             }
         }
 
@@ -33,13 +33,7 @@ new class RadixSort {
     }
 
     new method adaptIdxLSD(idx, aux) {
-        for rAux in this.aux {
-            if rAux is aux {
-                return idx;
-            }
-
-            idx += len(rAux);
-        }
+        return 0;
     }
 
     new method transcribe(array, a, aux, empty = True) {

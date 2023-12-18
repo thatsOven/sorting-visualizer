@@ -20,7 +20,7 @@ new class FeatureSort {
             if result[i].idx is None {
                 result[i].idx = i;
                 result[i].stabIdx = i;
-                result[i].setAux(True);
+                result[i].setAux(result);
             }
         }
 
@@ -28,13 +28,7 @@ new class FeatureSort {
     }
 
     new method __adaptIdx(idx, aux) {
-        for rAux in this.aux {
-            if rAux is aux {
-                return idx;
-            }
-
-            idx += len(rAux);
-        }
+        return 0;
     }
 
     new method sort(array, a, b) {

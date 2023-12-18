@@ -1330,8 +1330,7 @@ new class SortingVisualizer {
     new method setAux(array) {
         this.aux = array;
 
-        if this.settings["show-aux"] and not this.__auxMode {
-            this.__auxMode = True;
+        if this.settings["show-aux"] {
             new dynamic adapted = this.__adaptAux(this.aux);
 
             this.getAuxMax(adapted);
@@ -1341,7 +1340,11 @@ new class SortingVisualizer {
             }
 
             this.__visual.onAuxOn(len(adapted));
-            this.drawFullArray();
+
+            if !this.__auxMode {
+                this.drawFullArray();
+                this.__auxMode = True;
+            }
         }
     }
 

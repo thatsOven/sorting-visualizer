@@ -178,7 +178,7 @@ new class WhiteBarGraph: LineVisual {
                 
                 pos.x = i;
                 end.x = i;
-                end.y = pos.y - int(array[idx].value * this.auxLineSize);
+                end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 if idx in indices {
                     sortingVisualizer.graphics.line(pos, end, indices[idx], this.auxLineSize);
