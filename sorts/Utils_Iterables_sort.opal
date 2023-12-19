@@ -44,7 +44,7 @@ namespace MedianOfSixteenAdaptiveQuickSort {
         for i = a; i < b - 1; i++ {
             if array[i] > array[i + 1] {
                 isSorted = False;
-            } else {
+            } else if array[i] != array[i + 1] {
                 reverseSorted = False;
             }
 
