@@ -8,7 +8,7 @@ new class FeatureSort {
         if l <= 1 {
             return;
         }
-        UtilsIterablesStableSort(len(mainArray), mainArray, "Helium").sort(subarray, 0, l);
+        UtilsIterablesStableSort(len(mainArray), mainArray).sort(subarray, 0, l);
     }
 
     new method __adaptAux(array) {
