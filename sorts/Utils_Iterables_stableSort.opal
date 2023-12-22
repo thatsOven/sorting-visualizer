@@ -1,5 +1,7 @@
+use blockSwap, backwardBlockSwap, insertToLeft, insertToRight, bidirArrayCopy;
+
 new class UtilsIterablesStableSortMerge {
-    new method __init__(size, aux = None, rot = None) {
+    new method __init__(size, aux = None) {
         if aux is None {
             this.aux = sortingVisualizer.createValueArray(size);
         } else {
@@ -8,16 +10,47 @@ new class UtilsIterablesStableSortMerge {
         sortingVisualizer.setAux(this.aux);
 
         this.__capacity = size;
+    }
 
-        if rot is None {
-            this.rotate = sortingVisualizer.getRotation(
-                id = sortingVisualizer.getUserSelection(
-                    [r.name for r in sortingVisualizer.rotations],
-                    "Select rotation algorithm (default: Helium)"
-                )
-            ).indexedFn;
+    new method rotate(array, a, m, b) {
+        static: new int rl   = b - m,
+                        ll   = m - a,
+                        min_ = 1 if this.aux is None else (
+                            len(this.aux) if 
+                                min(len(this.aux), ll, rl) > 8
+                            else 1
+                        );
+
+        while ll > min_ and rl > min_ {
+            if rl < ll {
+                blockSwap(array, a, m, rl);
+                a  += rl;
+                ll -= rl;
+            } else {
+                b  -= ll;
+                rl -= ll;
+                backwardBlockSwap(array, a, b, ll);
+            }
+        }
+
+        if min_ == 1 {
+            if rl == 1 {
+                insertToLeft(array, m, a);
+            } elif ll == 1 {
+                insertToRight(array, a, b - 1);
+            }
+            
+            return;
+        }
+        
+        if rl < ll {
+            bidirArrayCopy(array, m, this.aux, 0, rl);
+            bidirArrayCopy(array, a, array, b - ll, ll);
+            bidirArrayCopy(this.aux, 0, array, a, rl);
         } else {
-            this.rotate = sortingVisualizer.getRotation(name = rot).indexedFn;
+            bidirArrayCopy(array, a, this.aux, 0, ll);
+            bidirArrayCopy(array, m, array, a, rl);
+            bidirArrayCopy(this.aux, 0, array, b - ll, ll);
         }
     }
 
@@ -174,8 +207,8 @@ new class UtilsIterablesStableSortMerge {
 use binaryInsertionSort;
 
 new class UtilsIterablesStableSort {
-    new method __init__(size, aux = None, rot = None) {
-        this.__merge = UtilsIterablesStableSortMerge(size, aux, rot);
+    new method __init__(size, aux = None) {
+        this.__merge = UtilsIterablesStableSortMerge(size, aux);
     }
 
     new classmethod getReversedRuns(array, a, b) {
@@ -216,7 +249,7 @@ new class UtilsIterablesStableSort {
 );
 new function utilsIterablesStableSortRun(array) {
     new int mode;
-    mode = sortingVisualizer.getUserInput("Insert buffer size (default = " + str(len(array) // 2) + ")", str(len(array) // 8));
+    mode = sortingVisualizer.getUserInput("Insert buffer size (default = " + str(len(array) // 8) + ")", str(len(array) // 8));
 
     UtilsIterablesStableSort(mode).sort(array, 0, len(array));
 }
