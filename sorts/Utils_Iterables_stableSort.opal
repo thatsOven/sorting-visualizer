@@ -105,7 +105,7 @@ new class UtilsIterablesStableSortMerge {
     }
 
     new method mergeInPlace(array, a, m, b, check = True) {
-        if checkMergeBounds(array, a, m, b) {
+        if checkMergeBounds(array, a, m, b, this.rotate) {
             return;
         }
 
@@ -161,7 +161,7 @@ new class UtilsIterablesStableSortMerge {
     }
 
     new method merge(array, a, m, b, check = True) {
-        if checkMergeBounds(array, a, m, b) {
+        if checkMergeBounds(array, a, m, b, this.rotate) {
             return;
         }
 
