@@ -880,9 +880,11 @@ new class SortingVisualizer {
             "-c:v", "libx264", "-pix_fmt", "yuvj420p", "tmp.mp4",
         ]), "Compressing frames...");
         
-        this.__audio = this.__audio[:round(this.__audioPtr)];
+        new dynamic rounded = round(this.__audioPtr);
+        this.__audio = this.__audio[:rounded];
         io.wavfile.write("audio.wav", FREQUENCY_SAMPLE, this.__audio);
-        this.__audio    = None;
+
+        this.__audio    = None if len(this.__audio) - 1 <= rounded else this.__audio[rounded:];
         this.__audioPtr = 0;
 
         this.__gui.renderScreen(subprocess.Popen([
