@@ -12,18 +12,7 @@ new class FeatureSort {
     }
 
     new method __adaptAux(array) {
-        new list result = [];
-
-        static: new int i = 0;
-        for bucket in array {
-            for item in bucket {
-                result.append(item.copy());
-                result[-1].idx = i;
-                result[-1].stabIdx = i;
-                result[-1].setAux(array);
-                i++;
-            }
-        }
+        new list result = list(chain.from_iterable(array));
 
         if len(result) == 0 {
             result = [Value(0)];

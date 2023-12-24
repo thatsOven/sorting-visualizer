@@ -32,7 +32,20 @@ new class RadixSort {
         return result;
     }
 
-    new method adaptIdxLSD(idx, aux) {
+    new method adaptIdx(idx, aux) {
+        if aux is this.aux {
+            return 0;
+        }
+        
+        new dynamic i = 0;
+        for j, bucket in enumerate(this.aux) {
+            i += len(bucket);
+
+            if j == idx {
+                return i - 1;
+            }
+        }
+
         return 0;
     }
 
@@ -56,6 +69,7 @@ new class RadixSort {
         aux[dig].append(value);
         sortingVisualizer.timer(sTime);
         sortingVisualizer.writes++;
+        sortingVisualizer.highlight(dig, True);
     }
 
     new method LSD(array, a, b) {
@@ -65,7 +79,7 @@ new class RadixSort {
 
         this.aux = [[] for _ in range(this.base)];
 
-        sortingVisualizer.setAdaptAux(this.adaptAux, this.adaptIdxLSD);
+        sortingVisualizer.setAdaptAux(this.adaptAux, this.adaptIdx);
         sortingVisualizer.setAux(this.aux);
 
         for p in range(hPow + 1) {
