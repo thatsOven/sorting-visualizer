@@ -12,22 +12,44 @@ new class FeatureSort {
     }
 
     new method __adaptAux(array) {
-        new list result = list(chain.from_iterable(
-            [([Value(0)] if x == [] else x) for x in array]
-                              ));
+        new list result = [];
 
-        for i in range(len(result)) {
-            if result[i].idx is None {
-                result[i].idx = i;
-                result[i].stabIdx = i;
-                result[i].setAux(result);
+        static: new int i = 0;
+        for bucket in array {
+            for item in bucket {
+                result.append(item.copy());
+                result[-1].idx = i;
+                result[-1].stabIdx = i;
+                result[-1].setAux(array);
+                i++;
             }
+        }
+
+        if len(result) == 0 {
+            result = [Value(0)];
+            result[0].idx = 0;
+            result[0].stabIdx = 0;
+            result[0].setAux(array);
+            return result;
         }
 
         return result;
     }
 
     new method __adaptIdx(idx, aux) {
+        if aux is this.aux {
+            return 0;
+        }
+        
+        new dynamic i = 0;
+        for j, bucket in enumerate(this.aux) {
+            i += len(bucket);
+
+            if j == idx {
+                return i - 1;
+            }
+        }
+
         return 0;
     }
 

@@ -10,7 +10,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
 
-new str VERSION = "2023.12.15";
+new str VERSION = "2023.12.24";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -760,15 +760,14 @@ new class SortingVisualizer {
         if this.__dynamicAux && !this.settings["lazy-aux"] {
             length = len(adapted);
 
+            new dynamic oldMax = this.auxMax;
+            this.getAuxMax(adapted);    
+
             if this.__oldAuxLen != length {
                 this.__visual.onAuxOn(length);
                 this.__oldAuxLen = length;
-            } else {
-                new dynamic oldMax = this.auxMax;
-                this.getAuxMax(adapted);
-                if this.auxMax != oldMax {
-                    this.__visual.onAuxOn(length);
-                }
+            } elif this.auxMax != oldMax {
+                this.__visual.onAuxOn(length);
             }
         }
     $end
