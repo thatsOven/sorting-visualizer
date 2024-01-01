@@ -1,4 +1,5 @@
 package opal: import *;
+$args ["--nostatic"]
 
 new int FREQUENCY_SAMPLE        = 48000,
         FRAME_DIGS              = 9,
@@ -8,9 +9,11 @@ new int FREQUENCY_SAMPLE        = 48000,
         MAX_UNCOMPRESSED_FRAMES = 2048;
 
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
-          MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE;
+          MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE,
+          N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
+          R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2023.12.24";
+new str VERSION = "2024.1.1";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -24,7 +27,7 @@ package sf2_loader:  import sf2_loader;
 package pygame.time: import Clock;
 package scipy:       import signal, io;
 use exec, getattr, eval;
-$args ["--nostatic"]
+
 $define FRAME_NAME os.path.join(SortingVisualizer.IMAGE_BUF, str(this.__currFrame).zfill(FRAME_DIGS) + ".jpg")
 
 enum RefreshMode {
@@ -880,8 +883,7 @@ new class SortingVisualizer {
         ]), "Compressing frames...");
         
         new dynamic rounded = round(this.__audioPtr);
-        this.__audio = this.__audio[:rounded];
-        io.wavfile.write("audio.wav", FREQUENCY_SAMPLE, this.__audio);
+        io.wavfile.write("audio.wav", FREQUENCY_SAMPLE, this.__audio[:rounded]);
 
         this.__audio    = None if len(this.__audio) - 1 <= rounded else this.__audio[rounded:];
         this.__audioPtr = 0;
@@ -1178,7 +1180,7 @@ new class SortingVisualizer {
 
     new method setSpeed(value) {
         if this.settings["render"] {
-            value *= NATIVE_FRAMERATE / RENDER_FRAMERATE;
+            value *= N_OVER_R;
         }
 
         if value >= 1 {
@@ -1202,9 +1204,10 @@ new class SortingVisualizer {
     property speed {
         get {
             if this.__sleep == 0 {
-                return this.__speed;
+                return round(this.__speed * R_OVER_N) if this.settings["render"] else this.__speed;
             } else {
-                return this.__speed / (this.__sleep * 1000);
+                new dynamic realSpeed = 1 / (this.__sleep * 1000);
+                return round(realSpeed * R_OVER_N) if this.settings["render"] else realSpeed;
             }
         }
     }
