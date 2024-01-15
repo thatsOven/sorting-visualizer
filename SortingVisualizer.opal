@@ -10,6 +10,7 @@ new int FREQUENCY_SAMPLE        = 48000,
 
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE,
+          INV_RENDER_FRAMES    = 1.0 / RENDER_FRAMERATE,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
@@ -870,7 +871,7 @@ new class SortingVisualizer {
         use f;
         with open("input.txt", "w") as f {
             for i in range(this.__currFrame) {
-                f.write("file " + str(i).zfill(FRAME_DIGS) + f".jpg\nduration {1 / RENDER_FRAMERATE}\n");
+                f.write("file " + str(i).zfill(FRAME_DIGS) + f".jpg\nduration {INV_RENDER_FRAMES}\n");
             }
         }
 
@@ -950,7 +951,7 @@ new class SortingVisualizer {
             }
         }
 
-        for t = 1.0 / RENDER_FRAMERATE; t < d; t += 1.0 / RENDER_FRAMERATE {}
+        for t = INV_RENDER_FRAMES; t < d; t += INV_RENDER_FRAMES {}
         this.__audioPtr += t * FREQUENCY_SAMPLE;
     $end
 
@@ -965,7 +966,7 @@ new class SortingVisualizer {
 
         $call mixAudio(t)
 
-        for i = 0; i < t; i += 1.0 / RENDER_FRAMERATE {
+        for i = 0; i < t; i += INV_RENDER_FRAMES {
             $call imgSave
         }
 
@@ -993,7 +994,7 @@ new class SortingVisualizer {
 
                 $call adaptIndices
 
-                new dynamic tSleep = max(1.0 / RENDER_FRAMERATE, this.__sleep + this.__tmpSleep);
+                new dynamic tSleep = max(INV_RENDER_FRAMES, this.__sleep + this.__tmpSleep);
                 this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
                 
                 new dynamic currWave = this.__getWaveformFromIdx(hList[0], adapted);
@@ -1033,7 +1034,7 @@ new class SortingVisualizer {
                     $call update
                 }
 
-                for i = 0; i < tSleep; i += 1.0 / RENDER_FRAMERATE {
+                for i = 0; i < tSleep; i += INV_RENDER_FRAMES {
                     $call imgSave
                 }
 
@@ -1123,7 +1124,7 @@ new class SortingVisualizer {
         this.setSpeed(len(this.array) / 128.0);
 
         new dynamic lazy = this.settings["lazy-render"];
-        new dynamic tSleep = max(1.0 / RENDER_FRAMERATE, this.__sleep);
+        new dynamic tSleep = max(INV_RENDER_FRAMES, this.__sleep);
         this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
 
         for i = a; i < b; i++ {
@@ -1156,7 +1157,7 @@ new class SortingVisualizer {
                     $call update
                 }
 
-                for j = 0; j < tSleep; j += 1.0 / RENDER_FRAMERATE {
+                for j = 0; j < tSleep; j += INV_RENDER_FRAMES {
                     $call imgSave
                 }
 
