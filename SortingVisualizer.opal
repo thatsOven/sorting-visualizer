@@ -914,16 +914,19 @@ new class SortingVisualizer {
         if this.__audio is None {
             this.__audio = currWave;
         } else {
-            if round(this.__audioPtr) < len(this.__audio) {
-                new dynamic zeros = numpy.zeros(round(this.__audioPtr));
+            new dynamic floored  = int(this.__audioPtr),
+                        lenAudio = len(this.__audio);
+
+            if floored < lenAudio {
+                new dynamic zeros = numpy.zeros(floored);
                 if this.__audioChs > 1 {
                     zeros = numpy.repeat(zeros.reshape(zeros.size, 1), this.__audioChs, axis = 1).astype(numpy.int16);
                 } else {
                     zeros = zeros.astype(numpy.int16);
                 }
 
-                if round(this.__audioPtr) + len(currWave) <= len(this.__audio) {
-                    new dynamic fillerZeros = numpy.zeros(len(this.__audio) - len(currWave) - round(this.__audioPtr));
+                if floored + len(currWave) <= lenAudio {
+                    new dynamic fillerZeros = numpy.zeros(lenAudio - len(currWave) - rounded);
                     if this.__audioChs > 1 {
                         fillerZeros = numpy.repeat(fillerZeros.reshape(fillerZeros.size, 1), this.__audioChs, axis = 1).astype(numpy.int16);
                     } else {
@@ -932,7 +935,7 @@ new class SortingVisualizer {
 
                     this.__audio += numpy.concatenate((zeros, currWave, fillerZeros));
                 } else {
-                    new dynamic size = len(this.__audio) - round(this.__audioPtr);
+                    new dynamic size = lenAudio - floored;
 
                     this.__audio += numpy.concatenate((zeros, currWave[:size]));
 

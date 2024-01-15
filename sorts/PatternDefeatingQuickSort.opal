@@ -58,7 +58,7 @@ namespace PDQSort {
             return True;
         }
 
-        for i = begin + 1, limit = 0; i < end; i++, limit += i - j + 1 {
+        for i = begin + 1, limit = 0; i < end; i++ {
             if limit > this.partialInsertSortLimit {
                 return False;
             }
@@ -71,7 +71,9 @@ namespace PDQSort {
                 for ; array[j] > key and j >= begin; j-- {
                     array[j + 1].write(array[j]);
                 }
+
                 array[j + 1].writeRestoreIdx(key, idx);
+                limit += i - j + 1;
             }
         }
         return True;
