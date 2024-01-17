@@ -14,7 +14,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.1.15";
+new str VERSION = "2024.1.17";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -1183,6 +1183,10 @@ new class SortingVisualizer {
     }
 
     new method setSpeed(value) {
+        if value == 0 {
+            throw VisualizerException("Speed setting cannot be zero");
+        }
+
         if this.settings["render"] {
             value *= N_OVER_R;
         }
@@ -1191,7 +1195,7 @@ new class SortingVisualizer {
             this.__speed       = round(value);
             this.__sleep       = 0;
             this.__currSample  = this.__unitSample;
-            this.__dFramesPerc = str(round(((value - 1) / value) * 100, 4)) + "%";
+            this.__dFramesPerc = str(round(((this.__speed - 1) / float(this.__speed)) * 100.0, 4)) + "%";
         } else {
             this.__speed       = 1;
             this.__sleep       = 0.001 / value;
@@ -1210,7 +1214,7 @@ new class SortingVisualizer {
             if this.__sleep == 0 {
                 return round(this.__speed * R_OVER_N) if this.settings["render"] else this.__speed;
             } else {
-                new dynamic realSpeed = 1 / (this.__sleep * 1000);
+                new dynamic realSpeed = 1.0 / (this.__sleep * 1000.0);
                 return round(realSpeed * R_OVER_N) if this.settings["render"] else realSpeed;
             }
         }
