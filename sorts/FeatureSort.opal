@@ -59,7 +59,7 @@ new class FeatureSort {
             this.aux[idx].append(array[i].copy());
             sortingVisualizer.timer(sTime);
             sortingVisualizer.writes++;
-            sortingVisualizer.highlight(idx, True);
+            sortingVisualizer.highlight(idx, this.aux);
         }
 
         sortingVisualizer.resetAdaptAux();

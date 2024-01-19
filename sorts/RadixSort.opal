@@ -69,7 +69,7 @@ new class RadixSort {
         aux[dig].append(value);
         sortingVisualizer.timer(sTime);
         sortingVisualizer.writes++;
-        sortingVisualizer.highlight(dig, True);
+        sortingVisualizer.highlight(dig, aux);
     }
 
     new method LSD(array, a, b) {
