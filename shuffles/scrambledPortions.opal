@@ -1,6 +1,6 @@
 use shuffleRandom;
 
-@Shuffle("Scrabled Tail");
+@Shuffle("Scrambled Tail");
 new function scrambledTailShuffle(array) {
     new list aux = sortingVisualizer.createValueArray(len(array));
     sortingVisualizer.setAux(aux);
