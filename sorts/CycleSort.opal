@@ -7,7 +7,6 @@ new function cycleSort(array, a, b) {
             if array[i] < val {
                 pos++;
             }
-            sortingVisualizer.highlight(pos);
         }
 
         if pos == cycleStart {
@@ -16,7 +15,6 @@ new function cycleSort(array, a, b) {
 
         while val == array[pos] {
             pos++;
-            sortingVisualizer.highlight(pos);
         }
 
         new Value tmp = array[pos].copy();
@@ -30,12 +28,10 @@ new function cycleSort(array, a, b) {
                 if array[i] < val {
                     pos++;
                 }
-                sortingVisualizer.highlight(pos);
             }
 
             while val == array[pos] {
                 pos++;
-                sortingVisualizer.highlight(pos);
             }
 
             tmp = array[pos].copy();

@@ -1212,10 +1212,10 @@ new class SortingVisualizer {
     property speed {
         get {
             if this.__sleep == 0 {
-                return round(this.__speed * R_OVER_N) if this.settings["render"] else this.__speed;
+                return this.__speed * R_OVER_N if this.settings["render"] else this.__speed;
             } else {
                 new dynamic realSpeed = 1.0 / (this.__sleep * 1000.0);
-                return round(realSpeed * R_OVER_N) if this.settings["render"] else realSpeed;
+                return realSpeed * R_OVER_N if this.settings["render"] else realSpeed;
             }
         }
     }

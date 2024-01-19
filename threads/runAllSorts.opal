@@ -61,7 +61,7 @@ runAllSort(1024, "Library Sort",       8, killers = {
 ct = "Selection Sorts";
 runAllSort(128,  "Selection Sort",   3);
 runAllSort(128,  "Double Selection", 3);
-runAllSort(64,   "Cycle Sort",       3);
+runAllSort(64,   "Cycle Sort",       2);
 
 
 ct = "Tree Sorts";
