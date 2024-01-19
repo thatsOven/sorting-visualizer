@@ -6,7 +6,7 @@ new function shuffleSort(array, a, b) {
     new dynamic speed = sortingVisualizer.speed,
                 aux   = sortingVisualizer.settings["show-aux"];
 
-    sortingVisualizer.setSpeed(max(int(50 * (len(array) / 2048.0)), speed * 2));
+    sortingVisualizer.setSpeed(max(int(50.0 * (len(array) / 2048.0)), speed * 2, 1));
     sortingVisualizer.settings["show-aux"] = False;
 
     FeatureSort().sort(array, a, b);
