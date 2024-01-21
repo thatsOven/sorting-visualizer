@@ -7,7 +7,7 @@ new class WhiteBarGraph: LineVisual {
     }
 
     new method draw(array, indices) {
-        static: new int oldIdx = 0, i, j;
+        static: new int oldIdx = 0, i;
 
         new dynamic pos = sortingVisualizer.graphics.resolution.copy(),
                     end = pos.copy(), idx;
@@ -47,9 +47,9 @@ new class WhiteBarGraph: LineVisual {
                 end.x = i;
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
 
-                for j in indices {
-                    if indices[j] is not None && j in range(oldIdx, idx) {
-                        sortingVisualizer.graphics.line(pos, end, indices[j], this.lineSize);
+                for i in indices {
+                    if indices[i] is not None && i in range(oldIdx, idx) {
+                        sortingVisualizer.graphics.line(pos, end, indices[i], this.lineSize);
                         break;
                     }
                 } else {
@@ -93,7 +93,7 @@ new class WhiteBarGraph: LineVisual {
     }
 
     new method drawAux(array, indices) {
-        static: new int oldIdx = 0, i, j;
+        static: new int oldIdx = 0, i;
         
         new dynamic pos = this.auxResolution.copy(),
                     end = pos.copy(), idx;
@@ -136,9 +136,9 @@ new class WhiteBarGraph: LineVisual {
                 end.x = i;
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
-                for j in indices {
-                    if indices[j] is not None && j in range(oldIdx, idx) {
-                        sortingVisualizer.graphics.line(pos, end, indices[j], this.auxLineSize);
+                for i in indices {
+                    if indices[i] is not None && i in range(oldIdx, idx) {
+                        sortingVisualizer.graphics.line(pos, end, indices[i], this.auxLineSize);
                         break;
                     }
                 } else {
