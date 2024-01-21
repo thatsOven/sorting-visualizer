@@ -7,7 +7,7 @@ new class WhiteBarGraph: LineVisual {
     }
 
     new method draw(array, indices) {
-        static: new int oldIdx = 0, i;
+        static: new int i;
 
         new dynamic pos = sortingVisualizer.graphics.resolution.copy(),
                     end = pos.copy(), idx;
@@ -15,6 +15,7 @@ new class WhiteBarGraph: LineVisual {
         end.x = 0;
 
         if len(array) > sortingVisualizer.graphics.resolution.x {
+            new dynamic oldIdx = 0;
             unchecked: repeat sortingVisualizer.graphics.resolution.x {
                 idx = int(Utils.translate(
                     pos.x, 0, sortingVisualizer.graphics.resolution.x, 
@@ -47,16 +48,11 @@ new class WhiteBarGraph: LineVisual {
                 end.x = i;
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
 
-                for i in indices {
-                    if indices[i] is not None && i in range(oldIdx, idx) {
-                        sortingVisualizer.graphics.line(pos, end, indices[i], this.lineSize);
-                        break;
-                    }
+                if idx in indices {
+                    sortingVisualizer.graphics.line(pos, end, indices[idx], this.lineSize);
                 } else {
                     sortingVisualizer.graphics.line(pos, end, (255, 255, 255), this.lineSize);
                 }
-
-                oldIdx = idx;
             }
         }
     }
@@ -93,8 +89,6 @@ new class WhiteBarGraph: LineVisual {
     }
 
     new method drawAux(array, indices) {
-        static: new int oldIdx = 0, i;
-        
         new dynamic pos = this.auxResolution.copy(),
                     end = pos.copy(), idx;
 
@@ -104,6 +98,7 @@ new class WhiteBarGraph: LineVisual {
         end.x = 0;
 
         if len(array) > this.auxResolution.x {
+            new dynamic oldIdx = 0;
             unchecked: repeat this.auxResolution.x {
                 idx = int(Utils.translate(
                     pos.x, 0, this.auxResolution.x, 
@@ -136,16 +131,11 @@ new class WhiteBarGraph: LineVisual {
                 end.x = i;
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
-                for i in indices {
-                    if indices[i] is not None && i in range(oldIdx, idx) {
-                        sortingVisualizer.graphics.line(pos, end, indices[i], this.auxLineSize);
-                        break;
-                    }
+                if idx in indices {
+                    sortingVisualizer.graphics.line(pos, end, indices[idx], this.auxLineSize);
                 } else {
                     sortingVisualizer.graphics.line(pos, end, (255, 255, 255), this.auxLineSize);
                 }
-
-                oldIdx = idx;
             }
         }
         
