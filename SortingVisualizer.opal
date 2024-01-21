@@ -14,7 +14,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.1.17";
+new str VERSION = "2024.1.21";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
