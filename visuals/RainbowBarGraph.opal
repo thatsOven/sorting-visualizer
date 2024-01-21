@@ -19,17 +19,17 @@ new class RainbowBarGraph: LineVisual {
     }
 
     new method draw(array, indices) {
-        static: new int oldIdx = 0, i;
+        static: new int oldIdx = 0, i, j;
 
-        new dynamic pos = this.resolution.copy(),
+        new dynamic pos = sortingVisualizer.graphics.resolution.copy(),
                     end = pos.copy(), idx;
         pos.x = 0;
         end.x = 0;
 
-        if len(array) > this.resolution.x {
-            unchecked: repeat this.resolution.x {
+        if len(array) > sortingVisualizer.graphics.resolution.x {
+            unchecked: repeat sortingVisualizer.graphics.resolution.x {
                 idx = int(Utils.translate(
-                    pos.x, 0, this.resolution.x, 
+                    pos.x, 0, sortingVisualizer.graphics.resolution.x, 
                     0, len(array)
                 ));
 
@@ -63,9 +63,9 @@ new class RainbowBarGraph: LineVisual {
                 end.x = i;
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
 
-                for i in indices {
-                    if indices[i] is not None && i in range(oldIdx, idx) {
-                        sortingVisualizer.graphics.line(pos, end, indices[i], this.lineSize);
+                for j in indices {
+                    if indices[j] is not None && j in range(oldIdx, idx) {
+                        sortingVisualizer.graphics.line(pos, end, indices[j], this.lineSize);
                         break;
                     }
                 } else {
@@ -85,11 +85,11 @@ new class RainbowBarGraph: LineVisual {
         new dynamic drawn = {};
 
         for idx in indices {
-            new dynamic pos = this.resolution.copy(), lineEnd;
+            new dynamic pos = sortingVisualizer.graphics.resolution.copy(), lineEnd;
 
             pos.x = Utils.translate(
                 idx, 0, len(array), 0, 
-                this.resolution.x // this.lineSize
+                sortingVisualizer.graphics.resolution.x // this.lineSize
             ) * this.lineSize + (this.lineSize // 2);
 
             if pos.x in drawn {
@@ -117,7 +117,7 @@ new class RainbowBarGraph: LineVisual {
     }
 
     new method drawAux(array, indices) {
-        static: new int oldIdx = 0, i;
+        static: new int oldIdx = 0, i, j;
         
         new dynamic pos = this.auxResolution.copy(),
                     end = pos.copy(), idx;
@@ -164,9 +164,9 @@ new class RainbowBarGraph: LineVisual {
                 end.x = i;
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
-                for i in indices {
-                    if indices[i] is not None && i in range(oldIdx, idx) {
-                        sortingVisualizer.graphics.line(pos, end, indices[i], this.auxLineSize);
+                for j in indices {
+                    if indices[j] is not None && j in range(oldIdx, idx) {
+                        sortingVisualizer.graphics.line(pos, end, indices[j], this.auxLineSize);
                         break;
                     }
                 } else {
