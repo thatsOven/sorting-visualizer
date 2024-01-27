@@ -33,20 +33,12 @@ new class RadixSort {
     }
 
     new method adaptIdx(idx, aux) {
-        if aux is this.aux {
-            return 0;
+        static: new int out;
+        for out = 0; idx >= 0; idx-- {
+            out += len(this.aux[idx]);
         }
-        
-        new dynamic i = 0;
-        for j, bucket in enumerate(this.aux) {
-            i += len(bucket);
-
-            if j == idx {
-                return i - 1;
-            }
-        }
-
-        return 0;
+    
+        return out - 1;
     }
 
     new method transcribe(array, a, aux, empty = True) {

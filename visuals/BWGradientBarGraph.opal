@@ -19,7 +19,7 @@ new class BWGradientBarGraph: LineVisual {
     }
 
     new method draw(array, indices) {
-        static: new int i;
+        static: new int oldIdx, i, j;
 
         new dynamic pos = this.resolution.copy(),
                     end = pos.copy(), idx;
@@ -27,7 +27,7 @@ new class BWGradientBarGraph: LineVisual {
         end.x = 0;
 
         if len(array) > this.resolution.x {
-            new dynamic oldIdx = 0;
+            oldIdx = 0;
             unchecked: repeat this.resolution.x {
                 idx = int(Utils.translate(
                     pos.x, 0, this.resolution.x, 
@@ -54,6 +54,7 @@ new class BWGradientBarGraph: LineVisual {
                 oldIdx = idx;
             }
         } else {
+            oldIdx = -1;
             for i = this.lineSize // 2; i < sortingVisualizer.graphics.resolution.x; i += this.lineSize {
                 idx = int(Utils.translate(
                     i - this.lineSize // 2, 0, sortingVisualizer.graphics.resolution.x, 
@@ -64,8 +65,11 @@ new class BWGradientBarGraph: LineVisual {
                 end.x = i;
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
 
-                if idx in indices {
-                    sortingVisualizer.graphics.line(pos, end, indices[idx], this.lineSize);
+                for j in indices {
+                    if indices[j] is not None && j in range(oldIdx + 1, idx + 1) {
+                        sortingVisualizer.graphics.line(pos, end, indices[j], this.lineSize);
+                        break;
+                    }
                 } else {
                     if array[idx].value < 0 {
                         sortingVisualizer.graphics.line(pos, end, (40, 40, 40), this.lineSize);
@@ -73,6 +77,8 @@ new class BWGradientBarGraph: LineVisual {
                         sortingVisualizer.graphics.line(pos, end, [40 + int(array[idx].value * this.colorConstant)] * 3, this.lineSize);
                     }
                 }
+
+                oldIdx = idx;
             }
         }
     }
@@ -113,6 +119,8 @@ new class BWGradientBarGraph: LineVisual {
     }
 
     new method drawAux(array, indices) {
+        static: new int oldIdx, i, j;
+
         new dynamic pos = this.auxResolution.copy(),
                     end = pos.copy(), idx;
         
@@ -122,7 +130,7 @@ new class BWGradientBarGraph: LineVisual {
         end.x = 0;
 
         if len(array) > this.auxResolution.x {
-            new dynamic oldIdx = 0;
+            oldIdx = 0;
             unchecked: repeat this.auxResolution.x {
                 idx = int(Utils.translate(
                     pos.x, 0, this.auxResolution.x, 
@@ -149,6 +157,7 @@ new class BWGradientBarGraph: LineVisual {
                 oldIdx = idx;
             }
         } else {
+            oldIdx = -1;
             for i = this.auxLineSize // 2; i < sortingVisualizer.graphics.resolution.x; i += this.auxLineSize {
                 idx = int(Utils.translate(
                     i - this.auxLineSize // 2, 0, sortingVisualizer.graphics.resolution.x, 
@@ -159,8 +168,11 @@ new class BWGradientBarGraph: LineVisual {
                 end.x = i;
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
-                if idx in indices {
-                    sortingVisualizer.graphics.line(pos, end, indices[idx], this.auxLineSize);
+                for j in indices {
+                    if indices[j] is not None && j in range(oldIdx + 1, idx + 1) {
+                        sortingVisualizer.graphics.line(pos, end, indices[j], this.auxLineSize);
+                        break;
+                    }
                 } else {
                     if array[idx].value < 0 {
                         sortingVisualizer.graphics.line(pos, end, (40, 40, 40), this.auxLineSize);
@@ -168,6 +180,8 @@ new class BWGradientBarGraph: LineVisual {
                         sortingVisualizer.graphics.line(pos, end, [40 + int(array[idx].value * this.auxColorConstant)] * 3, this.auxLineSize);
                     }
                 }
+
+                oldIdx = idx;
             }
         }
 

@@ -7,6 +7,11 @@ namespace PDQSort {
             blockSize              = 64,
             cachelineSize          = 64;
 
+    new classmethod lessThan(a, b) {
+        sortingVisualizer.comparisons++;
+        return 1 & ((1231 if a.getInt() < b.getInt() else 1237) >> 1);
+    }
+
     new classmethod log(n) {
         n >>= 1;
         for log = 0; n != 0; log++, n >>= 1 {}
@@ -91,6 +96,194 @@ namespace PDQSort {
         this.sortTwo(array, a, b);
     }
 
+    new classmethod swapOffsets(
+        array, first, last, leftOffsets, leftOffsetsPos, 
+        rightOffsets, rightOffsetsPos, num, useSwaps
+    ) {
+        if useSwaps {
+            for i in range(num) {
+                array[first + leftOffsets[leftOffsetsPos + i].readInt()].swap(
+                    array[last - rightOffsets[rightOffsetsPos + i].readInt()]
+                );
+            }
+        } elif num > 0 {
+            new int left  = first +  leftOffsets[ leftOffsetsPos].readInt(),
+                    right = last  - rightOffsets[rightOffsetsPos].readInt();
+            new Value tmp = array[left].copy();
+            array[left].write(array[right]);
+            for i = 1; i < num; i++ {
+                left  = first +  leftOffsets[ leftOffsetsPos + i].readInt();
+                array[right].write(array[left]);
+                right = last  - rightOffsets[rightOffsetsPos + i].readInt();
+                array[left].write(array[right]);
+            }
+            array[right].write(tmp);
+        }
+    }
+
+    new classmethod partRightBranchless(array, begin, end, leftOffsets, rightOffsets) {
+        new Value pivot = array[begin].copy();
+        new int first = begin,
+                last  = end;
+
+        do this.lessThan(array[first], pivot) == 1 {
+            first++;
+        }
+
+        if first - 1 == begin {
+            while first < last {
+                last--;
+                if this.lessThan(array[last], pivot) != 0 {
+                    break;
+                }
+            }
+        } else {
+            do this.lessThan(array[last], pivot) == 0 {
+                last--;
+            }
+        }
+
+        new bool alreadyParted = first >= last;
+        if !alreadyParted {
+            array[first].swap(array[last]);
+            first++;
+        }
+
+        new int leftNum    = 0, 
+                rightNum   = 0, 
+                leftStart  = 0, 
+                rightStart = 0;
+
+        while last - first > 2 * this.blockSize {
+            if leftNum == 0 {
+                leftStart = 0;
+                new int it = first;
+                for i = 0; i < this.blockSize; {
+                    repeat 8 {
+                        leftOffsets[leftNum].write(i);
+                        i++;
+                        leftNum += abs(this.lessThan(array[it], pivot) - 1);
+                        it++;
+                    }
+                }
+            }
+
+            if rightNum == 0 {
+                rightStart = 0;
+                new int it = last;
+                for i = 0; i < this.blockSize; {
+                    repeat 8 {
+                        i++;
+                        rightOffsets[rightNum].write(i);
+                        it--;
+                        rightNum += this.lessThan(array[it], pivot);
+                    }
+                }
+            }
+
+            new int num = min(leftNum, rightNum);
+            this.swapOffsets(
+                array, first, last, leftOffsets, leftStart, 
+                rightOffsets, rightStart, num, leftNum == rightNum
+            );
+            leftNum    -= num;
+            rightNum   -= num;
+            leftStart  += num;
+            rightStart += num;
+
+            if leftNum == 0 {
+                first += this.blockSize;
+            }
+
+            if rightNum == 0 {
+                last -= this.blockSize;
+            }
+        }
+
+        new int leftSize  = 0,
+                rightSize = 0,
+                unknownLeft = last - first - (this.blockSize if (rightNum != 0 || leftNum != 0) else 0);
+        
+        if rightNum != 0 {
+            leftSize  = unknownLeft;
+            rightSize = this.blockSize;
+        } elif leftNum != 0 {
+            leftSize  = this.blockSize;
+            rightSize = unknownLeft;
+        } else {
+            leftSize  = unknownLeft // 2;
+            rightSize = unknownLeft - leftSize; 
+        }
+
+        if unknownLeft != 0 && leftNum == 0 {
+            leftStart = 0;
+            new int it = first;
+            for i in range(leftSize) {
+                leftOffsets[leftNum].write(i);
+                leftNum += abs(this.lessThan(array[it], pivot) - 1);
+                it++;
+            }
+        }
+
+        if unknownLeft != 0 && rightNum == 0 {
+            rightStart = 0;
+            new int it = last;
+            for i = 0; i < rightSize; {
+                i++;
+                rightOffsets[rightNum].write(i);
+                it--;
+                rightNum += this.lessThan(array[it], pivot);
+            }
+        }
+
+        new int num = min(leftNum, rightNum);
+        this.swapOffsets(
+            array, first, last, leftOffsets, leftStart,
+            rightOffsets, rightStart, num, leftNum == rightNum
+        );
+        leftNum    -= num;
+        rightNum   -= num;
+        leftStart  += num;
+        rightStart += num;
+        
+        if leftNum == 0 {
+            first += leftSize;
+        }
+
+        if rightNum == 0 {
+            last -= rightSize;
+        }
+
+        new int leftOffsetsPos  = 0,
+                rightOffsetsPos = 0;
+
+        if leftNum != 0 {
+            leftOffsetsPos += leftStart;
+            while leftNum != 0 {
+                leftNum--;
+                last--;
+                array[first + leftOffsets[leftOffsetsPos + leftNum].readInt()].swap(array[last]);
+                first = last;
+            }
+        }
+
+        if rightNum != 0 {
+            rightOffsetsPos += rightStart;
+            while rightNum != 0 {
+                rightNum--;
+                array[last - rightOffsets[rightOffsetsPos + rightNum].readInt()].swap(first);
+                first++;
+                last = first;
+            }
+        }
+
+        new int pivotPos = first - 1;
+        array[begin].write(array[pivotPos]);
+        array[pivotPos].write(pivot);
+
+        return pivotPos, alreadyParted;
+    }
+
     new classmethod partRight(array, begin, end) {
         new Value pivot = array[begin].copy();
         new int first = begin,
@@ -171,7 +364,7 @@ namespace PDQSort {
         return pivotPos;
     }
 
-    new classmethod loop(array, begin, end, badAllowed) {
+    new classmethod loop(array, begin, end, badAllowed, branchless, leftOffsets = None, rightOffsets = None) {
         new bool leftmost = True;
 
         while True {
@@ -189,13 +382,9 @@ namespace PDQSort {
             new int halfSize = size // 2;
 
             if size > this.nintherThreshold {
-                sortingVisualizer.delay(5);
                 this.sortThree(array, begin, begin + halfSize, end - 1);
-                sortingVisualizer.delay(5);
                 this.sortThree(array, begin + 1, begin + (halfSize - 1), end - 2);
-                sortingVisualizer.delay(5);
                 this.sortThree(array, begin + 2, begin + (halfSize + 1), end - 3);
-                sortingVisualizer.delay(5);
                 this.sortThree(array, begin + (halfSize - 1), begin + halfSize, begin + (halfSize + 1));
                 array[begin].swap(array[begin + halfSize]);
             } else {
@@ -210,7 +399,11 @@ namespace PDQSort {
             new int pivotPos;
             new bool alreadyParted;
 
-            pivotPos, alreadyParted = this.partRight(array, begin, end);
+            if branchless {
+                pivotPos, alreadyParted = this.partRightBranchless(array, begin, end, leftOffsets, rightOffsets);
+            } else {
+                pivotPos, alreadyParted = this.partRight(array, begin, end);
+            }
 
             new int leftSize  = pivotPos - begin,
                     rightSize = end - (pivotPos + 1);
@@ -265,7 +458,7 @@ namespace PDQSort {
                 }
             }
 
-            this.loop(array, begin, pivotPos, badAllowed);
+            this.loop(array, begin, pivotPos, badAllowed, branchless, leftOffsets, rightOffsets);
             begin = pivotPos + 1;
             leftmost = False;
         }
@@ -278,5 +471,23 @@ namespace PDQSort {
     "PDQ Sort"
 );
 new function pdqSortRun(array) {
-    PDQSort.loop(array, 0, len(array), PDQSort.log(len(array)));
+    PDQSort.loop(array, 0, len(array), PDQSort.log(len(array)), False);
+}
+
+@Sort(
+    "Quick Sorts",
+    "Branchless Pattern-Defeating QuickSort",
+    "Branchless PDQ",
+    enabled = False
+);
+new function branchlessPdqSortRun(array) {
+    new list leftOffsets  = sortingVisualizer.createValueArray(PDQSort.blockSize + PDQSort.cachelineSize),
+             rightOffsets = sortingVisualizer.createValueArray(PDQSort.blockSize + PDQSort.cachelineSize);
+    sortingVisualizer.setAux(leftOffsets);
+    sortingVisualizer.setAdaptAux(
+        lambda array: array + rightOffsets,
+        lambda idx, aux: idx + len(leftOffsets) if aux is rightOffsets else idx
+    );
+
+    PDQSort.loop(array, 0, len(array), PDQSort.log(len(array)), True, leftOffsets, rightOffsets);
 }

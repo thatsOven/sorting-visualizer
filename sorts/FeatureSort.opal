@@ -26,20 +26,12 @@ new class FeatureSort {
     }
 
     new method __adaptIdx(idx, aux) {
-        if aux is this.aux {
-            return 0;
-        }
-        
-        new dynamic i = 0;
-        for j, bucket in enumerate(this.aux) {
-            i += len(bucket);
-
-            if j == idx {
-                return i - 1;
-            }
+        static: new int out;
+        for out = 0; idx >= 0; idx-- {
+            out += len(this.aux[idx]);
         }
 
-        return 0;
+        return out - 1;
     }
 
     new method sort(array, a, b) {
