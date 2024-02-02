@@ -9,6 +9,7 @@ namespace PDQSort {
 
     new classmethod lessThan(a, b) {
         sortingVisualizer.comparisons++;
+        sortingVisualizer.multiHighlight([a.idx, b.idx]);
         return 1 & ((1231 if a.getInt() < b.getInt() else 1237) >> 1);
     }
 
@@ -218,8 +219,9 @@ namespace PDQSort {
         if unknownLeft != 0 && leftNum == 0 {
             leftStart = 0;
             new int it = first;
-            for i in range(leftSize) {
+            for i = 0; i < leftSize; {
                 leftOffsets[leftNum].write(i);
+                i++;
                 leftNum += abs(this.lessThan(array[it], pivot) - 1);
                 it++;
             }
@@ -263,18 +265,20 @@ namespace PDQSort {
                 leftNum--;
                 last--;
                 array[first + leftOffsets[leftOffsetsPos + leftNum].readInt()].swap(array[last]);
-                first = last;
             }
+            leftNum--;
+            first = last;
         }
 
         if rightNum != 0 {
             rightOffsetsPos += rightStart;
             while rightNum != 0 {
                 rightNum--;
-                array[last - rightOffsets[rightOffsetsPos + rightNum].readInt()].swap(first);
+                array[last - rightOffsets[rightOffsetsPos + rightNum].readInt()].swap(array[first]);
                 first++;
-                last = first;
             }
+            rightNum--;
+            last = first;
         }
 
         new int pivotPos = first - 1;
