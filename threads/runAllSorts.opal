@@ -108,14 +108,14 @@ runAllSort(1024, "Odd Even Merge", 5);
 ct = "Quick Sorts";
 
 new dict centerKillers = {
-    "Linear":    ["Reversed Sawtooth", "Sawtooth"], 
+    "Linear":    ["Reversed Sawtooth"], 
     "Quadratic": ["Reversed Sawtooth", "Sawtooth"], 
     "Quintic":   ["Reversed Sawtooth", "Sawtooth"]
 };
 
 runAllSort(1024, "LL Quick Sort", 4, pivotSelections.index("First"), {
     "Linear": [
-        "Reversed", "Reversed Sawtooth", "Sawtooth", "No shuffle", 
+        "Reversed", "Reversed Sawtooth", "No shuffle", 
         "Sorted", "Few Random", "Noisy", "Scrambled Tail"
     ], 
     "Quadratic": [
