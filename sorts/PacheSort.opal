@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2021-2022 aphitorite
+# Copyright (c) 2021-2024 aphitorite
 # 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -23,8 +23,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-use lrBinarySearch, blockSwap, BitArray, medianOfThreeIdx, partition,
-    binaryInsertionSort;
+use lrBinarySearch, blockSwap, BitArray, binaryInsertionSort, 
+    compareValues, javaNumberOfLeadingZeros;
 
 namespace PacheSort {
     new int MIN_INSERT = 32,
@@ -34,127 +34,104 @@ namespace PacheSort {
         return int(math.log2(n));
     }
 
-    new classmethod siftDown(array, val, i, p, n) {
-        while 4 * i + 1 < n {
-            new Value max = val;
-            new int  next = i,
-                    child = 4 * i + 1;
+    new classmethod siftDown(array, pos, len, root, t) {
+        new int curr = root,
+                cmp  = 1 if (javaNumberOfLeadingZeros(root + 1) & 1) == 1 else -1,
+                left = 2 * curr + 1;
+        
+        while left < len {
+            new int next   = left,
+                    gChild = 2 * left + 1;
 
-            for j = child; j < min(child + 4, n); j++ {
-                if array[p + j] > max {
-                    max  = array[p + j].read();
-                    next = j;
+            for node in [left + 1] + [gChild + i for i in range(4)] {
+                if node >= len {
+                    break;
                 }
-            } 
 
-            if next == i {
+                if compareValues(array[pos + node], array[pos + next]) == cmp {
+                    next = node;
+                }
+            }
+
+            if next >= gChild {
+                if compareValues(array[pos + next], t) == cmp {
+                    array[pos + curr].write(array[pos + next]);
+
+                    curr = next;
+                    left = 2 * curr + 1;
+
+                    new int parent = (next - 1) // 2;
+
+                    if compareValues(array[pos + parent], t) == cmp {
+                        array[pos + curr].write(t);
+                        t = array[pos + parent].copy();
+                        array[pos + parent].write(array[pos + curr]);
+                    }
+                } else {
+                    break;
+                }
+            } else {
+                if compareValues(array[pos + next], t) == cmp {
+                    array[pos + curr].write(array[pos + next]);
+                    curr = next;
+                }
+
                 break;
             }
-
-            array[p + i].write(max);
-            i = next;
         }
-        array[p + i].write(val);
+
+        array[pos + curr].write(t);
     }
 
-    new classmethod optiHeapSort(array, a, b) {
-        new int n = b - a;
-
-        for i = (n - 1) // 4; i >= 0; i-- {
-            this.siftDown(array, array[a + i].read(), i, a, n);
-        }
-
-        for i = n - 1; i > 0; i-- {
-            new Value t = array[a + i].read();
-            array[a + i].write(array[a]);
-            this.siftDown(array, t, 0, a, i);
+    new classmethod heapify(array, pos, len) {
+        for i = (len - 1) // 2; i >= 0; i-- {
+            this.siftDown(array, pos, len, i, array[pos + i].copy());
         }
     }
 
-    new classmethod ninther(array, a) {
-        new int a1 = medianOfThreeIdx(array,     a, a + 1, a + 2),
-                m1 = medianOfThreeIdx(array, a + 3, a + 4, a + 5),
-                b1 = medianOfThreeIdx(array, a + 6, a + 7, a + 8);
+    new classmethod minMaxHeap(array, a, b) {
+        new int pos = a,
+                len = b - a;
 
-        return medianOfThreeIdx(array, a1, m1, b1);
-    }
+        this.heapify(array, pos, len);
 
-    new classmethod pivotSelect(array, a, b) {
-        if b - a <= 256 {
-            for i = a; i < a + 9; i++ {
-                array[i].swap(array[random.randrange(i, b)]);
-            }
-
-            array[a].swap(array[this.ninther(array, a)]);
-        } else {
-            for i = a; i < a + 27; i++ {
-                array[i].swap(array[random.randrange(i, b)]);
-            }
-
-            new int a1 = this.ninther(array, a),
-                    m1 = this.ninther(array, a + 9),
-                    b1 = this.ninther(array, a + 18);
-
-            array[a].swap(array[medianOfThreeIdx(array, a1, m1, b1)]);
+        for i = len; i > 1; {
+            i--;
+            new Value t = array[pos + i].copy();
+            array[pos + i].write(array[pos]);
+            this.siftDown(array, pos, i, 0, t);
         }
     }
 
-    new classmethod dualQuickSelect(array, a, b, r1, r2) {
-        new int a1 = a,
-                b1 = b;
+    new classmethod selectMinMax(array, a, b, s) {
+        this.heapify(array, a, b - a);
 
-        while b - a > PacheSort.MIN_INSERT {
-            this.pivotSelect(array, a, b);
-            new int m = partition(array, a, b, a);
-            array[a].swap(array[m]);
-
-            if m > r2 && m < b1 {
-                b1 = m;
-            } elif m < r2 && m + 1 > a1 {
-                a1 = m + 1;
-            } elif m == r2 {
-                a1 = b1;
-            }
-
-            if m == r1 {
-                break;
-            }
-
-            new int left  = m - a,
-                    right = b - m - 1;
-
-            if m > r1 {
-                b = m;
-            } else {
-                a = m + 1;
-            }
+        for i = 0; i < s; i++ {
+            b--;
+            new Value t = array[b].copy();
+            array[b].write(array[a]);
+            this.siftDown(array, a, b - a, 0, t);
         }
 
-        if b - a <= PacheSort.MIN_INSERT {
-            binaryInsertionSort(array, a, b);
-        }
+        for i = 0; i < s; i++ {
+            b--;
+            new Value t = array[b].copy();
+            new   int c = 1;
 
-        while b1 - a1 > PacheSort.MIN_INSERT {
-            this.pivotSelect(array, a1, b1);
-            new int m = partition(array, a1, b1, a1);
-            array[a1].swap(array[m]);
-
-            if m == r2 {
-                return;
+            if array[a + c + 1] < array[a + c] {
+                c++;
             }
 
-            new int left  = m - a1,
-                    right = b1 - m - 1;
-
-            if m > r2 {
-                b1 = m;
-            } else {
-                a1 = m + 1;
-            }
+            array[b].write(array[a + c]);
+            this.siftDown(array, a, b - a, c, t);
         }
 
-        if b1 - a1 <= PacheSort.MIN_INSERT {
-            binaryInsertionSort(array, a1, b1);
+        new int a1 = a + s;
+
+        while a1 > a {
+            a1--;
+            array[a1].swap(array[b]);
+            b++;
         }
     }
 
@@ -213,7 +190,7 @@ namespace PacheSort {
 
     new classmethod sort(array, a, b) {
         if b - a <= PacheSort.MIN_HEAP {
-            this.optiHeapSort(array, a, b);
+            this.minMaxHeap(array, a, b);
             return;
         }
 
@@ -223,8 +200,7 @@ namespace PacheSort {
                 a1     = a + bitLen,
                 b1     = b - bitLen;
 
-        this.dualQuickSelect(array, a, b, a1, b1 - 1);
-        this.optiHeapSort(array, b1, b);
+        this.selectMinMax(array, a, b, bitLen);
 
         if array[a1] < array[b1 - 1] {
             new int a2 = a1;
@@ -233,7 +209,7 @@ namespace PacheSort {
                 array[a2].swap(array[random.randrange(a2, b1)]);
             }
 
-            this.optiHeapSort(array, a1, a2);
+            this.minMaxHeap(array, a1, a2);
 
             new BitArray cnts = BitArray(array, a, b1, pCnt + 1, log);
 
@@ -247,17 +223,29 @@ namespace PacheSort {
             }
 
             for i = 0, j = 0; i < pCnt; i++ {
-                new int cur = cnts.get(i);
+                new int cur = cnts.get(i),
+                        loc = lrBinarySearch(array, a1 + i, a2, array[a2 + j], True) - a1;
 
                 while j < cur {
-                    new int loc = lrBinarySearch(array, a1 + i, a2, array[a2 + j], True) - a1;
-
                     if loc == i {
-                        cur--;
-                        array[a2 + j].swap(array[a2 + cur]);
+                        j++;
+                        loc = lrBinarySearch(array, a1 + i, a2, array[a2 + j]) - a1;
                     } else {
                         cnts.decr(loc);
-                        array[a2 + j].swap(array[a2 + cnts.get(loc)]);
+                        new int dest = cnts.get(loc);
+
+                        while True {
+                            new int newLoc = lrBinarySearch(array, a1 + i, a2, array[a2 + dest]) - a1;
+
+                            if newLoc != loc {
+                                loc = newLoc;
+                                break;
+                            }
+
+                            cnts.decr(loc);
+                            dest--;
+                        }
+                        array[a2 + j].swap(array[a2 + dest]);
                     }
                 }
                 j = lrBinarySearch(array, a2 + j, b1, array[a1 + i], False) - a2;
@@ -275,9 +263,8 @@ namespace PacheSort {
 
             this.optiLazyHeap(array, j, b1, log);
             HeliumSort.mergeWithBufferFW(array, a1, a2, b1, a);
+            this.minMaxHeap(array, a, a + pCnt);
         }
-
-        this.optiHeapSort(array, a, a1);
     }
 }
 

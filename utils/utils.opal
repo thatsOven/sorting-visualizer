@@ -354,3 +354,33 @@ new function log2(n) {
     for ; n != 0; n >>= 1, target++ {}
     return target;
 }
+
+new function javaNumberOfLeadingZeros(i) {
+    if i <= 0 {
+        return 32 if i == 0 else 0;
+    }
+
+    new int n = 31;
+
+    if i >= 1 << 16 {
+        n  -= 16;
+        i >>= 16;
+    }
+
+    if i >= 1 << 8 {
+        n  -= 8;
+        i >>= 8;
+    }
+
+    if i >= 1 << 4 {
+        n  -= 4;
+        i >>= 4;
+    }
+
+    if i >= 1 << 2 {
+        n  -= 2;
+        i >>= 2;
+    }
+
+    return n - (i >> 1);
+}

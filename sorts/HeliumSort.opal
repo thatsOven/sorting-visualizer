@@ -102,13 +102,13 @@ new class HeliumSort {
     new method checkSortedIdx(array, a, b) {
         this.reverseRuns(array, a, b);
 
-        for ; a < b - 1; a++ {
-            if array[a] > array[a + 1] {
-                return a;
+        for b--; b > a; b-- {
+            if array[b] < array[b - 1] {
+                return b;
             }
         }
 
-        return b;
+        return a;
     }
 
     new method rotate(array, a, m, b) {
@@ -154,42 +154,38 @@ new class HeliumSort {
     }
 
     new method findKeysUnsorted(array, a, p, b, q, to) {
-        new int n = p - a;
+        new int n = b - p;
 
-        p = a;
-        for i = p + n; i < b && n < q; i++ {
-            new int l = lrBinarySearch(array, p, p + n, array[i], True);
-            if i == l || array[i] != array[l] {
-                this.rotate(array, p, p + n, i);
-                new int add = i - p - n;
-                l += add;
-                p += add;
-
-                insertToLeft(array, p + n, l);
+        for i = p; i > a && n < q; i-- {
+            new int l = lrBinarySearch(array, p, p + n, array[i - 1], True) - p;
+            if l == n || array[i - 1] < array[p + l] {
+                this.rotate(array, i, p, p + n);
+                p = i - 1;
+                insertToRight(array, i - 1, p + l);
                 n++;
             }
         }
 
-        this.rotate(array, to, p, p + n);
+        this.rotate(array, p, p + n, to);
         return n;
     }
 
     new method findKeysSorted(array, a, b, q) {
         new int n = 1,
-                p = a;
+                p = b - 1;
         
-        for i = a + 1; i < b && n < q; i++ {
-            if array[i] > array[i - 1] {
-                this.rotate(array, p, p + n, i);
-                p = i - n;
+        for i = p; i > a && n < q; i-- {
+            if array[i - 1] != array[i] {
+                this.rotate(array, i, p, p + n);
+                p = i - 1;
                 n++;
             }
         }
 
         if n == q {
-            this.rotate(array, a, p, p + n);
+            this.rotate(array, p, p + n, b);            
         } else {
-            this.rotate(array, p, p + n, b);
+            this.rotate(array, a, p, p + n);
         }
 
         return n;
@@ -197,19 +193,19 @@ new class HeliumSort {
 
     new method findKeys(array, a, b, q) {
         new int p = this.checkSortedIdx(array, a, b);
-        if p == b {
+        if p == a {
             return None;
         }
 
-        if p - a < HeliumSort.MIN_SORTED_UNIQUE {
-            return this.findKeysUnsorted(array, a, a, b, q, a);
+        if b - p < HeliumSort.MIN_SORTED_UNIQUE {
+            return this.findKeysUnsorted(array, a, b - 1, b, q, b);
         } else {
-            new int n = this.findKeysSorted(array, a, p, q);
+            new int n = this.findKeysSorted(array, p, b, q);
             if n == q {
                 return n;
             }
 
-            return this.findKeysUnsorted(array, p - n, p, b, q, a);
+            return this.findKeysUnsorted(array, a, p, p + n, q, b);
         }
     }
 
@@ -1074,7 +1070,7 @@ new class HeliumSort {
             this.blockLen = sqrtn;
 
             if keysFound == keySize {
-                this.sortRuns(array, a + keysFound, b);
+                this.sortRuns(array, a, b - keysFound);
 
                 this.indices = sortingVisualizer.createValueArray(keySize);
                 this.buffer  = sortingVisualizer.createValueArray(mem - keySize);
@@ -1082,11 +1078,11 @@ new class HeliumSort {
                 sortingVisualizer.setAux(this.buffer);
 
                 this.keyLen = keysFound;
-                this.keyPos = a;
+                this.keyPos = b - keysFound;
                 this.bufLen = 0;
                 this.bufPos = -1;
 
-                this.hydrogenLoop(array, a + keysFound, b);
+                this.hydrogenLoop(array, a, b - keysFound);
             } else {
                 this.sortRuns(array, a, b);
 
@@ -1125,7 +1121,7 @@ new class HeliumSort {
                 return;
             }
 
-            this.sortRuns(array, a + keysFound, b);
+            this.sortRuns(array, a, b - keysFound);
 
             this.buffer = sortingVisualizer.createValueArray(mem);
             sortingVisualizer.setAux(this.buffer);
@@ -1133,7 +1129,7 @@ new class HeliumSort {
             this.bufLen = 0;
             this.bufPos = -1;
             this.keyLen = keysFound;
-            this.keyPos = a;
+            this.keyPos = b - keysFound;
 
             if keysFound == keySize {
                 this.blockLen = sqrtn;
@@ -1141,7 +1137,7 @@ new class HeliumSort {
                 this.blockLen = 0;
             }
 
-            this.heliumLoop(array, a + keysFound, b);
+            this.heliumLoop(array, a, b - keysFound);
 
             return;
         }
@@ -1157,7 +1153,7 @@ new class HeliumSort {
             return;
         }
 
-        this.sortRuns(array, a + keysFound, b);
+        this.sortRuns(array, a, b - keysFound);
 
         if mem > 0 {
             this.buffer = sortingVisualizer.createValueArray(mem);
@@ -1167,15 +1163,15 @@ new class HeliumSort {
         if keysFound == ideal {
             this.blockLen = sqrtn;
             this.bufLen   = sqrtn;
-            this.bufPos   = a + keySize;
+            this.bufPos   = b - sqrtn;
             this.keyLen   = keySize;
-            this.keyPos   = a;
+            this.keyPos   = this.bufPos - keySize;
         } else {
             this.blockLen = 0;
             this.bufLen   = keysFound;
-            this.bufPos   = a;
+            this.bufPos   = b - keysFound;
             this.keyLen   = keysFound;
-            this.keyPos   = a;
+            this.keyPos   = b - keysFound;
         }
 
         this.heliumLoop(array, a + keysFound, b);
