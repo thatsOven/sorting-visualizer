@@ -25,7 +25,7 @@ new class WhiteBarGraph: LineVisual {
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
 
                 for i in indices {
-                    if indices[i] is not None && i in range(oldIdx, idx) {
+                    if indices[i] is not None && oldIdx <= i < idx {
                         sortingVisualizer.graphics.line(pos, end, indices[i], 1);
                         break;
                     }
@@ -50,7 +50,7 @@ new class WhiteBarGraph: LineVisual {
                 end.y = pos.y - int(array[idx].value * this.lineLengthConst);
 
                 for j in indices {
-                    if indices[j] is not None && j in range(oldIdx + 1, idx + 1) {
+                    if indices[j] is not None && oldIdx <= j - 1 < idx {
                         sortingVisualizer.graphics.line(pos, end, indices[j], this.lineSize);
                         break;
                     }
@@ -116,7 +116,7 @@ new class WhiteBarGraph: LineVisual {
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 for i in indices {
-                    if i in range(oldIdx, idx) {
+                    if oldIdx <= i < idx {
                         sortingVisualizer.graphics.line(pos, end, indices[i], 1);
                         break;
                     }
@@ -141,7 +141,7 @@ new class WhiteBarGraph: LineVisual {
                 end.y = pos.y - int(array[idx].value * this.auxLineLengthConst);
 
                 for j in indices {
-                    if indices[j] is not None && j in range(oldIdx + 1, idx + 1) {
+                    if indices[j] is not None && oldIdx <= j - 1 < idx {
                         sortingVisualizer.graphics.line(pos, end, indices[j], this.auxLineSize);
                         break;
                     }
