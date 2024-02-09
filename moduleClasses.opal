@@ -13,7 +13,7 @@ new class Sort {
     }
 
     new method __call__(func) {
-        if this.enabled {
+        if DEBUG_MODE || this.enabled {
             new Sort sort = Sort(this.category, this.name, this.listName, this.dynAux);
             sort.func = deepcopy(func);
             del func;

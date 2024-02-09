@@ -1,5 +1,6 @@
 package opal: import *;
 $args ["--nostatic"]
+$define DEBUG_MODE False
 
 new int FREQUENCY_SAMPLE        = 48000,
         FRAME_DIGS              = 9,
@@ -14,7 +15,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.1.27";
+new str VERSION = "2024.2.9";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,

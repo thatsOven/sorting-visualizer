@@ -1,5 +1,3 @@
-use javaNumberOfLeadingZeros;
-
 namespace SmoothSort {
     new list LP = [
         1, 1, 3, 5, 9, 15, 25, 41, 67, 109, 177, 287, 465, 
@@ -53,7 +51,7 @@ namespace SmoothSort {
             array[head].write(array[stepson]);
 
             head = stepson;
-            new int trail = javaNumberOfLeadingZeros((p >> 1) << 1);
+            new int trail = int(math.log2(p & 0xfffffffe));
             p >>= trail;
             pshift += trail;
             isTrusty = False;
@@ -76,13 +74,13 @@ namespace SmoothSort {
                 p >>= 2;
                 pshift += 2;
             } else {
-                if SmoothSort.LP[pshift] - 1 >= hi - head {
+                if SmoothSort.LP[pshift - 1] >= hi - head {
                     this.trinkle(array, p, pshift, head, False);
                 } else {
                     this.sift(array, pshift, head);
                 }
 
-                if pshift == 1{
+                if pshift == 1 {
                     p <<= 1;
                     pshift--;
                 } else {
@@ -96,7 +94,7 @@ namespace SmoothSort {
 
         for ; pshift != 1 || p != 1; head-- {
             if pshift <= 1 {
-                new int trail = javaNumberOfLeadingZeros((p >> 1) << 1);
+                new int trail = int(math.log2(p & 0xfffffffe));
                 p >>= trail;
                 pshift += trail;
             } else {
@@ -118,5 +116,5 @@ namespace SmoothSort {
     enabled = False
 );
 new function smoothSortRun(array) {
-    SmoothSort.sort(array, 0, len(array));
+    SmoothSort.sort(array, 0, len(array) - 1);
 }
