@@ -1174,7 +1174,7 @@ new class HeliumSort {
             this.keyPos   = b - keysFound;
         }
 
-        this.heliumLoop(array, a + keysFound, b);
+        this.heliumLoop(array, a, b - keysFound);
     }
 }
 
