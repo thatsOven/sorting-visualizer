@@ -1,3 +1,5 @@
+use javaNumberOfTrailingZeros;
+
 namespace SmoothSort {
     new list LP = [
         1, 1, 3, 5, 9, 15, 25, 41, 67, 109, 177, 287, 465, 
@@ -51,7 +53,7 @@ namespace SmoothSort {
             array[head].write(array[stepson]);
 
             head = stepson;
-            new int trail = int(math.log2(p & 0xfffffffe));
+            new int trail = javaNumberOfTrailingZeros(p & 0xfffffffe);
             p >>= trail;
             pshift += trail;
             isTrusty = False;
@@ -94,7 +96,7 @@ namespace SmoothSort {
 
         for ; pshift != 1 || p != 1; head-- {
             if pshift <= 1 {
-                new int trail = int(math.log2(p & 0xfffffffe));
+                new int trail = javaNumberOfTrailingZeros(p & 0xfffffffe);
                 p >>= trail;
                 pshift += trail;
             } else {
@@ -113,7 +115,6 @@ namespace SmoothSort {
     "Tree Sorts",
     "Smooth Sort",
     "Smooth Sort",
-    enabled = False
 );
 new function smoothSortRun(array) {
     SmoothSort.sort(array, 0, len(array) - 1);

@@ -93,6 +93,7 @@ runAllSort(512,  "Tree Sort",        5, killers = {
     ],
 });
 runAllSort(2048, "Max Heap Sort",   15);
+runAllSort(2048, "Smooth Sort",     10);
 runAllSort(2048, "Poplar Heap",     10);
 runAllSort(1024, "Weak Heap Sort",   5);
 
