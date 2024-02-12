@@ -845,7 +845,7 @@ new class HeliumSort {
                     e = s + this.keyLen;
 
             binaryInsertionSort(array, s, e);
-            this.mergeOOP(array, s, e, b);
+            this.mergeOOP(array, a, s, e);
         }
     }
 
@@ -866,7 +866,7 @@ new class HeliumSort {
             }
         }
 
-        while r < this.bufLen {
+        while r <= this.bufLen {
             new int twoR = r * 2;
             for i = a; i < b - twoR; i += twoR {
                 this.mergeWithBuffer(array, i, i + r, i + twoR, this.bufPos);
@@ -927,21 +927,20 @@ new class HeliumSort {
 
         if this.keyLen != 0 || this.bufLen != 0 {
             new int s = this.bufPos if this.keyPos == -1 else this.keyPos,
-                    l = this.keyLen + this.bufLen,
-                    e = s + l;
+                    e = s + this.keyLen + this.bufLen;
 
             binaryInsertionSort(array, s, e);
 
-            s, b = this.reduceMergeBounds(array, s, e, b);
+            a, e = this.reduceMergeBounds(array, a, s, e);
 
-            if !this.optiSmartMerge(array, s, e, b, -1, True) {
-                this.mergeInPlace(array, s, e, b, True, False);
+            if !this.optiSmartMerge(array, a, s, e, -1, True) {
+                this.mergeInPlace(array, a, s, e, True, False);
             }
         }
     }
 
     new method inPlaceMergeSort(array, a, b, check = True) {
-        if check && this.checkSortedIdx(array, a, b) == b {
+        if check && this.checkSortedIdx(array, a, b) == a {
             return;
         }
 
@@ -1004,7 +1003,7 @@ new class HeliumSort {
                 mem = n // 2;
             }
 
-            if this.checkSortedIdx(array, a, b) == b {
+            if this.checkSortedIdx(array, a, b) == a {
                 return;
             }
             
@@ -1030,7 +1029,7 @@ new class HeliumSort {
                 keySize = n // sqrtn;
             }
 
-            if this.checkSortedIdx(array, a, b) == b {
+            if this.checkSortedIdx(array, a, b) == a {
                 return;
             }
             
