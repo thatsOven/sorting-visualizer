@@ -92,7 +92,7 @@ new class HeliumSort {
             }
 
             if i - l >= HeliumSort.MIN_REV_RUN_SIZE {
-                reverse(array, l, i);
+                reverse(array, l, i + 1);
             }
 
             l = i + 1;
