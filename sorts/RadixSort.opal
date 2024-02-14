@@ -98,6 +98,7 @@ new class RadixSort {
 
         new list aux = [[] for _ in range(this.base)];
         sortingVisualizer.setAux(aux);
+        this.aux = aux;
 
         for i = a; i < b; i++ {
             new int dig = array[i].readDigit(p, this.base);
