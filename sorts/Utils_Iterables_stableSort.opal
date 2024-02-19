@@ -33,13 +33,13 @@ new class UtilsIterablesStableSortMerge {
             }
         }
 
-        if min_ == 1 {
-            if rl == 1 {
-                insertToLeft(array, m, a);
-            } elif ll == 1 {
-                insertToRight(array, a, b - 1);
-            }
+        if rl == 1 {
+            insertToLeft(array, m, a);
+        } elif ll == 1 {
+            insertToRight(array, a, b - 1);
+        }
             
+        if min_ == 1 || rl <= 1 || ll <= 1 {
             return;
         }
         

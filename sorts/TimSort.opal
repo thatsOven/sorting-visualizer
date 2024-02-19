@@ -5,6 +5,20 @@ new class TimSort {
             MIN_GALLOP = 7,
             INITIAL_TMP_STORAGE_LENGTH = 256;
 
+    new method __adaptAux(array) {
+        return array + this.runBase + this.runLen;
+    }
+
+    new method __adaptIdx(idx, aux) {
+        if aux is this.runBase {
+            return idx + len(this.tmp);
+        } elif aux is this.runLen {
+            return idx + len(this.tmp) + len(this.runBase);
+        }
+
+        return idx;
+    }
+
     new method __init__(a, length) {
         this.a = a;
         this.len = length;
@@ -12,8 +26,6 @@ new class TimSort {
         this.tmp = sortingVisualizer.createValueArray((this.len >> 1)
                                                    if (this.len < 2 * TimSort.INITIAL_TMP_STORAGE_LENGTH)
                                                    else TimSort.INITIAL_TMP_STORAGE_LENGTH);
-
-        sortingVisualizer.setAux(this.tmp);
 
         this.minGallop = TimSort.MIN_GALLOP;
         this.stackSize = 0;
@@ -23,8 +35,11 @@ new class TimSort {
                              else (19 if (this.len < 119151)
                              else 40));
 
-        this.runBase = [0 for _ in range(stackLen)];
-        this.runLen  = [0 for _ in range(stackLen)];
+        this.runBase = sortingVisualizer.createValueArray(stackLen);
+        this.runLen  = sortingVisualizer.createValueArray(stackLen);
+
+        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
+        sortingVisualizer.setAux(this.tmp);
     }
 
     new method sort(a, lo, hi) {
@@ -96,8 +111,8 @@ new class TimSort {
     }
 
     new method pushRun(runBase, runLen) {
-        this.runBase[this.stackSize] = runBase;
-        this.runLen[this.stackSize] = runLen;
+        this.runBase[this.stackSize].write(runBase);
+        this.runLen[this.stackSize].write(runLen);
         this.stackSize++;
     }
 
@@ -130,16 +145,16 @@ new class TimSort {
     }
 
     new method mergeAt(i) {
-        new int base1 = this.runBase[i],
-                len1  = this.runLen[i],
-                base2 = this.runBase[i + 1],
-                len2  = this.runLen[i + 1];
+        new int base1 = this.runBase[i].readInt(),
+                len1  = this.runLen[i].readInt(),
+                base2 = this.runBase[i + 1].readInt(),
+                len2  = this.runLen[i + 1].readInt();
 
-        this.runLen[i] = len1 + len2;
+        this.runLen[i].write(len1 + len2);
 
         if i == this.stackSize - 3 {
-            this.runBase[i + 1] = this.runBase[i + 2];
-            this.runLen[i + 1] = this.runLen[i + 2];
+            this.runBase[i + 1].write(this.runBase[i + 2]);
+            this.runLen[i + 1].write(this.runLen[i + 2]);
         }
         this.stackSize--;
 
@@ -561,7 +576,8 @@ new class TimSort {
 @Sort(
     "Merge Sorts",
     "Tim Sort",
-    "Tim Sort"
+    "Tim Sort",
+    usesDynamicAux = True
 );
 new function timSortRun(array) {
     TimSort(array, len(array)).sort(array, 0, len(array));
