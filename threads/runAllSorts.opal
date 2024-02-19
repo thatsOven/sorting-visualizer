@@ -147,6 +147,7 @@ ct = "Merge Sorts";
 runAllSort(1024, "Merge Sort",            8);
 runAllSort(1024, "Bottom Up Merge",       4);
 runAllSort(256,  "Lazy Stable",           4, rotations.index("Gries-Mills"));
+runAllSort(1024, "Rotate Merge",          3, rotations.index("Gries-Mills"));
 runAllSort(1024, "Adaptive Rotate Merge", 5, 128);
 runAllSort(1024, "Uranium Sort",          2);
 runAllSort(1024, "Tim Sort",              5);

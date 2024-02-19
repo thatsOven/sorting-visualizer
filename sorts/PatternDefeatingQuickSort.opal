@@ -266,7 +266,6 @@ namespace PDQSort {
                 last--;
                 array[first + leftOffsets[leftOffsetsPos + leftNum].readInt()].swap(array[last]);
             }
-            leftNum--;
             first = last;
         }
 
@@ -277,7 +276,6 @@ namespace PDQSort {
                 array[last - rightOffsets[rightOffsetsPos + rightNum].readInt()].swap(array[first]);
                 first++;
             }
-            rightNum--;
             last = first;
         }
 
