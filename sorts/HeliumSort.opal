@@ -116,7 +116,7 @@ new class HeliumSort {
         new int rl   = b - m,
                 ll   = m - a,
                 bl   = this.bufLen if ip else len(this.buffer),
-                min_ = bl if min(bl, rl, ll) > HeliumSort.SMALL_MERGE else 1;
+                min_ = bl if rl != ll && min(bl, rl, ll) > HeliumSort.SMALL_MERGE else 1;
 
         while ll > min_ and rl > min_ {
             if rl < ll {

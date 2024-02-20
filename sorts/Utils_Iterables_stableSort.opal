@@ -15,11 +15,8 @@ new class UtilsIterablesStableSortMerge {
     new method rotate(array, a, m, b) {
         static: new int rl   = b - m,
                         ll   = m - a,
-                        min_ = 1 if this.aux is None else (
-                            len(this.aux) if 
-                                min(len(this.aux), ll, rl) > 8
-                            else 1
-                        );
+                        bl   = 1 if this.aux is None else len(this.aux),
+                        min_ = bl if rl != ll && min(bl, rl, ll) > 8 else 1;
 
         while ll > min_ and rl > min_ {
             if rl < ll {
