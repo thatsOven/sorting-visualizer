@@ -346,7 +346,7 @@ new function findMin(array, a, b) {
 }
 
 new function findHighestPower(array, a, b, base) {
-    return math.log(findMax(array, a, b), base);
+    return int(math.log(findMax(array, a, b), base));
 }
 
 new function log2(n) {

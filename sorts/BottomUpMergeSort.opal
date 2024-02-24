@@ -45,8 +45,7 @@ namespace BottomUpMergeSort {
             return;
         }
 
-        new int  s = 16;
-        new list b = sortingVisualizer.createValueArray(n);
+        new int s = 16;
 
         new dynamic speed = sortingVisualizer.speed;
         sortingVisualizer.setSpeed(max(int(10 * (len(array) / 2048)), speed * 2));
@@ -57,8 +56,8 @@ namespace BottomUpMergeSort {
         binaryInsertionSort(array, i, n);
 
         sortingVisualizer.setSpeed(speed);
-        sortingVisualizer.setAux(b);
 
+        new dynamic b = sortingVisualizer.createValueArray(n);
         while s < n {
             this.mergePass(array, b, s, n);
             s *= 2;

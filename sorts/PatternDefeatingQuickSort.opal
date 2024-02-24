@@ -485,11 +485,6 @@ new function pdqSortRun(array) {
 new function branchlessPdqSortRun(array) {
     new list leftOffsets  = sortingVisualizer.createValueArray(PDQSort.blockSize + PDQSort.cachelineSize),
              rightOffsets = sortingVisualizer.createValueArray(PDQSort.blockSize + PDQSort.cachelineSize);
-    sortingVisualizer.setAux(leftOffsets);
-    sortingVisualizer.setAdaptAux(
-        lambda array: array + rightOffsets,
-        lambda idx, aux: idx + len(leftOffsets) if aux is rightOffsets else idx
-    );
 
     PDQSort.loop(array, 0, len(array), PDQSort.log(len(array)), True, leftOffsets, rightOffsets);
 }

@@ -1,7 +1,6 @@
 new class MergeSort {
     new method __init__(length) {
         this.aux = sortingVisualizer.createValueArray(length);
-        sortingVisualizer.setAux(this.aux);
     }
 
     new method merge(array, a, m, b) {

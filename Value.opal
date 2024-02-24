@@ -1,6 +1,5 @@
 new record HighlightInfo(idx, aux = None, color = None);
 
-@Typing.mode(Typing.check);
 new class Value {
     new method __init__(value) {
         this.value   = value;
@@ -46,7 +45,7 @@ new class Value {
 
         sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
 
-        return temp;
+        return int(temp);
     }
 
     new method readInt() {

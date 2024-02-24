@@ -80,6 +80,11 @@ new class HeliumSort {
         this.buffer  = None;
         this.indices = None;
         this.keys    = None;
+
+        this.bufLen = 0;
+        this.bufPos = -1;
+        this.keyLen = 0;
+        this.keyPos = -1;
     }
 
     new method reverseRuns(array, a, b) {
@@ -992,36 +997,6 @@ new class HeliumSort {
         }
     }
 
-    new method __bufIdxKeysAdapt(array) {
-        return array + this.indices + this.keys;
-    }
-
-    new method __bufIdxKeysAdaptIdx(idx, aux) {
-        if aux is this.buffer {
-            return idx;
-        } elif aux is this.indices {
-            return idx + len(this.buffer);
-        } 
-
-        return idx + len(this.buffer) + len(this.indices);
-    }
-
-    new method __bufIdxAdapt(array) {
-        return array + this.indices;
-    }
-
-    new method __bufKeysAdapt(array) {
-        return array + this.keys;
-    }
-
-    new method __bufIdxOrKeysAdaptIdx(idx, aux) {
-        if aux is this.buffer {
-            return idx;
-        }
-            
-        return idx + len(this.buffer);
-    }
-
     new method sort(array, a, b, mem) {
         new int n = b - a;
         if n <= HeliumSort.SMALL_SORT {
@@ -1040,10 +1015,7 @@ new class HeliumSort {
             }
             
             this.sortRuns(array, a, b, p);
-
             this.buffer = sortingVisualizer.createValueArray(mem);
-            sortingVisualizer.setAux(this.buffer);
-
             this.uraniumLoop(array, a, b);
 
             return;
@@ -1068,17 +1040,11 @@ new class HeliumSort {
             
             this.sortRuns(array, a, b, p);
 
+            this.buffer  = sortingVisualizer.createValueArray(mem - 2 * keySize);
             this.indices = sortingVisualizer.createValueArray(keySize);
             this.keys    = sortingVisualizer.createValueArray(keySize);
-            this.buffer  = sortingVisualizer.createValueArray(mem - 2 * keySize);
-            sortingVisualizer.setAdaptAux(this.__bufIdxKeysAdapt, this.__bufIdxKeysAdaptIdx);
-            sortingVisualizer.setAux(this.buffer);
-
+            
             this.blockLen = sqrtn;
-            this.bufLen = 0;
-            this.bufPos = 0;
-            this.keyLen = 0;
-            this.keyPos = 0;
 
             this.hydrogenLoop(array, a, b);
 
@@ -1105,29 +1071,18 @@ new class HeliumSort {
             if keysFound == keySize {
                 this.sortRuns(array, a, b - keysFound, p);
 
-                this.indices = sortingVisualizer.createValueArray(keySize);
                 this.buffer  = sortingVisualizer.createValueArray(mem - keySize);
-                sortingVisualizer.setAdaptAux(this.__bufIdxAdapt, this.__bufIdxOrKeysAdaptIdx);
-                sortingVisualizer.setAux(this.buffer);
+                this.indices = sortingVisualizer.createValueArray(keySize);
 
                 this.keyLen = keysFound;
                 this.keyPos = b - keysFound;
-                this.bufLen = 0;
-                this.bufPos = -1;
 
                 this.hydrogenLoop(array, a, b - keysFound);
             } else {
                 this.sortRuns(array, a, b, p);
 
-                this.keys   = sortingVisualizer.createValueArray(keySize);
                 this.buffer = sortingVisualizer.createValueArray(mem - keySize);
-                sortingVisualizer.setAdaptAux(this.__bufKeysAdapt, this.__bufIdxOrKeysAdaptIdx);
-                sortingVisualizer.setAux(this.buffer);
-
-                this.bufLen = 0;
-                this.bufPos = -1;
-                this.keyLen = 0;
-                this.keyPos = -1;
+                this.keys   = sortingVisualizer.createValueArray(keySize);
 
                 this.heliumLoop(array, a, b);
             }
@@ -1158,10 +1113,7 @@ new class HeliumSort {
             this.sortRuns(array, a, b - keysFound, p);
 
             this.buffer = sortingVisualizer.createValueArray(mem);
-            sortingVisualizer.setAux(this.buffer);
 
-            this.bufLen = 0;
-            this.bufPos = -1;
             this.keyLen = keysFound;
             this.keyPos = b - keysFound;
 
@@ -1192,7 +1144,6 @@ new class HeliumSort {
 
         if mem > 0 {
             this.buffer = sortingVisualizer.createValueArray(mem);
-            sortingVisualizer.setAux(this.buffer);
         }
 
         if keysFound == ideal {

@@ -12,26 +12,10 @@ new class TreeSort {
         }
     }
 
-    new method __adaptAux(array) {
-        return array + this.upper + this.tmp;
-    }
-
-    new method __adaptIdx(idx, aux) {
-        if aux is this.lower {
-            return idx;
-        } elif aux is this.upper {
-            return idx + len(this.lower);
-        }
-
-        return idx + len(this.lower) + len(this.upper);
-    }
-
     new method sort(array) {
         this.lower = sortingVisualizer.createValueArray(len(array));
         this.upper = sortingVisualizer.createValueArray(len(array));
         this.tmp   = sortingVisualizer.createValueArray(len(array));
-        sortingVisualizer.setAux(this.lower);
-        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
 
         for i = 1; i < len(array); i++ {
             new int c = 0;

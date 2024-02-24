@@ -208,20 +208,6 @@ new class SqrtStableQuickSort {
         binaryInsertionSort(array, a, b);
     }
 
-    new classmethod __adaptAux(array) {
-        return array + this.ones + this.keys;
-    }
-
-    new classmethod __adaptIdx(idx, aux) {
-        if aux is this.zeros {
-            return idx;
-        } elif aux is this.ones {
-            return idx + len(this.zeros);
-        }
-
-        return idx + len(this.zeros) + len(this.ones);
-    }
-
     new classmethod sort(array, a, b) {
         new int sqrt = pow2Sqrt(b - a);
 
@@ -230,8 +216,6 @@ new class SqrtStableQuickSort {
         this.zeros = sortingVisualizer.createValueArray(sqrt);
         this.ones  = sortingVisualizer.createValueArray(sqrt);
         this.keys  = sortingVisualizer.createValueArray(((b - a - 1) // sqrt) + 1);
-        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
-        sortingVisualizer.setAux(this.zeros);
 
         this.quickSorter(array, a, b, 2 * math.log2(b - a));
     }

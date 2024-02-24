@@ -951,7 +951,6 @@ new function grailSortInPlace(array, start, length) {
 
 new function grailSortStaticOOP(array, start, length) {
     GrailSort.extBuffer    = sortingVisualizer.createValueArray(GrailSort.GRAIL_STATIC_EXT_BUF_LEN);
-    sortingVisualizer.setAux(GrailSort.extBuffer);
     GrailSort.extBufferLen = GrailSort.GRAIL_STATIC_EXT_BUF_LEN;
     GrailSort.grailCommonSort(array, start, length, GrailSort.extBuffer, GrailSort.GRAIL_STATIC_EXT_BUF_LEN);
 }
@@ -962,15 +961,11 @@ new function grailSortDynamicOOP(array, start, length) {
     }
 
     GrailSort.extBuffer = sortingVisualizer.createValueArray(GrailSort.extBufferLen);
-    sortingVisualizer.setAux(GrailSort.extBuffer);
     GrailSort.grailCommonSort(array, start, length, GrailSort.extBuffer, GrailSort.extBufferLen);
 }
 
-new function grailSortGivenAux(array, start, length, aux, set = True) {
+new function grailSortGivenAux(array, start, length, aux) {
     GrailSort.extBuffer = aux;
-    if set {
-        sortingVisualizer.setAux(GrailSort.extBuffer);
-    }
     GrailSort.extBufferLen = len(aux);
     GrailSort.grailCommonSort(array, start, length, GrailSort.extBuffer, GrailSort.extBufferLen);
 }
@@ -1003,7 +998,6 @@ new function grailSortRun(array) {
         }
         default {
             GrailSort.GRAIL_STATIC_EXT_BUF_LEN = mode;
-
             grailSortStaticOOP(array, 0, len(array));
         }
     }

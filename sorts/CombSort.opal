@@ -24,6 +24,7 @@ new class CombSort {
         while (gap > 1) or swapped {
             if gap > 1 {
                 gap /= this.shrink;
+                gap = int(gap);
             }
 
             swapped = False;

@@ -1,5 +1,3 @@
-package itertools: import chain;
-
 use UtilsIterablesStableSort;
 
 new class FeatureSort {
@@ -11,14 +9,14 @@ new class FeatureSort {
         UtilsIterablesStableSort(len(mainArray), mainArray).sort(subarray, 0, l);
     }
 
-    new method __adaptAux(array) {
-        new list result = list(chain.from_iterable(array));
+    new method __adaptAux(_) {
+        new list result = list(chain.from_iterable(this.aux));
 
         if len(result) == 0 {
             result = [Value(0)];
             result[0].idx = 0;
             result[0].stabIdx = 0;
-            result[0].setAux(array);
+            result[0].setAux(this.aux);
             return result;
         }
 
@@ -43,24 +41,26 @@ new class FeatureSort {
 
         this.aux = [[] for _ in range(b - a + 1)];
         sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
-        sortingVisualizer.setAux(this.aux);
+        sortingVisualizer.addAux(this.aux);
 
         for i = a; i < b; i++ {
             new int idx = int((array[i].readInt() - min_) * CONST);
+
+            new Value val = array[i].copy();
+            val.idx = idx + len(this.aux[idx]);
+            val.setAux(this.aux);
+
             new dynamic sTime = default_timer();
-            this.aux[idx].append(array[i].copy());
+            this.aux[idx].append(val);
             sortingVisualizer.timer(sTime);
             sortingVisualizer.writes++;
             sortingVisualizer.highlight(idx, this.aux);
         }
 
-        sortingVisualizer.resetAdaptAux();
         for i in range(b - a) {
             this.sortSubarray(this.aux[i], array);
         }
 
-        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
-        sortingVisualizer.setAux(this.aux);
         for i = 0, r = a; i < len(this.aux); i++ {
             for j = 0; j < len(this.aux[i]); j++, r++ {
                 array[r].write(this.aux[i][j]);

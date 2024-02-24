@@ -103,8 +103,6 @@ new class WikiSort {
             } else {
                 this.cache = cache;
             }
-
-            sortingVisualizer.setAux(this.cache);
         } else {
             this.cache = None;
         }
@@ -579,8 +577,8 @@ new class WikiSort {
                 }
             } else {
                 new int block_size, buffer_size, index, last, count, pull_index = 0;
-                block_size  = math.sqrt(iterator.length());
-                buffer_size = iterator.length()//block_size + 1;
+                block_size  = int(math.sqrt(iterator.length()));
+                buffer_size = iterator.length() // block_size + 1;
 
                 buffer1.set(0, 0);
                 buffer2.set(0, 0);
@@ -905,8 +903,7 @@ new class WikiSort {
     "Wiki Sort"
 );
 new function wikiSortRun(array) {
-    new int mode;
-    mode = sortingVisualizer.getUserInput("Insert buffer size (0 for in-place)", "0");
+    new int mode = sortingVisualizer.getUserInput("Insert buffer size (0 for in-place)", "0");
 
     new WikiSort wikiSort = WikiSort(mode);
     wikiSort.sort(array, len(array));

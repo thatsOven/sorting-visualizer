@@ -7,7 +7,6 @@ new class UtilsIterablesStableSortMerge {
         } else {
             this.aux = aux;
         }
-        sortingVisualizer.setAux(this.aux);
 
         this.__capacity = size;
     }

@@ -1,8 +1,7 @@
 new function sawtooth(array) {
     new int count = 4;
 
-    new list temp = sortingVisualizer.createValueArray(len(array));
-    sortingVisualizer.setAux(temp);
+    new dynamic temp = sortingVisualizer.createValueArray(len(array));
 
     for j = 0, k = 0; j < count; j++ {
         for i = j; i < len(array); i += count, k++ {

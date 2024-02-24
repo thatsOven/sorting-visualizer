@@ -14,8 +14,8 @@ new class RadixSort {
         return findHighestPower(array, a, b, this.base);
     }
 
-    new method adaptAux(array) {
-        new list result = list(chain.from_iterable(array));
+    new method adaptAux(_) {
+        new list result = list(chain.from_iterable(this.aux));
 
         repeat this.arrayLen - len(result) {
             result.append(Value(0));
@@ -55,10 +55,13 @@ new class RadixSort {
         }
     }
 
-    new method auxWrite(aux, dig, array, idx) {
-        new dynamic value = array[idx].read();
+    new method auxWrite(aux, dig, array, i) {
+        new Value val = array[i].copy();
+        val.idx = dig;
+        val.setAux(this.aux);
+
         new dynamic sTime = default_timer();
-        aux[dig].append(value);
+        aux[dig].append(val);
         sortingVisualizer.timer(sTime);
         sortingVisualizer.writes++;
         sortingVisualizer.highlight(dig, aux);
@@ -72,7 +75,7 @@ new class RadixSort {
         this.aux = [[] for _ in range(this.base)];
 
         sortingVisualizer.setAdaptAux(this.adaptAux, this.adaptIdx);
-        sortingVisualizer.setAux(this.aux);
+        sortingVisualizer.addAux(this.aux);
 
         for p in range(hPow + 1) {
             for i = a; i < b; i++ {
@@ -89,7 +92,7 @@ new class RadixSort {
 
         if p is None {
             p = this.getHighestPower(array, a, b);
-            sortingVisualizer.setAdaptAux(this.adaptAux);
+            sortingVisualizer.setAdaptAux(this.adaptAux, this.adaptIdx);
         }
 
         if a >= b or p < -1 {
@@ -97,8 +100,8 @@ new class RadixSort {
         }
 
         new list aux = [[] for _ in range(this.base)];
-        sortingVisualizer.setAux(aux);
         this.aux = aux;
+        sortingVisualizer.addAux(aux);
 
         for i = a; i < b; i++ {
             new int dig = array[i].readDigit(p, this.base);

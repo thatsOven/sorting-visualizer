@@ -2,8 +2,7 @@ use shuffleRandom;
 
 @Shuffle("Scrambled Tail");
 new function scrambledTailShuffle(array) {
-    new list aux = sortingVisualizer.createValueArray(len(array));
-    sortingVisualizer.setAux(aux);
+    new dynamic aux = sortingVisualizer.createValueArray(len(array));
 
     new int i = 0,
             j = 0,
@@ -25,8 +24,7 @@ new function scrambledTailShuffle(array) {
 
 @Shuffle("Scrambled Head");
 new function scrambledHeadShuffle(array) {
-    new list aux = sortingVisualizer.createValueArray(len(array));
-    sortingVisualizer.setAux(aux);
+    new dynamic aux = sortingVisualizer.createValueArray(len(array));
 
     new int i = len(array) - 1,
             j = i,

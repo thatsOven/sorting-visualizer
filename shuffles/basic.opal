@@ -32,8 +32,7 @@ new function fewRandomShuffle(array) {
 new function finalMergeShuffle(array) {
     new int count = 2;
 
-    new list temp = sortingVisualizer.createValueArray(len(array));
-    sortingVisualizer.setAux(temp);
+    new dynamic temp = sortingVisualizer.createValueArray(len(array));
 
     new int k = 0;
     for j = 0; j < count; j++ {

@@ -196,18 +196,6 @@ new class AeosQuickSort {
         insertionSort(array, a, b);
     }
 
-    new method __adaptAux(array) {
-        return array + this.indices;
-    }
-
-    new method __adaptIdx(idx, aux) {
-        if aux is this.indices {
-            return idx + len(this.aux);
-        }
-
-        return idx;
-    }
-
     new method sort(array, a, b) {
         if b - a < 16 {
             insertionSort(array, a, b);
@@ -220,8 +208,6 @@ new class AeosQuickSort {
 
         this.aux     = sortingVisualizer.createValueArray(sqrt);
         this.indices = sortingVisualizer.createValueArray((b - a) // sqrt);
-        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
-        sortingVisualizer.setAux(this.aux);
 
         this.sortRec(array, a, b, sqrt, 0);
     }

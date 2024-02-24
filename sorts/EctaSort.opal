@@ -26,7 +26,7 @@
 use binaryInsertionSort, arrayCopy;
 
 new class EctaSort {
-    new method mergeTo(from_, to, a, m, b, p) {
+    new classmethod mergeTo(from_, to, a, m, b, p) {
         new int i = a,
                 j = m;
 
@@ -49,7 +49,7 @@ new class EctaSort {
         }
     }
 
-    new method pingPongMerge(array, buf, a, m1, m2, m3, b) {
+    new classmethod pingPongMerge(array, buf, a, m1, m2, m3, b) {
         new int p    = 0,
                 p1   = p + m2 - a,
                 pEnd = p + b - a;
@@ -59,7 +59,7 @@ new class EctaSort {
 		this.mergeTo(buf, array, p, p1, pEnd, a);
     }
 
-    new method mergeBWExt(array, tmp, a, m, b) {
+    new classmethod mergeBWExt(array, tmp, a, m, b) {
         new int s = b - m;
 
         arrayCopy(array, m, tmp, 0, s);
@@ -85,7 +85,7 @@ new class EctaSort {
         }
     }
 
-    new method blockCycle(array, buf, keys, a, bLen, bCnt) {
+    new classmethod blockCycle(array, buf, keys, a, bLen, bCnt) {
         for i = 0; i < bCnt; i++ {
             if keys[i] != i {
                 arrayCopy(array, a + i * bLen, buf, 0, bLen);
@@ -106,7 +106,7 @@ new class EctaSort {
         }
     }
 
-    new method blockMerge(array, buf, tags, a, m, b, bLen) {
+    new classmethod blockMerge(array, buf, tags, a, m, b, bLen) {
         new int c = 0,
                 t = 2,
                 i = a,
@@ -182,19 +182,7 @@ new class EctaSort {
         this.blockCycle(array, buf, tags, a, bLen, (b - a) // bLen);
     }
 
-    new method __adaptAux(array) {
-        return array + this.tags;
-    }
-
-    new method __adaptIdx(idx, aux) {
-        if aux is this.tags {
-            return idx + len(this.buf);
-        }
-
-        return idx;
-    }
-
-    new method sort(array, a, b) {
+    new classmethod sort(array, a, b) {
         if b - a <= 32 {
             binaryInsertionSort(array, a, b);
             return;
@@ -216,34 +204,32 @@ new class EctaSort {
 
         sortingVisualizer.setSpeed(speed);
 
-        this.buf  = sortingVisualizer.createValueArray(bufLen);
-        this.tags = sortingVisualizer.createValueArray(tLen);
-        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
-        sortingVisualizer.setAux(this.buf);
+        new dynamic buf  = sortingVisualizer.createValueArray(bufLen),
+                    tags = sortingVisualizer.createValueArray(tLen);
 
         for ; 4 * j <= bufLen; j *= 4 {
             for i = a; i + 2 * j < b; i += 4 * j {
-                this.pingPongMerge(array, this.buf, i, i + j, i + 2 * j, min(i + 3 * j, b), min(i + 4 * j, b));
+                this.pingPongMerge(array, buf, i, i + j, i + 2 * j, min(i + 3 * j, b), min(i + 4 * j, b));
             }
 
             if i + j < b {
-                this.mergeBWExt(array, this.buf, i, i + j, b);
+                this.mergeBWExt(array, buf, i, i + j, b);
             }
         }
 
         for ; j <= bufLen; j *= 2 {
             for i = a; i + j < b; i += 2 * j {
-                this.mergeBWExt(array, this.buf, i, i + j, min(i + 2 * j, b));
+                this.mergeBWExt(array, buf, i, i + j, min(i + 2 * j, b));
             }
         }
 
         for ; j < b - a; j *= 2 {
             for i = a; i + j + bufLen < b; i += 2 * j {
-                this.blockMerge(array, this.buf, this.tags, i, i + j, min(i + 2 * j, b), bLen);
+                this.blockMerge(array, buf, tags, i, i + j, min(i + 2 * j, b), bLen);
             }
 
             if i + j < b {
-                this.mergeBWExt(array, this.buf, i, i + j, b);
+                this.mergeBWExt(array, buf, i, i + j, b);
             }
         } 
     }
@@ -255,5 +241,5 @@ new class EctaSort {
     "Ecta Sort"
 );
 new function ectaSortRun(array) {
-    EctaSort().sort(array, 0, len(array));
+    EctaSort.sort(array, 0, len(array));
 }

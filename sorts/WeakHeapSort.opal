@@ -23,8 +23,6 @@ new class WeakHeapSort {
     }
 
     new method sort() {
-        sortingVisualizer.setAux(this.bits);
-
         new int n = this.length, i, j, x, y, Gparent;
 
         for i = n - 1; i > 0; i-- {

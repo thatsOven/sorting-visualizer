@@ -265,8 +265,6 @@ namespace LogSort {
     new classmethod sort(array, a, n, bLen) {
         bLen = max(9, min(n, bLen));
         new list swap = sortingVisualizer.createValueArray(bLen);
-        sortingVisualizer.setAux(swap);
-
         this.logSort(array, swap, a, n, bLen);
     }
 }

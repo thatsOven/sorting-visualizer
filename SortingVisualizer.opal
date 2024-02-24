@@ -1,5 +1,5 @@
 package opal: import *;
-$args ["--nostatic"]
+$args ["--nostatic", "--type-mode", "none"]
 $define DEBUG_MODE False
 
 new int FREQUENCY_SAMPLE        = 48000,
@@ -15,13 +15,14 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.2.12";
+new str VERSION = "2024.2.24";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
        builtins;
 package timeit:      import default_timer;
 package functools:   import total_ordering;
+package itertools:   import chain;
 package traceback:   import format_exception;
 package pygame_gui:  import UIManager, elements, windows;
 package pygame:      import Rect, image, display;
@@ -82,7 +83,8 @@ new class SortingVisualizer {
 
     new method __init__() {
         this.array = [];
-        this.aux   = None;
+        this.__auxArrays   = [];
+        this.__baseRefCnts = [];
         this.__verifyArray = None;
 
         this.distributions = [];
@@ -291,8 +293,7 @@ new class SortingVisualizer {
         }
 
         if id is None {
-            new int id;
-            id = Utils.Iterables.binarySearch(array, class_(name));
+            new int id = Utils.Iterables.binarySearch(array, class_(name));
 
             if id != -1 {
                 return func(id, length, unique);
@@ -344,7 +345,6 @@ new class SortingVisualizer {
 
         this.resetAux();
         this.resetAdaptAux();
-        this.drawFullArray();
         this.renderStats();
 
         if this.settings["render"] {
@@ -389,7 +389,7 @@ new class SortingVisualizer {
                     id, cmp;
     
             while a < b {
-                id = a + (b - a) / 2;
+                id = a + (b - a) // 2;
 
                 cmp = compare(name, array[id].name);
                 if cmp == 0 {
@@ -445,7 +445,6 @@ new class SortingVisualizer {
 
         this.resetAux();
         this.resetAdaptAux();
-        this.drawFullArray();
 
         this.printArrayState();
     }
@@ -456,8 +455,7 @@ new class SortingVisualizer {
         }
 
         if id is None {
-            new int id;
-            id = Utils.Iterables.binarySearch(this.sorts[category], Sort("", "", name));
+            new int id = Utils.Iterables.binarySearch(this.sorts[category], Sort("", "", name));
 
             if id != -1 {
                 this.__runSortById(category, id);
@@ -479,6 +477,10 @@ new class SortingVisualizer {
     }
 
     new method getMaxViaKey(array, getVal = lambda x : x.value) {
+        if len(array) == 0 {
+            return 1;
+        }
+
         new dynamic maxVal = getVal(array[0]), val;
 
         for i = 1; i < len(array); i++ {
@@ -498,7 +500,7 @@ new class SortingVisualizer {
 
     new method getAuxMax(array = None) {
         if array is None {
-            this.auxMax = float(this.getMaxViaKey(this.__adaptAux(this.aux)));
+            this.auxMax = float(this.getMaxViaKey(this.__adaptAux(this.__auxArrays)));
         } else {
             this.auxMax = float(this.getMaxViaKey(array));
         }
@@ -514,9 +516,7 @@ new class SortingVisualizer {
     }
 
     new method checkArrayState() {
-        new int state, sUntil;
-
-        sUntil = this.checkSorted(this.array);
+        new int sUntil = this.checkSorted(this.array);
 
         new int eq = len(this.array) - 1;
         for i in range(len(this.array)) {
@@ -695,11 +695,25 @@ new class SortingVisualizer {
         }
     }
 
-    new method __defaultAdaptAux(array) {
-        return array;
+    new method __defaultAdaptAux(arrays) {
+        new dynamic result = list(chain.from_iterable(arrays));
+        if len(result) == 0 {
+            return [Value(0)];
+        }
+
+        return result;
     }
 
     new method __defaultAdaptIdx(idx, aux) {
+        static: new int offs = 0;
+        for array in this.__auxArrays {
+            if aux is array {
+                return offs + idx;
+            }
+
+            offs += len(array);
+        }
+
         return idx;
     }
 
@@ -721,7 +735,7 @@ new class SortingVisualizer {
     new method __getWaveformFromIdx(i, adapted) {
         new dynamic tmp;
 
-        if i.aux and this.aux is not None {
+        if i.aux is not None && len(this.__auxArrays) != 0 {
             tmp = this.__sound.play(adapted[i.idx].value, this.auxMax, this.__soundSample);
         } else {
             tmp = this.__sound.play(this.array[i.idx].value, this.arrayMax, this.__soundSample);
@@ -779,11 +793,9 @@ new class SortingVisualizer {
 
     $macro adaptIndices
         if this.settings["show-aux"] {
-            if aux && this.__adaptIdx is not this.__defaultAdaptIdx {
-                for i in range(len(hList)) {
-                    if hList[i].aux is not None {
-                        hList[i].idx = this.__adaptIdx(hList[i].idx, hList[i].aux);
-                    }
+            for i in range(len(hList)) {
+                if hList[i].aux is not None {
+                    hList[i].idx = this.__adaptIdx(hList[i].idx, hList[i].aux);
                 }
             }
         } else {
@@ -812,8 +824,15 @@ new class SortingVisualizer {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
                 
-                aux = this.settings["show-aux"] and this.aux is not None;
-                new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
+                aux = this.settings["show-aux"] and len(this.__auxArrays) != 0;
+
+                new dynamic adapted;
+                if aux {
+                    this.__garbageCollect();
+                    adapted = this.__adaptAux(this.__auxArrays);
+                } else {
+                    adapted = None;
+                }
 
                 $call adaptIndices
                 $call playSound(hList, adapted)
@@ -990,8 +1009,15 @@ new class SortingVisualizer {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
                 
-                aux = this.settings["show-aux"] and this.aux is not None;
-                new dynamic adapted = this.__adaptAux(this.aux) if aux else None;
+                aux = this.settings["show-aux"] and len(this.__auxArrays) != 0;
+
+                new dynamic adapted;
+                if aux {
+                    this.__garbageCollect();
+                    adapted = this.__adaptAux(this.__auxArrays);
+                } else {
+                    adapted = None;
+                }
 
                 $call adaptIndices
 
@@ -1279,7 +1305,6 @@ new class SortingVisualizer {
         if this.__prepared {
             this.resetAux();
             this.resetAdaptAux();
-            this.drawFullArray();
             this.renderStats();
         }
 
@@ -1331,20 +1356,17 @@ new class SortingVisualizer {
             result.append(item);
         }
 
+        this.__addAux(result, 0);
+
         return result;
     }
 
-    new method setInvisibleArray(array) {
-        for i in range(len(array)) {
-            array[i].idx = None;
-        }
-    }
+    new method __addAux(array, refmod) {
+        this.__auxArrays.append(array);
+        this.__baseRefCnts.append(sys.getrefcount(array) - 2 - refmod);
 
-    new method setAux(array) {
-        this.aux = array;
-
-        if this.settings["show-aux"] {
-            new dynamic adapted = this.__adaptAux(this.aux);
+        if len(this.__auxArrays) == 1 && this.settings["show-aux"] {
+            new dynamic adapted = this.__adaptAux(this.__auxArrays);
 
             this.getAuxMax(adapted);
 
@@ -1361,11 +1383,56 @@ new class SortingVisualizer {
         }
     }
 
+    new method addAux(array) {
+        this.__addAux(array, 1);
+    }
+
+    new method __garbageCollect() {
+        new dynamic newAuxs = [],
+                    newRefs = [];
+        static: new int i;
+        for i = 0; i < len(this.__auxArrays); i++ {
+            if sys.getrefcount(this.__auxArrays[i]) > this.__baseRefCnts[i] {
+                newAuxs.append(this.__auxArrays[i]);
+                newRefs.append(this.__baseRefCnts[i]);
+            } else {
+                this.__auxArrays[i].clear();
+            }
+        }
+
+        this.__auxArrays   = newAuxs;
+        this.__baseRefCnts = newRefs;
+
+        if len(this.__auxArrays) == 0 {
+            this.__auxMode    = False;
+            this.__visual.onAuxOff();
+            this.drawFullArray();
+        }
+    }
+
+    new method removeAux(aux) {
+        static: new int i;
+        for i = 0; i < len(this.__auxArrays); i++ {
+            if aux is this.__auxArrays[i] {
+                this.__baseRefCnts[i] = sys.getrefcount(this.__auxArrays[i]);
+                break;
+            }
+        }
+    }
+
+    new method setInvisibleArray(array) {
+        for i in range(len(array)) {
+            array[i].idx = None;
+        }
+    }
+
     new method resetAux() {
-        this.aux = None;
+        this.__auxArrays.clear();
+        this.__baseRefCnts.clear();
         this.__dynamicAux = False;
         this.__auxMode    = False;
         this.__visual.onAuxOff();
+        this.drawFullArray();
     }
 
     new method __loadThreadAndRun(thread, initGraph = False) {

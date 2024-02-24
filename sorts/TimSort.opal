@@ -5,30 +5,9 @@ new class TimSort {
             MIN_GALLOP = 7,
             INITIAL_TMP_STORAGE_LENGTH = 256;
 
-    new method __adaptAux(array) {
-        return array + this.runBase + this.runLen;
-    }
-
-    new method __adaptIdx(idx, aux) {
-        if aux is this.runBase {
-            return idx + len(this.tmp);
-        } elif aux is this.runLen {
-            return idx + len(this.tmp) + len(this.runBase);
-        }
-
-        return idx;
-    }
-
     new method __init__(a, length) {
         this.a = a;
         this.len = length;
-
-        this.tmp = sortingVisualizer.createValueArray((this.len >> 1)
-                                                   if (this.len < 2 * TimSort.INITIAL_TMP_STORAGE_LENGTH)
-                                                   else TimSort.INITIAL_TMP_STORAGE_LENGTH);
-
-        this.minGallop = TimSort.MIN_GALLOP;
-        this.stackSize = 0;
 
         new int stackLen = 5 if (this.len < 120)
                              else (10 if (this.len < 1542)
@@ -38,8 +17,12 @@ new class TimSort {
         this.runBase = sortingVisualizer.createValueArray(stackLen);
         this.runLen  = sortingVisualizer.createValueArray(stackLen);
 
-        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
-        sortingVisualizer.setAux(this.tmp);
+        this.tmp = sortingVisualizer.createValueArray((this.len >> 1)
+                                                   if (this.len < 2 * TimSort.INITIAL_TMP_STORAGE_LENGTH)
+                                                   else TimSort.INITIAL_TMP_STORAGE_LENGTH);
+
+        this.minGallop = TimSort.MIN_GALLOP;
+        this.stackSize = 0;
     }
 
     new method sort(a, lo, hi) {
@@ -567,7 +550,6 @@ new class TimSort {
 
             new list newArray = sortingVisualizer.createValueArray(newSize);
             this.tmp = newArray;
-            sortingVisualizer.setAux(this.tmp);
         }
         return this.tmp;
     }

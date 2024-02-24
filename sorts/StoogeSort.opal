@@ -4,7 +4,7 @@ new function stoogeSort(array, a, b) {
     compSwap(array, a, b);
 
     if b - a + 1 >= 3 {
-        new int t = (b - a + 1) / 3;
+        new int t = (b - a + 1) // 3;
 
         stoogeSort(array, a, b - t);
         stoogeSort(array, a + t, b);

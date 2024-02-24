@@ -258,20 +258,6 @@ new class ShelfSort {
         }
     }
 
-    new classmethod __adaptAux(array) {
-        return array + this.indicesA + this.indicesB;
-    }
-
-    new classmethod __adaptIdx(idx, aux) {
-        if aux is this.scratch {
-            return idx;
-        } elif aux is this.indicesA {
-            return idx + len(this.scratch);
-        }
-
-        return idx + len(this.scratch) + len(this.indicesA);
-    }
-
     new classmethod sort(array, start, size) {
         new int logSize = 0,
                       v = size;
@@ -289,8 +275,6 @@ new class ShelfSort {
         this.scratch  = sortingVisualizer.createValueArray(scratchSize);
         this.indicesA = sortingVisualizer.createValueArray(scratchSize);
         this.indicesB = sortingVisualizer.createValueArray(scratchSize);
-        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
-        sortingVisualizer.setAux(this.scratch);
 
         new int sortedZoneSize = ShelfSort.SMALL_SORT, runLen, i;
         for ; sortedZoneSize < scratchSize // 2; sortedZoneSize *= 2 {
@@ -298,15 +282,13 @@ new class ShelfSort {
             sortedZoneSize *= 2;
 
             for i = 0; i < size; i += sortedZoneSize * 2 {
-                static {
-                    new int p1 = start + i,
-                            p2 = start + i + runLen,
-                            p3 = p2 + runLen,
-                            p4 = p3 + runLen;
+                new int p1 = start + i,
+                        p2 = start + i + runLen,
+                        p3 = p2 + runLen,
+                        p4 = p3 + runLen;
 
-                    new bint less1 = array[p2 - 1] <= array[p2],
-                             less2 = array[p4 - 1] <= array[p4];
-                } 
+                new bool less1 = array[p2 - 1] <= array[p2],
+                         less2 = array[p4 - 1] <= array[p4];
 
                 if !less1 {
                     this.mergePair(array, p1, p2, this.scratch, 0, runLen - 1);

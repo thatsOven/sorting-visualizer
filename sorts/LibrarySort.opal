@@ -38,20 +38,6 @@ new class LibrarySort {
         }
     }
 
-    new method __adaptAux(array) {
-        return array + this.cnts + this.locs;
-    }
-
-    new method __adaptIdx(idx, aux) {
-        if aux is this.temp {
-            return idx;
-        } elif aux is this.cnts {
-            return idx + len(this.temp);
-        }
-
-        return idx + len(this.temp) + len(this.cnts);
-    }
-
     new method sort(array, length) {
         if length < 32 {
             binaryInsertionSort(array, 0, length);
@@ -66,8 +52,6 @@ new class LibrarySort {
         this.temp = sortingVisualizer.createValueArray(length);
         this.cnts = sortingVisualizer.createValueArray(maxLevel + 2);
         this.locs = sortingVisualizer.createValueArray(length - maxLevel);
-        sortingVisualizer.setAdaptAux(this.__adaptAux, this.__adaptIdx);
-        sortingVisualizer.setAux(this.temp);
 
         for i = j, k = 0; i < length; i++ {
             if this.R * j == i {
