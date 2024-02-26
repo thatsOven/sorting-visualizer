@@ -1522,7 +1522,7 @@ new class SortingVisualizer {
     $include os.path.join(HOME_DIR, "threadBuilder", "BuilderEvaluator.opal")
 
     new method __finalizeRender() {
-        if this.settings["render"] && this.__audio is not None {
+        if this.settings["render"] {
             new dynamic cwd;
             if this.__currFrame != 0 {
                 cwd = this.__videoGen();
