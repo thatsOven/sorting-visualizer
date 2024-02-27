@@ -1,5 +1,5 @@
 package opal: import *;
-$args ["--nostatic", "--type-mode", "none"]
+$args ["--nostatic", "--type-mode", "none", "--nocompile"]
 $define DEBUG_MODE False
 
 new int FREQUENCY_SAMPLE        = 48000,
