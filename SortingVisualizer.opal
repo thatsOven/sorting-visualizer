@@ -1,5 +1,5 @@
 package opal: import *;
-$args ["--nostatic", "--type-mode", "none", "--nocompile"]
+$args ["--nostatic", "--type-mode", "none"]
 $define DEBUG_MODE False
 
 new int FREQUENCY_SAMPLE        = 48000,
@@ -15,7 +15,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.2.27";
+new str VERSION = "2024.2.28";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -1363,7 +1363,14 @@ new class SortingVisualizer {
 
     new method __addAux(array, refmod) {
         this.__auxArrays.append(array);
-        this.__baseRefCnts.append(sys.getrefcount(array) - 2 - refmod);
+
+        $comptime
+            if CY_COMPILING {
+                $export this.__baseRefCnts.append(sys.getrefcount(array) - 1 - refmod);
+            } else {
+                $export this.__baseRefCnts.append(sys.getrefcount(array) - 2 - refmod);
+            }
+        $end
 
         if len(this.__auxArrays) == 1 && this.settings["show-aux"] {
             new dynamic adapted = this.__adaptAux(this.__auxArrays);
