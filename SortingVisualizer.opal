@@ -1,5 +1,5 @@
 package opal: import *;
-$args ["--nostatic", "--type-mode", "none"]
+$args ["--nostatic", "--type-mode", "none", "--require", "2024.3.3"]
 $define DEBUG_MODE False
 
 new int FREQUENCY_SAMPLE        = 48000,
@@ -1364,12 +1364,10 @@ new class SortingVisualizer {
     new method __addAux(array, refmod) {
         this.__auxArrays.append(array);
 
-        $comptime
-            if CY_COMPILING {
-                $export this.__baseRefCnts.append(sys.getrefcount(array) - 1 - refmod);
-            } else {
-                $export this.__baseRefCnts.append(sys.getrefcount(array) - 2 - refmod);
-            }
+        $if CY_COMPILING
+            this.__baseRefCnts.append(sys.getrefcount(array) - 1 - refmod);
+        $else
+            this.__baseRefCnts.append(sys.getrefcount(array) - 2 - refmod);
         $end
 
         if len(this.__auxArrays) == 1 && this.settings["show-aux"] {
