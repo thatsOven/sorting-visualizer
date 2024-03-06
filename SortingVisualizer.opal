@@ -1356,19 +1356,18 @@ new class SortingVisualizer {
             result.append(item);
         }
 
-        this.__addAux(result, 0);
-
+        $if CY_COMPILING
+            this.__addAux(result, 1);
+        $else
+            this.__addAux(result, 2);
+        $end
+        
         return result;
     }
 
     new method __addAux(array, refmod) {
         this.__auxArrays.append(array);
-
-        $if CY_COMPILING
-            this.__baseRefCnts.append(sys.getrefcount(array) - 1 - refmod);
-        $else
-            this.__baseRefCnts.append(sys.getrefcount(array) - 2 - refmod);
-        $end
+        this.__baseRefCnts.append(sys.getrefcount(array) - refmod);
 
         if len(this.__auxArrays) == 1 && this.settings["show-aux"] {
             new dynamic adapted = this.__adaptAux(this.__auxArrays);
@@ -1389,7 +1388,11 @@ new class SortingVisualizer {
     }
 
     new method addAux(array) {
-        this.__addAux(array, 1);
+        $if CY_COMPILING
+            this.__addAux(array, 1);
+        $else
+            this.__addAux(array, 3);
+        $end
     }
 
     new method __garbageCollect() {
