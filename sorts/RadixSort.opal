@@ -9,14 +9,15 @@ new class RadixSort {
             this.base = base;
         }
         this.arrayLen = None;
+        this.offs = 0;
     }
 
     new method getHighestPower(array, a, b) {
         return findHighestPower(array, a, b, this.base);
     }
 
-    new method adaptAux(_) {
-        new list result = list(chain.from_iterable(this.aux));
+    new method adaptAuxLSD(arrays) {
+        new list result = list(chain.from_iterable(arrays[0]));
 
         repeat this.arrayLen - len(result) {
             result.append(Value(0));
@@ -60,7 +61,7 @@ new class RadixSort {
 
     new method auxWrite(aux, dig, array, i) {
         new Value val = array[i].copy();
-        val.setAux(this.aux);
+        val.setAux(aux);
 
         new dynamic sTime = default_timer();
         aux[dig].append(val);
@@ -73,27 +74,51 @@ new class RadixSort {
 
         new int hPow = this.getHighestPower(array, a, b);
 
-        this.aux = [[] for _ in range(this.base)];
+        new list aux = [[] for _ in range(this.base)];
 
-        sortingVisualizer.setAdaptAux(this.adaptAux);
-        sortingVisualizer.addAux(this.aux);
+        sortingVisualizer.setAdaptAux(this.adaptAuxLSD);
+        sortingVisualizer.addAux(aux);
 
         for p in range(hPow + 1) {
             for i = a; i < b; i++ {
                 new int dig = array[i].readDigit(p, this.base);
-                this.auxWrite(this.aux, dig, array, i);
+                this.auxWrite(aux, dig, array, i);
             }
 
-            this.transcribe(array, a, this.aux);
+            this.transcribe(array, a, aux);
         }
     }
 
-    new method MSD(array, a, b, p = None) {
-        this.arrayLen = b - a;
+    new method adaptAuxMSD(arrays) {
+        new list result = list(chain.from_iterable(list(chain.from_iterable(arrays))));
 
+        if len(result) == 0 {
+            result = [Value(0)];
+            result[0].idx = 0;
+            result[0].stabIdx = 0;
+            result[0].setAux(result);
+            return result;
+        }
+
+        for i in range(len(result)) {
+            if result[i].idx is None {
+                result[i].idx = i;
+                result[i].stabIdx = i;
+                result[i].setAux(result);
+            }
+        }
+
+        return result;
+    }
+
+    new method adaptIdx(idx, aux) {
+        return this.offs + idx;
+    }
+
+    new method MSD(array, a, b, p = None) {
         if p is None {
             p = this.getHighestPower(array, a, b);
-            sortingVisualizer.setAdaptAux(this.adaptAux);
+            sortingVisualizer.setAdaptAux(this.adaptAuxMSD, this.adaptIdx);
         }
 
         if a >= b or p < -1 {
@@ -101,7 +126,6 @@ new class RadixSort {
         }
 
         new list aux = [[] for _ in range(this.base)];
-        this.aux = aux;
         sortingVisualizer.addAux(aux);
 
         for i = a; i < b; i++ {
@@ -110,6 +134,7 @@ new class RadixSort {
         }
 
         this.transcribe(array, a, aux, False);
+        this.offs += b - a;
 
         new int sum_ = 0;
         for i in range(len(aux)) {
@@ -117,6 +142,7 @@ new class RadixSort {
 
             sum_ += len(aux[i]);
             sortingVisualizer.writes += len(aux[i]);
+            this.offs -= len(aux[i]);
             aux[i].clear();
         }
     }
