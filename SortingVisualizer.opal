@@ -1388,11 +1388,7 @@ new class SortingVisualizer {
     }
 
     new method addAux(array) {
-        $if CY_COMPILING
-            this.__addAux(array, 1);
-        $else
-            this.__addAux(array, 3);
-        $end
+        this.__addAux(array, 3);
     }
 
     new method __garbageCollect() {
