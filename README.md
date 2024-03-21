@@ -3,7 +3,7 @@
 
 to run, open or compile `SortingVisualizer.opal` using the opal compiler.
 
-here you can find a video about the program: https://youtu.be/qzZ2kDkm28Q
+here you can find a video about the program: https://youtu.be/iZjOP4Htz3c
 
 # Installation
 To properly run the visualizer, you will need to install these Python modules:
@@ -25,7 +25,7 @@ If set to `True`, additional information about the visualizer's state will be vi
 ### Render mode
 If set to `True`, the visualizer will generate videos instead of visualizing algorithms in real-time. A preview of the video will be visualized on the screen while it's being made, at a lower framerate.
 ### Lazy auxiliary visualization
-The visualizer usually checks if the auxiliary array changed in size, or its maximum element changed, so that the visual can re-compute its data accordingly. If lazy auxiliary visualization is set to `False`, these checks are disabled, that is, the visualizer will assume the maximum element of the auxiliary array and its length are constant.
+The visualizer checks if the auxiliary array changed in size, or its maximum element changed, in specific scenarios, so that the visual can re-compute its data accordingly. If lazy auxiliary visualization is set to `False`, these checks are disabled, that is, the visualizer will assume the maximum element of the auxiliary array and its length are constant.
 ### Lazy rendering
 Real-time visualization will always try to use `fast` variants of the given visual style for performance reasons, while render mode always uses standard variants, which are slower but higher quality. If lazy rendering is set to `True`, the visualizer will use `fast` variants of visual styles for render mode too. This does not result in quality loss in certain cases, like with the bar graph-like visual styles under a certain array size.
 
@@ -76,6 +76,7 @@ An `HighlightInfo` object contains more information for each highlight. Internal
 To create a new array, the visualizer provides  `sortingVisualizer.createValueArray(length: int) -> list[Value]`, which is pre-filled with already configured `Value`s. This also automatically shows the array in the visualizer. To remove an array from visualization, you can use `sortingVisualizer.removeAux(array: list)`. In case the `createValueArray` function is not used to create an array, but you still want to visualize it, you can use `sortingVisualizer.addAux(array: list)` and, if it's not an array of values, you can provide adaptation functions using `sortingVisualizer.setAdaptAux(fn, idxFn = None)`: 
 - `fn(arrays: list[list]) -> list[Value]`: set this function to properly convert your array in a list of `Value`s that the visualizer can work with;
 - `idxFn(idx: int, aux: list) -> int`: this function can be set to adapt the highlighted indices to the resulting `list[Value]` for visualization purposes.
+
 Deleting an array, or making it go out of scope, while the array is being visualized, will automatically remove the array from the visualization thanks to the dedicated garbage collector.
 You can also disable highlights from a given array using the `sortingVisualizer.setInvisibleArray(array: list[Value])` method.
 ## Using rotations and pivot selections provided by the visualizer
@@ -212,7 +213,7 @@ The `Visual` class contains two abstract methods:
 - `draw(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: draws the main array. `indices` contains the list of highlighted indices, each mapped to a color. If the mapped color is `None` the visual should draw those indices like they're not highlighted;
 - `drawAux(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: like `draw`, but draws the aux array.
 
-The class also provides three methods that get called in specific scenarios and can be overrided. By default, they do nothing:
+The class also provides three methods that get called in specific scenarios and can be overridden. By default, they do nothing:
 - `prepare()`: precomputes data for the visual style;
 - `onAuxOn(length)`: gets called when aux is turned on or constants are to recompute. Useful to prepare data;
 - `onAuxOff()`: gets called when aux mode is turned off. Useful to restore old values.
