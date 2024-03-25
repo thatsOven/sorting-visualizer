@@ -21,16 +21,16 @@ new class RainbowBarGraph: LineVisual {
     new method draw(array, indices) {
         static: new int oldIdx, i, j;
 
-        new dynamic pos = this.resolution.copy(),
+        new dynamic pos = sortingVisualizer.graphics.resolution.copy(),
                     end = pos.copy(), idx;
         pos.x = 0;
         end.x = 0;
 
-        if len(array) > this.resolution.x {
+        if len(array) > sortingVisualizer.graphics.resolution.x {
             oldIdx = 0;
-            unchecked: repeat this.resolution.x {
+            unchecked: repeat sortingVisualizer.graphics.resolution.x {
                 idx = int(Utils.translate(
-                    pos.x, 0, this.resolution.x, 
+                    pos.x, 0, sortingVisualizer.graphics.resolution.x, 
                     0, len(array)
                 ));
 
@@ -87,11 +87,11 @@ new class RainbowBarGraph: LineVisual {
         new dynamic drawn = {};
 
         for idx in indices {
-            new dynamic pos = this.resolution.copy(), lineEnd;
+            new dynamic pos = sortingVisualizer.graphics.resolution.copy(), lineEnd;
 
             pos.x = Utils.translate(
                 idx, 0, len(array), 0, 
-                this.resolution.x // this.lineSize
+                sortingVisualizer.graphics.resolution.x // this.lineSize
             ) * this.lineSize + (this.lineSize // 2);
 
             if pos.x in drawn {
