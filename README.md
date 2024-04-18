@@ -2,6 +2,7 @@
  A sorting algorithms visualizer written in opal
 
 to run, open or compile `SortingVisualizer.opal` using the opal compiler.
+
 to build a release, use `opal release build.iproj`.
 
 here you can find a video about the program: https://youtu.be/iZjOP4Htz3c
