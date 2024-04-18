@@ -1369,7 +1369,7 @@ new class SortingVisualizer {
         this.__auxArrays.append(array);
         this.__baseRefCnts.append(sys.getrefcount(array) - refmod);
 
-        if len(this.__auxArrays) == 1 && this.settings["show-aux"] {
+        if len(this.__auxArrays) >= 1 && this.settings["show-aux"] {
             new dynamic adapted = this.__adaptAux(this.__auxArrays);
 
             this.getAuxMax(adapted);

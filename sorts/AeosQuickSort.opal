@@ -216,7 +216,7 @@ new class AeosQuickSort {
 @Sort(
     "Quick Sorts",
     "Aeos QuickSort",
-    "Aeos Quick",
+    "Aeos Quick"
 );
 new function aeosQuicksortRun(array) {
     AeosQuickSort().sort(array, 0, len(array));
