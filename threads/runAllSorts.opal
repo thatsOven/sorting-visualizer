@@ -180,5 +180,5 @@ runAllSort(1024, "Static Sort",        3);
 
 ct = "Impractical Sorts";
 runAllSort(64, "Stooge Sort", 7);
-runAllSort(5,    "Bogo Sort", 0.5);
-runAllSort(5,    "Bozo Sort", 0.5);
+runAllSort(8,    "Bogo Sort", 5);
+runAllSort(8,    "Bozo Sort", 5);
