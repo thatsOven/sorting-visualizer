@@ -162,7 +162,7 @@ runAllSort(2048, "Helium Sort",   3, 0);
 runAllSort(1024, "Hydrogen Sort", 2);
 runAllSort(2048, "Kota Sort",     7, rotations.index("Cycle Reverse"));
 runAllSort(1024, "Ecta Sort",     3);
-runAllSort(2048, "Lithium Sort",  4, rotations.index("Helium"));
+runAllSort(2048, "Lithium Sort",  4);
 
 
 ct = "Partition Sorts";

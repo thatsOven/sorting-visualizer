@@ -59,16 +59,54 @@ new class LithiumSort {
             MAX_STRAT4_UNIQUE  = 8,
             SMALL_MERGE        = 16;
 
-    new method __init__(rot = None) {
-        if rot is None {
-            this.rotate = sortingVisualizer.getRotation(
-                id = sortingVisualizer.getUserSelection(
-                    [r.name for r in sortingVisualizer.rotations],
-                    "Select rotation algorithm (default: Helium)"
-                )
-            ).indexedFn;
+    new method __init__() {
+        this.bufLen = 0;
+    }
+
+    new method rotate(array, a, m, b) {
+        new int rl   = b - m,
+                ll   = m - a,
+                bl   = this.bufLen,
+                min_ = bl if rl != ll && min(bl, rl, ll) > LithiumSort.SMALL_MERGE else 1;
+
+        while ll > min_ and rl > min_ {
+            if rl < ll {
+                blockSwap(array, a, m, rl);
+                a  += rl;
+                ll -= rl;
+            } else {
+                b  -= ll;
+                rl -= ll;
+                backwardBlockSwap(array, a, b, ll);
+            }
+        }
+
+        if rl == 1 {
+            insertToLeft(array, m, a);
+        } elif ll == 1 {
+            insertToRight(array, a, b - 1);
+        }
+
+        if min == 1 || rl <= 1 || ll <= 1 {
+            return;
+        }            
+        
+        if rl < ll {
+            backwardBlockSwap(array, m, this.bufPos, rl);
+
+            for i = m + rl - 1; i >= a + rl; i-- {
+                array[i].swap(array[i - rl]);
+            }
+
+            backwardBlockSwap(array, this.bufPos, a, rl);
         } else {
-            this.rotate = sortingVisualizer.getRotation(name = rot).indexedFn;
+            blockSwap(array, a, this.bufPos, ll);
+
+            for i = a; i < b - ll; i++ {
+                array[i].swap(array[i + ll]);
+            }
+
+            blockSwap(array, this.bufPos, b - ll, ll);
         }
     }
 
@@ -664,6 +702,7 @@ new class LithiumSort {
 
         this.firstMerge(array, a, a + r, b, strat3);
 
+        this.bufLen = 0;
         binaryInsertionSort(array, b, e);
         
         r = lrBinarySearch(array, a, b, array[e - 1], False);
