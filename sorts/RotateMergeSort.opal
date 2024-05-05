@@ -121,8 +121,7 @@ new function rotateMergeSortRun(array) {
 @Sort(
     "Merge Sorts",
     "Rotate Merge Sort (Parallel)",
-    "Rotate Merge (Parallel)",
-    enabled = not CY_COMPILING
+    "Rotate Merge (Parallel)"
 );
 new function rotateMergeSortRun(array) {
     sortingVisualizer.runParallel(RotateMergeSort().sortParallel, array, 0, len(array));

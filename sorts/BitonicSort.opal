@@ -88,8 +88,7 @@ new function bitonicSortRun(array) {
 @Sort(
     "Concurrent Sorts",
     "Bitonic Sort (Parallel)",
-    "Bitonic Sort (Parallel)",
-    enabled = not CY_COMPILING
+    "Bitonic Sort (Parallel)"
 );
 new function bitonicSortRun(array) {
     sortingVisualizer.runParallel(BitonicSort.sortParallel, array, 0, len(array), True);

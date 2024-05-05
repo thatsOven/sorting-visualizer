@@ -98,8 +98,7 @@ new function LLQuickSortRun(array) {
 @Sort(
     "Quick Sorts",
     "Quick Sort - Left/Right Pointers (Parallel)",
-    "LR Quick Sort (Parallel)",
-    enabled = not CY_COMPILING
+    "LR Quick Sort (Parallel)"
 );
 new function LRQuickSortRun(array) {
     sortingVisualizer.runParallel(QuickSort().LRQuickSortParallel, array, 0, len(array));
@@ -108,8 +107,7 @@ new function LRQuickSortRun(array) {
 @Sort(
     "Quick Sorts",
     "Quick Sort - Left/Left Pointers (Parallel)",
-    "LL Quick Sort (Parallel)",
-    enabled = not CY_COMPILING
+    "LL Quick Sort (Parallel)"
 );
 new function LLQuickSortRun(array) {
     sortingVisualizer.runParallel(QuickSort().LLQuickSortParallel, array, 0, len(array));

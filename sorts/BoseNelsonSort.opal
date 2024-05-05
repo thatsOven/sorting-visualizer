@@ -83,8 +83,7 @@ new function boseNelsonSortRun(array) {
 @Sort(
     "Concurrent Sorts",
     "Bose Nelson Sort (Parallel)",
-    "Bose Nelson (Parallel)",
-    enabled = not CY_COMPILING
+    "Bose Nelson (Parallel)"
 );
 new function boseNelsonSortRun(array) {
     sortingVisualizer.runParallel(BoseNelsonSort.sortParallel, array, 0, len(array));
