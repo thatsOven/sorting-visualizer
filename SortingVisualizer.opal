@@ -1151,44 +1151,54 @@ new class SortingVisualizer {
         this.highlights.append(HighlightInfo(index, aux, None));
     }
 
-    new method createThread(fn, *args, **kwargs) {
-        return threading.Thread(target = lambda: fn(*args, **kwargs), daemon = True);
-    }
+    $if CY_COMPILING
+        new method createThread(*args, **kwargs) {
+            throw NotImplementedError;
+        }
 
-    new method runParallel(fn, *args, **kwargs) {
-        this.__parallel   = True;
-        this.__mainThread = threading.get_ident();
+        new method runParallel(*args, **kwargs) {
+            throw NotImplementedError;
+        }
+    $else
+        new method createThread(fn, *args, **kwargs) {
+            return threading.Thread(target = lambda: fn(*args, **kwargs), daemon = True);
+        }
 
-        new dynamic running   = True,
-                    exception = None;
+        new method runParallel(fn, *args, **kwargs) {
+            this.__parallel   = True;
+            this.__mainThread = threading.get_ident();
 
-        new function __fn() {
-            external running, exception;
+            new dynamic running   = True,
+                        exception = None;
 
-            try {
-                fn(*args, **kwargs);
-            } catch Exception as e {
-                exception = e;
+            new function __fn() {
+                external running, exception;
+
+                try {
+                    fn(*args, **kwargs);
+                } catch Exception as e {
+                    exception = e;
+                }
+                
+                running = False;
             }
-            
-            running = False;
+
+            new dynamic t = threading.Thread(target = __fn, daemon = True);
+            t.start();
+
+            while running {
+                this.multiHighlightAdvanced([]);
+            }
+
+            t.join();
+
+            if exception is not None {
+                throw exception;
+            }
+
+            this.__parallel = False;
         }
-
-        new dynamic t = threading.Thread(target = __fn, daemon = True);
-        t.start();
-
-        while running {
-            this.multiHighlightAdvanced([]);
-        }
-
-        t.join();
-
-        if exception is not None {
-            throw exception;
-        }
-
-        this.__parallel = False;
-    }
+    $end
 
     new method sweep(a, b, color, hList = None) {
         this.renderStats();
