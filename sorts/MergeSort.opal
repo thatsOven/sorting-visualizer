@@ -102,7 +102,8 @@ new function mergeSortRun(array) {
 @Sort(
     "Merge Sorts",
     "Merge Sort (Parallel)",
-    "Merge Sort (Parallel)"
+    "Merge Sort (Parallel)",
+    enabled = not CY_COMPILING
 );
 new function mergeSortRun(array) {
     sortingVisualizer.runParallel(MergeSort(len(array)).mergeSortParallel, array, 0, len(array));

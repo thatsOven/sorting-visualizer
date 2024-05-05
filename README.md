@@ -3,7 +3,7 @@
 
 to run, open or compile `SortingVisualizer.opal` using the opal compiler.
 
-to build a release, use `opal release build.iproj`.
+to build a release, use `opal pyrelease build.iproj`, or `opal release build.iproj`, which creates a faster release that has no threading support.
 
 here you can find a video about the program: https://youtu.be/iZjOP4Htz3c
 
@@ -203,10 +203,10 @@ new function myDistribution(array, length) {
 }
 ```
 ## Working with threads
-The visualizer usually operates in a sequential manner, so, to properly visualize parallel sorts, it's sufficient to call the algorithm's main function in `sortingVisualizer.runParallel(fn: Callable, *args, **kwargs)`, so that the visualizer can create a separate sort thread and run the visualization code on the main thread (since pygame has to run on the main thread), as well as properly handle highlighting. To create a thread inside of such an algorithm, `sortingVisualizer.createThread(fn: Callable, *args, **kwargs)` should be used to avoid program freezing. This is equivalent to creating a daemon thread, so, if a thread needs to be created separately, it should also be marked as a daemon. 
+The visualizer usually operates in a sequential manner, so, to properly visualize parallel sorts, it's sufficient to call the algorithm's main function in `sortingVisualizer.runParallel(fn: Callable, *args, **kwargs)`, so that the visualizer can create a separate sort thread and run the visualization code on the main thread (since pygame has to run on the main thread), as well as properly handle highlighting. To create a thread inside of such an algorithm, `sortingVisualizer.createThread(fn: Callable, *args, **kwargs)` should be used to avoid program freezing. This is equivalent to creating a daemon thread, so, if a thread needs to be created separately, it should also be marked as a daemon. Note that this feature does not work when compiling the program in Cython mode (using `opal pyxcompile`, `opal compile`, or `opal release`).
 
 ## Adding visual styles
-To add a visual style, a class needs to be created and inherit from the `Visual` class. That way, visuals are automatically added. Said file needs to be added in the `visuals` folder.  Example:
+To add a visual style, a class needs to be created and inherit from the `Visual` class. That way, visuals are automatically added. Said file needs to be added in the `visuals` folder. Example:
 ```
 new class MyVisual: Visual {
 	new method __init__() {
