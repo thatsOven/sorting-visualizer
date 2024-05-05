@@ -84,10 +84,12 @@ new class SortingVisualizer {
 
     new method __init__() {
         this.array = [];
-        this.highlights = [];
         this.__auxArrays   = [];
         this.__baseRefCnts = [];
         this.__verifyArray = None;
+
+        this.highlights     = [];
+        this.highlightsLock = threading.Lock();
 
         this.distributions = [];
         this.shuffles      = [];
@@ -138,9 +140,8 @@ new class SortingVisualizer {
         this.__audioPtr      = 0;
         this.__audio         = None;
 
-        this.__parallel       = False;
-        this.__mainThread     = None;
-        this.__highlightsLock = threading.Lock();
+        this.__parallel   = False;
+        this.__mainThread = None;
 
         this.__loadSettings();
 
@@ -822,10 +823,7 @@ new class SortingVisualizer {
 
     $macro handleThreadedHighlight
         if this.__parallel && threading.get_ident() != this.__mainThread {
-            with this.__highlightsLock {
-                this.queueMultiHighlightAdvanced(hList);
-            }
-            
+            this.queueMultiHighlightAdvanced(hList);
             time.sleep(max(this.__sleep + this.__tmpSleep, MIN_SLEEP));
             return;
         }
@@ -1140,19 +1138,27 @@ new class SortingVisualizer {
     }
 
     new method queueMultiHighlightAdvanced(hList) {
-        this.highlights += hList;
+        with this.highlightsLock {
+            this.highlights += hList;
+        }
     }
 
     new method queueHighlightAdvanced(hInfo) {
-        this.highlights.append(hInfo);
+        with this.highlightsLock {
+            this.highlights.append(hInfo);
+        }
     }
 
     new method queueMultiHighlight(hList, aux = None) {
-        this.highlights += [HighlightInfo(x, aux, None) for x in hList];
+        with this.highlightsLock {
+            this.highlights += [HighlightInfo(x, aux, None) for x in hList];
+        }
     }
 
     new method queueHighlight(index, aux = None) {
-        this.highlights.append(HighlightInfo(index, aux, None));
+        with this.highlightsLock {
+            this.highlights.append(HighlightInfo(index, aux, None));
+        }
     }
 
     new method createThread(fn, *args, **kwargs) {
