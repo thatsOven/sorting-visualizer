@@ -7,7 +7,8 @@ new int FREQUENCY_SAMPLE        = 48000,
         NATIVE_FRAMERATE        = 120,
         RENDER_FRAMERATE        = 60,
         PREVIEW_MOD             = 5,
-        MAX_UNCOMPRESSED_FRAMES = 2048;
+        MAX_UNCOMPRESSED_FRAMES = 2048,
+        POLYPHONY_LIMIT         = 8;
 
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE,
@@ -15,11 +16,11 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.5.4";
+new str VERSION = "2024.5.5";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
-       builtins;
+       builtins, threading;
 package timeit:      import default_timer;
 package functools:   import total_ordering;
 package itertools:   import chain;
@@ -83,6 +84,7 @@ new class SortingVisualizer {
 
     new method __init__() {
         this.array = [];
+        this.highlights = [];
         this.__auxArrays   = [];
         this.__baseRefCnts = [];
         this.__verifyArray = None;
@@ -135,6 +137,9 @@ new class SortingVisualizer {
         this.__iVideo        = 0;
         this.__audioPtr      = 0;
         this.__audio         = None;
+
+        this.__parallel   = False;
+        this.__mainThread = None;
 
         this.__loadSettings();
 
@@ -733,6 +738,10 @@ new class SortingVisualizer {
     }
 
     new method __getWaveformFromIdx(i, adapted) {
+        if i.silent {
+            return;
+        }
+
         new dynamic tmp;
 
         if i.aux is not None && len(this.__auxArrays) != 0 {
@@ -749,7 +758,7 @@ new class SortingVisualizer {
     }
 
     $macro playSound(hList, adapted)
-        this.graphics.playWaveforms([this.__getWaveformFromIdx(x, adapted) for x in hList]);
+        this.graphics.playWaveforms([this.__getWaveformFromIdx(x, adapted) for x in hList[:min(len(hList), POLYPHONY_LIMIT)]]);
     $end
 
     new method __partitionIndices(hList) {
@@ -810,9 +819,19 @@ new class SortingVisualizer {
         }
     $end
 
+    $macro handleThreadedHighlight
+        if this.__parallel && threading.get_ident() != this.__mainThread {
+            this.queueMultiHighlightAdvanced(hList);
+            time.sleep(max(this.__sleep + this.__tmpSleep, MIN_SLEEP));
+            return;
+        }
+    $end
+
     new method multiHighlightAdvanced(hList) {
+        $call handleThreadedHighlight
+
         new dynamic sTime = default_timer();
-        hList = [x for x in hList if x is not None];
+        hList = [x for x in (hList + this.highlights) if x is not None];
         hList = [x for x in hList if x.idx is not None];
 
         static {
@@ -844,7 +863,12 @@ new class SortingVisualizer {
                     hList = this.__partitionIndices(hList)[0];
                 }
 
-                this.__visual.fastDraw(this.array, hList);
+                if this.__parallel {
+                    this.graphics.fill((0, 0, 0));
+                    this.__visual.draw(this.array, hList);
+                } else {
+                    this.__visual.fastDraw(this.array, hList);
+                }
 
                 if aux {
                     $call auxSect
@@ -854,12 +878,15 @@ new class SortingVisualizer {
                 this.renderStats();
 
                 $call update
+                
+                if !this.__parallel {
+                    for highlight in hList {
+                        hList[highlight] = None;
+                    }
 
-                for highlight in hList {
-                    hList[highlight] = None;
+                    this.__visual.fastDraw(this.array, hList | this.__forceLoadedIndices);
                 }
-
-                this.__visual.fastDraw(this.array, hList | this.__forceLoadedIndices);
+                
                 this.__soundSample = this.__currSample;
 
                 new dynamic tTime = max(this.__sleep + this.__tmpSleep, MIN_SLEEP) - default_timer() + sTime;
@@ -868,7 +895,7 @@ new class SortingVisualizer {
                 }
                 
                 this.__tmpSleep = 0;
-            } else {
+            } elif !this.__parallel {
                 hList = this.__partitionIndices(hList)[0];
 
                 for highlight in hList {
@@ -882,6 +909,7 @@ new class SortingVisualizer {
         }
 
         this.__speedCounter++;
+        this.highlights.clear();
     }
 
     new method __videoGen() {
@@ -994,9 +1022,11 @@ new class SortingVisualizer {
     }
 
     new method __renderedHighlight(hList) {
-        hList = [x for x in hList if x is not None];
+        $call handleThreadedHighlight
+
+        hList = [x for x in (hList + this.highlights) if x is not None];
         hList = [x for x in hList if x.idx is not None];
-        new dynamic lazy = this.settings["lazy-render"];
+        new dynamic lazy = this.settings["lazy-render"] && !this.__parallel;
 
         this.graphics.updateEvents();
 
@@ -1025,7 +1055,7 @@ new class SortingVisualizer {
                 this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
                 
                 new dynamic currWave = this.__getWaveformFromIdx(hList[0], adapted);
-                for h in hList {
+                for h in hList[1:min(len(hList), POLYPHONY_LIMIT)] {
                     currWave += this.__getWaveformFromIdx(h, adapted);
                 }
 
@@ -1076,22 +1106,21 @@ new class SortingVisualizer {
                 }
                 
                 this.__tmpSleep = 0;
-            } else {
-                if lazy {
-                    hList = this.__partitionIndices(hList)[0];
+            } elif lazy {
+                hList = this.__partitionIndices(hList)[0];
 
-                    for highlight in hList {
-                        hList[highlight] = None;
-                    }
-
-                    this.__visual.fastDraw(this.array, hList);
+                for highlight in hList {
+                    hList[highlight] = None;
                 }
+
+                this.__visual.fastDraw(this.array, hList);
             }
         } elif this.__speedCounter >= this.__speed {
             this.__speedCounter = 0;
         }
 
         this.__speedCounter++;
+        this.highlights.clear();
     }
 
     new method highlightAdvanced(hInfo) {
@@ -1104,6 +1133,61 @@ new class SortingVisualizer {
 
     new method highlight(index, aux = None) {
         this.highlightAdvanced(HighlightInfo(index, aux, None));
+    }
+
+    new method queueMultiHighlightAdvanced(hList) {
+        this.highlights += hList;
+    }
+
+    new method queueHighlightAdvanced(hInfo) {
+        this.highlights.append(hInfo);
+    }
+
+    new method queueMultiHighlight(hList, aux = None) {
+        this.highlights += [HighlightInfo(x, aux, None) for x in hList];
+    }
+
+    new method queueHighlight(index, aux = None) {
+        this.highlights.append(HighlightInfo(index, aux, None));
+    }
+
+    new method createThread(fn, *args, **kwargs) {
+        return threading.Thread(target = lambda: fn(*args, **kwargs), daemon = True);
+    }
+
+    new method runParallel(fn, *args, **kwargs) {
+        this.__parallel   = True;
+        this.__mainThread = threading.get_ident();
+
+        new dynamic running   = True,
+                    exception = None;
+
+        new function __fn() {
+            external running, exception;
+
+            try {
+                fn(*args, **kwargs);
+            } catch Exception as e {
+                exception = e;
+            }
+            
+            running = False;
+        }
+
+        new dynamic t = threading.Thread(target = __fn, daemon = True);
+        t.start();
+
+        while running {
+            this.multiHighlightAdvanced([]);
+        }
+
+        t.join();
+
+        if exception is not None {
+            throw exception;
+        }
+
+        this.__parallel = False;
     }
 
     new method sweep(a, b, color, hList = None) {
@@ -1579,18 +1663,29 @@ new class SortingVisualizer {
         return this.__gui.fileDialog(allowed, initPath);
     }
 
-    new method run() {
-        Utils.Iterables.stableSort(this.distributions);
-        Utils.Iterables.stableSort(this.shuffles);
-        Utils.Iterables.stableSort(this.visuals);
-        Utils.Iterables.stableSort(this.categories);
-        Utils.Iterables.stableSort(this.pivotSelections);
-        Utils.Iterables.stableSort(this.rotations);
-        Utils.Iterables.stableSort(this.sounds);
+    new method __prepare(group) {
+        new dynamic attr = getattr(this, group);
+        Utils.Iterables.stableSort(attr);
+        IO.out(f"{len(attr)} {group} loaded.\n");
+    }
 
+    new method run() {
+        this.__prepare("distributions");
+        this.__prepare("shuffles");
+        this.__prepare("visuals");
+        this.__prepare("pivotSelections");
+        this.__prepare("rotations");
+        this.__prepare("sounds");
+
+        Utils.Iterables.stableSort(this.categories);
+        
+        static: new int tot = 0;
         for list_ in this.sorts {
             Utils.Iterables.stableSort(this.sorts[list_]);
+            tot += len(this.sorts[list_]);
         }
+
+        IO.out(f"{tot} sorts loaded.\n");
 
         new Shuffle threadShuf = Shuffle("Run thread");
         threadShuf.func = this.__threadShuf;

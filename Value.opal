@@ -1,4 +1,4 @@
-new record HighlightInfo(idx, aux = None, color = None);
+new record HighlightInfo(idx, aux = None, color = None, silent = False);
 
 new class Value {
     new method __init__(value) {

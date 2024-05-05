@@ -26,6 +26,26 @@ new class QuickSort {
         }
     }
 
+    new method LRQuickSortParallel(array, a, b) {
+        if b - a > 1 {
+            array[a].swap(array[this.pSel(array, a, b)]);
+
+            new int p;
+            p = partition(array, a, b, a);
+
+            array[a].swap(array[p]);
+
+            new dynamic t0 = sortingVisualizer.createThread(this.LRQuickSortParallel, array,     a, p),
+                        t1 = sortingVisualizer.createThread(this.LRQuickSortParallel, array, p + 1, b);
+
+            t0.start();
+            t1.start();
+
+            t0.join();
+            t1.join();
+        }
+    }
+
     new method LLQuickSort(array, a, b) {
         while b - a > 1 {
             array[b - 1].swap(array[this.pSel(array, a, b)]);
@@ -35,6 +55,24 @@ new class QuickSort {
 
             this.LLQuickSort(array, a, p);
             a = p + 1;
+        }
+    }
+
+    new method LLQuickSortParallel(array, a, b) {
+        if b - a > 1 {
+            array[b - 1].swap(array[this.pSel(array, a, b)]);
+
+            new int p;
+            p = LLPartition(array, a, b);
+
+            new dynamic t0 = sortingVisualizer.createThread(this.LLQuickSortParallel, array,     a, p),
+                        t1 = sortingVisualizer.createThread(this.LLQuickSortParallel, array, p + 1, b);
+
+            t0.start();
+            t1.start();
+
+            t0.join();
+            t1.join();
         }
     }
 }
@@ -55,4 +93,22 @@ new function LRQuickSortRun(array) {
 );
 new function LLQuickSortRun(array) {
     QuickSort().LLQuickSort(array, 0, len(array));
+}
+
+@Sort(
+    "Quick Sorts",
+    "Quick Sort - Left/Right Pointers (Parallel)",
+    "LR Quick Sort (Parallel)"
+);
+new function LRQuickSortRun(array) {
+    sortingVisualizer.runParallel(QuickSort().LRQuickSortParallel, array, 0, len(array));
+}
+
+@Sort(
+    "Quick Sorts",
+    "Quick Sort - Left/Left Pointers (Parallel)",
+    "LL Quick Sort (Parallel)"
+);
+new function LLQuickSortRun(array) {
+    sortingVisualizer.runParallel(QuickSort().LLQuickSortParallel, array, 0, len(array));
 }

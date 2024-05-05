@@ -66,14 +66,23 @@ For array operations that don't work properly with the `Value` class, the visual
 - `sortingVisualizer.write(array: list, i: int, val)`;
 - `sortingVisualizer.swap(array: list, a: int, b: int)`.
 ## Manual highlights
-The visualizer provides four methods for manual highlighting:
+The visualizer provides eight methods for manual highlighting:
 - `sortingVisualizer.highlight(index: int, aux: bool = False)`: highlights the given index;
 - `sortingVisualizer.multiHighlight(indices: list[int], aux: bool = False)`: highlights a list of indices.
 - `sortingVisualizer.highlightAdvanced(index: HighlightInfo)`: highlights a `HighlightInfo` object;
-- `sortingVisualizer.multiHighlightAdvanced(indices: list[HighlightInfo])`: highlights a list of `HighlightInfo` objects.
+- `sortingVisualizer.multiHighlightAdvanced(indices: list[HighlightInfo])`: highlights a list of `HighlightInfo` objects;
+- `sortingVisualizer.queueHighlight(index: int, aux: bool = False)`: adds the given index to the list of highlights that will be visualized with the next update;
+- `sortingVisualizer.queueMultiHighlight(indices: list[int], aux: bool = False)`: like `queueHighlight`, but accepts a list of indices;
+- `sortingVisualizer.queueHighlightAdvanced(index: HighlightInfo)`: like `queueHighlight`, but uses a `HighlightInfo` object;
+- `sortingVisualizer.queueMultiHighlightAdvanced(indices: list[HighlightInfo])`: like `queueHighlightAdvanced`, but accepts a list of `HighlightInfo` objects;
 
 An `HighlightInfo` object contains more information for each highlight. Internally, the visualizer also generates those when calling the non-advanced variants of highlights. They are composed like this:
-`record HighlightInfo(index: int, aux: list[Value] | None = None, color: tuple[int, int, int] | None = None);`
+`record HighlightInfo(index: int, aux: list[Value] | None = None, color: tuple[int, int, int] | None = None, silent: bool = False);`
+- `index`: contains the array index to be highlighted;
+- `aux`: stores a pointer to the auxiliary array where the highlight came from. If `None`, the highlight came from the main array;
+- `color`: the color that the highlight will have;
+- `silent`: whether the highlight should not produce sound. Useful for color coding.
+
 ## Working with auxiliary arrays
 To create a new array, the visualizer provides  `sortingVisualizer.createValueArray(length: int) -> list[Value]`, which is pre-filled with already configured `Value`s. This also automatically shows the array in the visualizer. To remove an array from visualization, you can use `sortingVisualizer.removeAux(array: list)`. In case the `createValueArray` function is not used to create an array, but you still want to visualize it, you can use `sortingVisualizer.addAux(array: list)` and, if it's not an array of values, you can provide adaptation functions using `sortingVisualizer.setAdaptAux(fn, idxFn = None)`: 
 - `fn(arrays: list[list]) -> list[Value]`: set this function to properly convert your array in a list of `Value`s that the visualizer can work with;
@@ -193,6 +202,9 @@ new function myDistribution(array, length) {
     # your code here
 }
 ```
+## Working with threads
+The visualizer usually operates in a sequential manner, so, to properly visualize parallel sorts, it's sufficient to call the algorithm's main function in `sortingVisualizer.runParallel(fn: Callable, *args, **kwargs)`, so that the visualizer can create a separate sort thread and run the visualization code on the main thread (since pygame has to run on the main thread), as well as properly handle highlighting. To create a thread inside of such an algorithm, `sortingVisualizer.createThread(fn: Callable, *args, **kwargs)` should be used to avoid program freezing. This is equivalent to creating a daemon thread, so, if a thread needs to be created separately, it should also be marked as a daemon. 
+
 ## Adding visual styles
 To add a visual style, a class needs to be created and inherit from the `Visual` class. That way, visuals are automatically added. Said file needs to be added in the `visuals` folder.  Example:
 ```

@@ -99,11 +99,13 @@ runAllSort(1024, "Weak Heap Sort",   5);
 
 
 ct = "Concurrent Sorts";
-runAllSort(1024, "Bose Nelson",    7);
-runAllSort(1024, "Fold Sort",      7);
-runAllSort(1024, "Bitonic Sort",   5);
-runAllSort(1024, "Pairwise",       5);
-runAllSort(1024, "Odd Even Merge", 5);
+runAllSort(1024, "Bose Nelson",                7);
+runAllSort(2048, "Bose Nelson (Parallel)",  0.05);
+runAllSort(1024, "Fold Sort",                  7);
+runAllSort(1024, "Bitonic Sort",               5);
+runAllSort(2048, "Bitonic Sort (Parallel)", 0.05);
+runAllSort(1024, "Pairwise",                   5);
+runAllSort(1024, "Odd Even Merge",             5);
 
 
 ct = "Quick Sorts";
@@ -114,7 +116,7 @@ new dict centerKillers = {
     "Quintic":   ["Reversed Sawtooth", "Sawtooth"]
 };
 
-runAllSort(1024, "LL Quick Sort", 4, pivotSelections.index("First"), {
+new dict firstKillers = {
     "Linear": [
         "Reversed", "Reversed Sawtooth", "No shuffle", 
         "Sorted", "Few Random", "Noisy", "Scrambled Tail"
@@ -132,27 +134,33 @@ runAllSort(1024, "LL Quick Sort", 4, pivotSelections.index("First"), {
         "Sorted", "Few Random", "Final Merge Pass", "Scrambled Head"
     ],
     "Perlin Noise": ["Sorted"]
-});
-runAllSort(1024, "LR Quick Sort",          4, pivotSelections.index("Middle"), centerKillers);
+};
+
+runAllSort(1024, "LL Quick Sort",              4, pivotSelections.index("First"),  firstKillers);
+runAllSort(1024, "LL Quick Sort (Parallel)", 0.5, pivotSelections.index("First"),  firstKillers);
+runAllSort(1024, "LR Quick Sort",              4, pivotSelections.index("Middle"), centerKillers);
+runAllSort(1024, "LR Quick Sort (Parallel)", 0.5, pivotSelections.index("Middle"), centerKillers);
 centerKillers["Linear"].remove("Reversed Sawtooth");
-runAllSort(1024, "Stackless Quick",        4, pivotSelections.index("Median of three (unstable)"), centerKillers);
-runAllSort(1024, "Dual Pivot Quick",       4, killers = centerKillers);
-runAllSort(2048, "Median-Of-16 A. Quick", 10);
-runAllSort(2048, "PDQ Sort",              10); 
-runAllSort(1024, "Aeos Quick",             3);
-runAllSort(1024, "Log Sort",               3, 0);
+runAllSort(1024, "Stackless Quick",            4, pivotSelections.index("Median of three (unstable)"), centerKillers);
+runAllSort(1024, "Dual Pivot Quick",           4, killers = centerKillers);
+runAllSort(2048, "Median-Of-16 A. Quick",     10);
+runAllSort(2048, "PDQ Sort",                  10); 
+runAllSort(1024, "Aeos Quick",                 3);
+runAllSort(1024, "Log Sort",                   3, 0);
 
 
 ct = "Merge Sorts";
-runAllSort(1024, "Merge Sort",            8);
-runAllSort(1024, "Bottom Up Merge",       4);
-runAllSort(256,  "Lazy Stable",           4, rotations.index("Gries-Mills"));
-runAllSort(1024, "Rotate Merge",          3, rotations.index("Gries-Mills"));
-runAllSort(1024, "Adaptive Rotate Merge", 5, 128);
-runAllSort(1024, "Uranium Sort",          2);
-runAllSort(1024, "Tim Sort",              5);
-runAllSort(2048, "Andrey's Merge",        8);
-runAllSort(2048, "Buf Merge 2",           3, rotations.index("Helium"));
+runAllSort(1024, "Merge Sort",                 8);
+runAllSort(2048, "Merge Sort (Parallel)",      1);
+runAllSort(1024, "Bottom Up Merge",            4);
+runAllSort(256,  "Lazy Stable",                4, rotations.index("Gries-Mills"));
+runAllSort(1024, "Rotate Merge",               3, rotations.index("Gries-Mills"));
+runAllSort(2048, "Rotate Merge (Parallel)", 0.25, rotations.index("Gries-Mills"));
+runAllSort(1024, "Adaptive Rotate Merge",      5, 128);
+runAllSort(1024, "Uranium Sort",               2);
+runAllSort(1024, "Tim Sort",                   5);
+runAllSort(2048, "Andrey's Merge",             8);
+runAllSort(2048, "Buf Merge 2",                3, rotations.index("Helium"));
 
 
 ct = "Block Merge Sorts";
