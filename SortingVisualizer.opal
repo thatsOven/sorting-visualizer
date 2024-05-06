@@ -823,7 +823,10 @@ new class SortingVisualizer {
 
     $macro handleThreadedHighlight
         if this.__parallel && threading.get_ident() != this.__mainThread {
-            this.queueMultiHighlightAdvanced(hList);
+            with this.highlightsLock {
+                this.highlights += hList;
+            }
+
             time.sleep(max(this.__sleep + this.__tmpSleep, MIN_SLEEP));
             return;
         }
@@ -1188,6 +1191,7 @@ new class SortingVisualizer {
         t.start();
 
         while running {
+            time.sleep(0.005); # this fixes some freezing issues (???)
             this.multiHighlightAdvanced([]);
         }
 
