@@ -1,0 +1,7 @@
+{
+    "codec":   "libx264",
+    "pix_fmt": "yuvj420p",
+    "preset":  "slower",
+    "tune":    "film",
+    "profile": "high"
+}

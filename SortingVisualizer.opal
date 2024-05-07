@@ -80,6 +80,7 @@ new class VisualizerException: Exception {}
 new class SortingVisualizer {
     new str SETTINGS_FILE = os.path.join(HOME_DIR, "config.json"),
             IMAGE_BUF     = os.path.join(HOME_DIR, "frames"),
+            PROFILES      = os.path.join(HOME_DIR, "profiles"),
             SOUND_CONFIG  = os.path.join(HOME_DIR, "sounds", "config");
 
     new method __init__() {
@@ -144,7 +145,8 @@ new class SortingVisualizer {
         this.__mainThread = None;
 
         this.__loadSettings();
-
+        
+        this._loadProfile();
         this.__initGraphics();
         this.__gui = GUI();
 
@@ -152,7 +154,7 @@ new class SortingVisualizer {
             this.__movingTextSize = Vector(0, this.__fontSize * 20);
         } else {
             this.__movingTextSize = Vector(0, this.__fontSize * 15);
-        }
+        }    
     }
 
     new method __initGraphics() {
@@ -177,7 +179,13 @@ new class SortingVisualizer {
 
     new method _writeSettings() {
         with open(SortingVisualizer.SETTINGS_FILE, "w") as f {
-            json.dump(this.settings, f);
+            json.dump(this.settings, f, indent = 4);
+        }
+    }
+
+    new method _loadProfile() {
+        with open(os.path.join(SortingVisualizer.PROFILES, this.settings["profile"] + ".json"), "r") as f {
+            this.__renderProfile = json.loads(f.read());
         }
     }
 
@@ -932,9 +940,13 @@ new class SortingVisualizer {
 
         this.__gui.saveBackground();
         this.__gui.renderScreen(subprocess.Popen([
-            "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt", 
-            "-c:v", "libx264", "-pix_fmt", "yuvj420p", "tmp.mp4",
-        ]), "Compressing frames...");
+            "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt",
+            "-c:v",       this.__renderProfile["codec"], 
+            "-profile:v", this.__renderProfile["profile"],
+            "-pix_fmt",   this.__renderProfile["pix_fmt"], 
+            "-preset",    this.__renderProfile["preset"],
+            "tmp.mp4"
+        ]), "Merging videos...");
         
         new dynamic rounded = round(this.__audioPtr);
         io.wavfile.write("audio.wav", FREQUENCY_SAMPLE, this.__audio[:rounded]);
@@ -1648,8 +1660,12 @@ new class SortingVisualizer {
 
             this.__gui.saveBackground();
             this.__gui.renderScreen(subprocess.Popen([
-                "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt", 
-                "-c:v", "libx264", "-pix_fmt", "yuvj420p", "output.mp4",
+                "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt",
+                "-c:v",       this.__renderProfile["codec"], 
+                "-profile:v", this.__renderProfile["profile"],
+                "-pix_fmt",   this.__renderProfile["pix_fmt"], 
+                "-preset",    this.__renderProfile["preset"],
+                "output.mp4"
             ]), "Merging videos...");
 
             os.chdir(cwd);

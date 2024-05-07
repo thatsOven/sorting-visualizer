@@ -658,6 +658,7 @@ new class GUI {
                     showAuxSettingValue      = this.__sv.settings["show-aux"],
                     lazyAuxSettingValue      = this.__sv.settings["lazy-aux"],
                     lazyRenderSettingValue   = this.__sv.settings["lazy-render"],
+                    profileSettingValue      = this.__sv.settings["profile"],
                     soundSettingValue        = this.__sv.settings["sound"];
 
         new dynamic settingsPanel = elements.UIPanel(
@@ -751,6 +752,16 @@ new class GUI {
         );
 
         elements.UILabel(
+            Rect(this.OFFS.x, this.OFFS.y + 250, 250, 20), 
+            "Render profile", this.__manager, settingsPanel
+        );
+        new dynamic profileSetting = elements.ui_drop_down_menu.UIDropDownMenu(
+            [os.path.splitext(os.path.basename(x))[0] for x in os.listdir(SortingVisualizer.PROFILES)], str(profileSettingValue),
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 200, this.OFFS.y + 250, 200, 20),
+            this.__manager, settingsPanel 
+        );
+
+        elements.UILabel(
             Rect(this.OFFS.x, this.SETTINGS_WIN_SIZE.y - 150, 250, 20), 
             "Sounds", this.__manager, settingsPanel
         );
@@ -788,7 +799,7 @@ new class GUI {
             external showTextSettingValue, showAuxSettingValue, 
                      internalInfoSettingValue, renderSettingValue,
                      lazyAuxSettingValue, lazyRenderSettingValue,
-                     soundSettingValue;
+                     soundSettingValue, profileSettingValue;
 
             if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED {
                 new bool val = event.text == "True";
@@ -811,6 +822,9 @@ new class GUI {
                     }
                     case lazyRenderSetting {
                         lazyRenderSettingValue = val;
+                    }
+                    case profileSetting {
+                        profileSettingValue = event.text;
                     }
                     case soundSetting {
                         soundSettingValue = event.text;
@@ -836,9 +850,10 @@ new class GUI {
                         }
                     }
                     case settingsSaveButton {
-                        new dynamic oldSound = this.__sv.settings["sound"],
-                                    resX     = resolutionXSetting.get_text(),
-                                    resY     = resolutionYSetting.get_text();
+                        new dynamic oldSound   = this.__sv.settings["sound"],
+                                    oldProfile = this.__sv.settings["profile"],
+                                    resX       = resolutionXSetting.get_text(),
+                                    resY       = resolutionYSetting.get_text();
 
                         if checkType(resX, int) {
                             int <- resX;
@@ -871,12 +886,17 @@ new class GUI {
                             "render":        renderSettingValue,
                             "lazy-aux":      lazyAuxSettingValue,
                             "lazy-render":   lazyRenderSettingValue,
+                            "profile":       profileSettingValue,
                             "sound":         soundSettingValue,
                             "resolution":    [resX, resY]
                         };
 
                         try {
                             this.__sv._writeSettings();
+
+                            if oldProfile != profileSettingValue {
+                                this.__sv._loadProfile();
+                            }
 
                             if oldSound != soundSettingValue {
                                 this.__sv._setSound(name = soundSettingValue);
