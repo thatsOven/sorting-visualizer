@@ -5,7 +5,7 @@
     "render": false,
     "lazy-aux": false,
     "lazy-render": false,
-    "profile": "h264_nvenc",
+    "profile": "h264_sw",
     "sound": "Default",
     "resolution": [
         1280,
