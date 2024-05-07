@@ -16,7 +16,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.5.5";
+new str VERSION = "2024.5.7";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -1192,7 +1192,10 @@ new class SortingVisualizer {
 
         while running {
             time.sleep(0.005); # this fixes some freezing issues (???)
-            this.multiHighlightAdvanced([]);
+
+            with this.highlightsLock {
+                this.multiHighlightAdvanced([]);
+            }
         }
 
         t.join();
