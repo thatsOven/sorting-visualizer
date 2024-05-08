@@ -957,7 +957,7 @@ new class SortingVisualizer {
         this.__gui.saveBackground();
         this.__gui.renderScreen(subprocess.Popen([
             "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt",
-            "-b:v",       str(this.__settings["bitrate"]) + "k",
+            "-b:v",       str(this.settings["bitrate"]) + "k",
             "-c:v",       this.__renderProfile["codec"], 
             "-profile:v", this.__renderProfile["profile"],
             "-pix_fmt",   this.__renderProfile["pix_fmt"], 
@@ -1684,7 +1684,7 @@ new class SortingVisualizer {
             this.__gui.saveBackground();
             this.__gui.renderScreen(subprocess.Popen([
                 "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt",
-                "-b:v",       str(this.__settings["bitrate"]) + "k",
+                "-b:v",       str(this.settings["bitrate"]) + "k",
                 "-c:v",       this.__renderProfile["codec"], 
                 "-profile:v", this.__renderProfile["profile"],
                 "-pix_fmt",   this.__renderProfile["pix_fmt"], 
