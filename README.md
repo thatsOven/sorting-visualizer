@@ -75,6 +75,7 @@ The visualizer provides eight methods for manual highlighting:
 - `sortingVisualizer.queueMultiHighlight(indices: list[int], aux: bool = False)`: like `queueHighlight`, but accepts a list of indices;
 - `sortingVisualizer.queueHighlightAdvanced(index: HighlightInfo)`: like `queueHighlight`, but uses a `HighlightInfo` object;
 - `sortingVisualizer.queueMultiHighlightAdvanced(indices: list[HighlightInfo])`: like `queueHighlightAdvanced`, but accepts a list of `HighlightInfo` objects;
+Queued highlights are stored in a list (`sortingVisualizer.highlights`) that can be edited manually for advanced operations. In a multithreaded context, it should be edited while the relative lock `sortingVisualizer.highlightsLock` is acquired. This is done automatically in the `queue` methods.
 
 An `HighlightInfo` object contains more information for each highlight. Internally, the visualizer also generates those when calling the non-advanced variants of highlights. They are composed like this:
 `record HighlightInfo(index: int, aux: list[Value] | None = None, color: tuple[int, int, int] | None = None, silent: bool = False);`
