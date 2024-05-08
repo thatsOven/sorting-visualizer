@@ -8,7 +8,7 @@ new int FREQUENCY_SAMPLE        = 48000,
         RENDER_FRAMERATE        = 60,
         PREVIEW_MOD             = 5,
         MAX_UNCOMPRESSED_FRAMES = 2048,
-        POLYPHONY_LIMIT         = 8;
+        POLYPHONY_LIMIT         = 4;
 
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE,
@@ -16,7 +16,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.5.8";
+new str VERSION = "2024.5.9";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
