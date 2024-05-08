@@ -30,6 +30,10 @@ If set to `True`, the visualizer will generate videos instead of visualizing alg
 The visualizer checks if the auxiliary array changed in size, or its maximum element changed, in specific scenarios, so that the visual can re-compute its data accordingly. If lazy auxiliary visualization is set to `False`, these checks are disabled, that is, the visualizer will assume the maximum element of the auxiliary array and its length are constant.
 ### Lazy rendering
 Real-time visualization will always try to use `fast` variants of the given visual style for performance reasons, while render mode always uses standard variants, which are slower but higher quality. If lazy rendering is set to `True`, the visualizer will use `fast` variants of visual styles for render mode too. This does not result in quality loss in certain cases, like with the bar graph-like visual styles under a certain array size.
+### Render bitrate (kbps)
+Sets the output video bitrate (in kbps) for videos generated through render mode.
+### Render profile
+Allows the user to select one of the different encoding profiles to be used with ffmpeg in render mode. Such profiles are found in the `profiles` folder, and can be added and customized dynamically. Note that some of these profiles are platform or hardware dependent, so they're not guaranteed to work. In case an incompatible profiles or invalid options have been provided through the selected profile, or something went wrong during the rendering process, the visualizer will report that ffmpeg returned a nonzero return code.
 
 # The API
 ## Array operations
