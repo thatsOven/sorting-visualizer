@@ -1,6 +1,6 @@
 {
     "codec":   "h264_nvenc",
-    "pix_fmt": "yuvj420p",
+    "pix_fmt": "yuv420p",
     "preset":  "p1",
     "tune":    "ull",
     "profile": "baseline"
