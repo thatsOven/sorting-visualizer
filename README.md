@@ -75,7 +75,6 @@ The visualizer provides eight methods for manual highlighting:
 - `sortingVisualizer.queueMultiHighlight(indices: list[int], aux: bool = False)`: like `queueHighlight`, but accepts a list of indices;
 - `sortingVisualizer.queueHighlightAdvanced(index: HighlightInfo)`: like `queueHighlight`, but uses a `HighlightInfo` object;
 - `sortingVisualizer.queueMultiHighlightAdvanced(indices: list[HighlightInfo])`: like `queueHighlightAdvanced`, but accepts a list of `HighlightInfo` objects;
-Queued highlights are stored in a list (`sortingVisualizer.highlights`) that can be edited manually for advanced operations. In a multithreaded context, it should be edited while the relative lock `sortingVisualizer.highlightsLock` is acquired. This is done automatically in the `queue` methods.
 
 An `HighlightInfo` object contains more information for each highlight. Internally, the visualizer also generates those when calling the non-advanced variants of highlights. They are composed like this:
 `record HighlightInfo(index: int, aux: list[Value] | None = None, color: tuple[int, int, int] | None = None, silent: bool = False);`
@@ -83,6 +82,8 @@ An `HighlightInfo` object contains more information for each highlight. Internal
 - `aux`: stores a pointer to the auxiliary array where the highlight came from. If `None`, the highlight came from the main array;
 - `color`: the color that the highlight will have;
 - `silent`: whether the highlight should not produce sound. Useful for color coding.
+
+Queued highlights are stored in a list (`sortingVisualizer.highlights`) that can be edited manually for advanced operations. In a multithreaded context, it should be edited while the relative lock `sortingVisualizer.highlightsLock` is acquired. This is done automatically in the `queue` methods.
 
 ## Working with auxiliary arrays
 To create a new array, the visualizer provides  `sortingVisualizer.createValueArray(length: int) -> list[Value]`, which is pre-filled with already configured `Value`s. This also automatically shows the array in the visualizer. To remove an array from visualization, you can use `sortingVisualizer.removeAux(array: list)`. In case the `createValueArray` function is not used to create an array, but you still want to visualize it, you can use `sortingVisualizer.addAux(array: list)` and, if it's not an array of values, you can provide adaptation functions using `sortingVisualizer.setAdaptAux(fn, idxFn = None)`: 
