@@ -33,7 +33,7 @@ Real-time visualization will always try to use `fast` variants of the given visu
 ### Render bitrate (kbps)
 Sets the output video bitrate (in kbps) for videos generated through render mode.
 ### Render profile
-Allows the user to select one of the different encoding profiles to be used with ffmpeg in render mode. Such profiles are found in the `profiles` folder, and can be added and customized dynamically. Note that some of these profiles are platform or hardware dependent, so they're not guaranteed to work. In case an incompatible profile or invalid options have been provided through the selected profile, or something went wrong during the rendering process, the visualizer will report that ffmpeg returned a nonzero return code.
+Allows the user to select one of the different encoding profiles to be used with ffmpeg in render mode. Such profiles are found in the `profiles` folder, and can be added and customized dynamically. Note that some of these profiles are platform or hardware dependent, so they're not guaranteed to work. In case an incompatible profile or invalid options have been provided through the selected profile, or something went wrong during the rendering process, the visualizer will report that ffmpeg exited with a nonzero return code.
 
 # The API
 ## Array operations
