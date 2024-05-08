@@ -5,6 +5,7 @@
     "render": false,
     "lazy-aux": false,
     "lazy-render": false,
+    "bitrate": 8000,
     "profile": "h264_sw",
     "sound": "Default",
     "resolution": [

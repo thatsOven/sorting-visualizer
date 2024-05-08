@@ -753,11 +753,20 @@ new class GUI {
 
         elements.UILabel(
             Rect(this.OFFS.x, this.OFFS.y + 250, 250, 20), 
+            "Render bitrate (kbps)", this.__manager, settingsPanel
+        );
+        new dynamic bitrateSetting = elements.UITextEntryLine(
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 100, this.OFFS.y + 250, 100, 20),
+            this.__manager, settingsPanel, initial_text = str(this.__sv.settings["bitrate"])
+        );
+
+        elements.UILabel(
+            Rect(this.OFFS.x, this.OFFS.y + 280, 250, 20), 
             "Render profile", this.__manager, settingsPanel
         );
         new dynamic profileSetting = elements.ui_drop_down_menu.UIDropDownMenu(
             [os.path.splitext(os.path.basename(x))[0] for x in os.listdir(SortingVisualizer.PROFILES)], str(profileSettingValue),
-            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 200, this.OFFS.y + 250, 200, 20),
+            Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 200, this.OFFS.y + 280, 200, 20),
             this.__manager, settingsPanel 
         );
 
@@ -852,8 +861,10 @@ new class GUI {
                     case settingsSaveButton {
                         new dynamic oldSound   = this.__sv.settings["sound"],
                                     oldProfile = this.__sv.settings["profile"],
+                                    oldBitrate = this.__sv.settings["bitrate"],
                                     resX       = resolutionXSetting.get_text(),
-                                    resY       = resolutionYSetting.get_text();
+                                    resY       = resolutionYSetting.get_text(),
+                                    bitrate    = bitrateSetting.get_text();
 
                         if checkType(resX, int) {
                             int <- resX;
@@ -879,6 +890,13 @@ new class GUI {
                             return;
                         }
 
+                        if checkType(bitrate, int) {
+                            int <- bitrate;
+                        } else {
+                            this.userWarn("Error", "Invalid bitrate.");
+                            return;
+                        }
+
                         this.__sv.settings = {
                             "show-text":     showTextSettingValue,
                             "show-aux":      showAuxSettingValue,
@@ -886,6 +904,7 @@ new class GUI {
                             "render":        renderSettingValue,
                             "lazy-aux":      lazyAuxSettingValue,
                             "lazy-render":   lazyRenderSettingValue,
+                            "bitrate":       bitrate,
                             "profile":       profileSettingValue,
                             "sound":         soundSettingValue,
                             "resolution":    [resX, resY]

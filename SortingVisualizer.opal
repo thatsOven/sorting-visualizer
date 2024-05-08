@@ -16,7 +16,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.5.7";
+new str VERSION = "2024.5.8";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -141,8 +141,10 @@ new class SortingVisualizer {
         this.__audioPtr      = 0;
         this.__audio         = None;
 
-        this.__parallel   = False;
-        this.__mainThread = None;
+        this.__parallel         = False;
+        this.__mainThread       = None;
+        this.__videoGenFlag     = False;
+        this.__videoGenFlagLock = threading.Lock();
 
         this.__loadSettings();
         
@@ -831,6 +833,14 @@ new class SortingVisualizer {
 
     $macro handleThreadedHighlight
         if this.__parallel && threading.get_ident() != this.__mainThread {
+            while True {
+                with this.__videoGenFlagLock {
+                    if !this.__videoGenFlag {
+                        break;
+                    }
+                }
+            }
+
             with this.highlightsLock {
                 this.highlights += hList;
             }
@@ -926,6 +936,12 @@ new class SortingVisualizer {
     }
 
     new method __videoGen() {
+        if this.__parallel {
+            with this.__videoGenFlagLock {
+                this.__videoGenFlag = True;
+            }
+        }
+
         new dynamic cwd = os.getcwd();
         os.chdir(SortingVisualizer.IMAGE_BUF);
 
@@ -941,12 +957,13 @@ new class SortingVisualizer {
         this.__gui.saveBackground();
         this.__gui.renderScreen(subprocess.Popen([
             "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt",
+            "-b:v",       str(this.__settings["bitrate"]) + "k",
             "-c:v",       this.__renderProfile["codec"], 
             "-profile:v", this.__renderProfile["profile"],
             "-pix_fmt",   this.__renderProfile["pix_fmt"], 
             "-preset",    this.__renderProfile["preset"],
             "tmp.mp4"
-        ]), "Merging videos...");
+        ]), "Compressing frames...");
         
         new dynamic rounded = round(this.__audioPtr);
         io.wavfile.write("audio.wav", FREQUENCY_SAMPLE, this.__audio[:rounded]);
@@ -961,6 +978,12 @@ new class SortingVisualizer {
         ]), "Adding audio...");
 
         this.__iVideo++;
+
+        if this.__parallel {
+            with this.__videoGenFlagLock {
+                this.__videoGenFlag = False;
+            }
+        }
         
         return cwd;
     }
@@ -1661,6 +1684,7 @@ new class SortingVisualizer {
             this.__gui.saveBackground();
             this.__gui.renderScreen(subprocess.Popen([
                 "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt",
+                "-b:v",       str(this.__settings["bitrate"]) + "k",
                 "-c:v",       this.__renderProfile["codec"], 
                 "-profile:v", this.__renderProfile["profile"],
                 "-pix_fmt",   this.__renderProfile["pix_fmt"], 
