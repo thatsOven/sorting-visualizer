@@ -42,7 +42,7 @@ new class ScrambledRainbowBarGraph: LineVisual {
                         break;
                     }
                 } else {
-                    sortingVisualizer.graphics.line(pos, end, hsvToRgb(array[idx].stabIdx * colorConstant), 1);
+                    sortingVisualizer.graphics.line(pos, end, hsvToRgb(array[idx].stabIdx * this.colorConstant), 1);
                 }
                 
                 pos.x++;

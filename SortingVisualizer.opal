@@ -1,5 +1,5 @@
 package opal: import *;
-$args ["--nostatic", "--type-mode", "none", "--require", "2024.3.3"]
+$args ["--nostatic", "--type-mode", "none", "--require", "2024.5.10"]
 $define DEBUG_MODE False
 
 new int FREQUENCY_SAMPLE        = 48000,
@@ -16,7 +16,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.5.9";
+new str VERSION = "2024.5.10";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -1015,7 +1015,7 @@ new class SortingVisualizer {
                 }
 
                 if floored + len(currWave) <= lenAudio {
-                    new dynamic fillerZeros = numpy.zeros(lenAudio - len(currWave) - rounded);
+                    new dynamic fillerZeros = numpy.zeros(lenAudio - len(currWave) - floored);
                     if this.__audioChs > 1 {
                         fillerZeros = numpy.repeat(fillerZeros.reshape(fillerZeros.size, 1), this.__audioChs, axis = 1).astype(numpy.int16);
                     } else {

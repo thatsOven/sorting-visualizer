@@ -99,7 +99,7 @@ while True {
                 }
             }
             commands.insert(0, labelCommand);
-            commands.insert(0, ThreadCommand("VERSION", THREAD_VERSION));
+            commands.insert(0, ThreadCommand("VERSION", VERSION));
 
             while True {
                 new str name = this.__gui.userInputDialog("Thread builder", "Enter a name for this thread:", str, ""), 

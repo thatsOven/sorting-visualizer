@@ -1,0 +1,4 @@
+pygame_gui
+scipy
+perlin_noise
+sf2_loader

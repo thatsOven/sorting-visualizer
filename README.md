@@ -1,20 +1,15 @@
 ﻿# Sorting Visualizer
  A sorting algorithms visualizer written in opal
 
-to run, open or compile `SortingVisualizer.opal` using the opal compiler.
+to run from source, open or compile `SortingVisualizer.opal` using the opal compiler.
 
 to build a release, use `opal release build.iproj`.
 
 here you can find a video about the program: https://youtu.be/iZjOP4Htz3c
 
 # Installation
-To properly run the visualizer, you will need to install these Python modules:
-```
-pygame_gui
-scipy
-perlin_noise
-sf2_loader
-```
+To properly run the visualizer from source, you will need to install the Python modules listed in `requirements.txt`.
+
 To use render mode, ffmpeg needs to be properly installed on your system.
 
 # Settings
@@ -34,6 +29,21 @@ Real-time visualization will always try to use `fast` variants of the given visu
 Sets the output video bitrate (in kbps) for videos generated through render mode.
 ### Render profile
 Allows the user to select one of the different encoding profiles to be used with ffmpeg in render mode. Such profiles are found in the `profiles` folder, and can be added and customized dynamically. Note that some of these profiles are platform or hardware dependent, so they're not guaranteed to work. In case an incompatible profile or invalid options have been provided through the selected profile, or something went wrong during the rendering process, the visualizer will report that ffmpeg exited with a nonzero return code.
+
+# Creating Python extensions
+To do Python development for the visualizer, it's recommended to create its Python compiled version first, so that your IDE can give you hints and highlights for the visualizer's methods and utilities. To do this, it's sufficient to compile `SortingVisualizer.opal` in Python mode, like this:
+```
+opal pycompile SortingVisualizer.opal
+```
+
+And then add these lines on top of your Python code:
+```py
+#opal$if False
+from SortingVisualizer import *
+#opal$end
+```
+
+These will import the visualizer normally when you're doing development, since Python will see the `#opal` lines as comments, but ignore the import when compiling the whole project, since opal will treat those lines as precompiler instructions.
 
 # The API
 ## Array operations

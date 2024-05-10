@@ -271,7 +271,7 @@ namespace KotaSort {
                 binaryInsertionSort(array, i, min(i + j, b));
             }
 
-            for ; j < length; j *= 2 {
+            for ; j < b - a; j *= 2 {
                 for i = a; i + j < b; i += 2 * j {
                     this.inPlaceMergeBW(array, i, i + j, min(i + 2 * j, b));
                 }
