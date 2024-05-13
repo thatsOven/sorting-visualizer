@@ -1,6 +1,10 @@
-use insertionSort, medianOf9, medianOfMedians, medianOfFewUnique;
+use insertionSort, medianOf9, medianOfMedians, medianOfFewUnique, adaptLow;
 
 new class AeosQuickSort {
+    new method __init__() {
+        this.indices = None;
+    }
+
     new method medianOfFewUnique(array, start, end) {
         new int i    = start,
                 read = 0;
@@ -196,6 +200,10 @@ new class AeosQuickSort {
         insertionSort(array, a, b);
     }
 
+    new method __adaptAux(arrays) {
+        return adaptLow(arrays, (this.indices, ));
+    }
+
     new method sort(array, a, b) {
         if b - a < 16 {
             insertionSort(array, a, b);
@@ -206,6 +214,7 @@ new class AeosQuickSort {
         for ; 1 << (lgSqrt << 1) < b - a; lgSqrt++ {}
         new int sqrt = 1 << lgSqrt;
 
+        sortingVisualizer.setAdaptAux(this.__adaptAux);
         this.aux     = sortingVisualizer.createValueArray(sqrt);
         this.indices = sortingVisualizer.createValueArray((b - a) // sqrt);
 

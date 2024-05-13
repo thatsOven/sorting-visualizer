@@ -330,6 +330,20 @@ new function findMax(array, a, b) {
     return findMaxValue(array, a, b).readInt();
 }
 
+new function findMaxIndex(array, a, b) {
+    static: new int idx = 0;
+    new Value max_ = array[0].copy();
+
+    for i = a; i < b; i++ {
+        if array[i] > max_ {
+            max_ = array[i].copy();
+            idx = i;
+        }
+    }
+
+    return idx;
+}
+
 new function findMinValue(array, a, b) {
     new Value currMin = array[a].copy();
 

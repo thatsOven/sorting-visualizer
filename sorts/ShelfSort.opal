@@ -1,11 +1,17 @@
 # https://github.com/bhauth/shelfsort
 
-use arrayCopy;
+use arrayCopy, adaptLow;
 
 new class ShelfSort {
     new int SMALL_SORT = 4;
 
-    new classmethod smallSort(array, start) {
+    new method __init__() {
+        this.scratch  = None;
+        this.indicesA = None;
+        this.indicesB = None;
+    }
+
+    new method smallSort(array, start) {
         new Value a = array[start    ].copy(),
                   b = array[start + 1].copy(),
                   c = array[start + 2].copy(),
@@ -64,7 +70,7 @@ new class ShelfSort {
         }
     }
 
-    new classmethod mergePair(array, start1, start2, output, oStart, n) {
+    new method mergePair(array, start1, start2, output, oStart, n) {
         new int i1 = n,
                 i2 = n, i;
 
@@ -96,7 +102,7 @@ new class ShelfSort {
         this.indicesB[iStart + last    ].write(nextClearBId); 
     $end
 
-    new classmethod blockMerge(array, start, scratch, iStart, bCount1, bCount2, bSize) {
+    new method blockMerge(array, start, scratch, iStart, bCount1, bCount2, bSize) {
         new int ii1          = bCount1 - 1,
                 ii2          = bCount2 - 1,
                 bId1         = this.indicesA[iStart + ii1].readInt(),
@@ -237,7 +243,7 @@ new class ShelfSort {
         }
     }
 
-    new classmethod finalBlockSorting(array, start, scratch, blocks, bSize) {
+    new method finalBlockSorting(array, start, scratch, blocks, bSize) {
         for b in range(blocks) {
             new int ix = this.indicesA[b].readInt();
 
@@ -258,7 +264,11 @@ new class ShelfSort {
         }
     }
 
-    new classmethod sort(array, start, size) {
+    new method __adaptAux(arrays) {
+        return adaptLow(arrays, (this.indicesA, this.indicesB));
+    }
+
+    new method sort(array, start, size) {
         new int logSize = 0,
                       v = size;
 
@@ -272,6 +282,7 @@ new class ShelfSort {
             this.smallSort(array, start + i);
         }
 
+        sortingVisualizer.setAdaptAux(this.__adaptAux);
         this.scratch  = sortingVisualizer.createValueArray(scratchSize);
         this.indicesA = sortingVisualizer.createValueArray(scratchSize);
         this.indicesB = sortingVisualizer.createValueArray(scratchSize);
@@ -348,8 +359,9 @@ new class ShelfSort {
 @Sort(
     "Block Merge Sorts",
     "Shelf Sort",
-    "Shelf Sort"
+    "Shelf Sort",
+    usesDynamicAux = True
 );
 new function shelfSortRun(array) {
-    ShelfSort.sort(array, 0, len(array));
+    ShelfSort().sort(array, 0, len(array));
 }

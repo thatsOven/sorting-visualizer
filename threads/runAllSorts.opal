@@ -18,15 +18,16 @@ new function runAllSort(size, name, speed, toPush = None, killers = None) {
     );
 }
 
+new list pivotSelections = [p.name for p in this.pivotSelections],
+         distributions   = [d.name for d in this.distributions],
+         rotations       = [r.name for r in this.rotations];
+
 new int autoValue;
-if runOpts["distribution"] == 1 {
+if runOpts["distribution"] == distributions.index("Perlin Noise") {
     autoValue = -1;
 } else {
     autoValue = 1;
 }
-
-new list pivotSelections = [p.name for p in this.pivotSelections],
-         rotations       = [r.name for r in this.rotations];
 
 
 new str ct;
@@ -96,6 +97,7 @@ runAllSort(2048, "Max Heap Sort",   15);
 runAllSort(2048, "Smooth Sort",     10);
 runAllSort(2048, "Poplar Heap",     10);
 runAllSort(1024, "Weak Heap Sort",   5);
+runAllSort(1024, "Patience Sort",   10);
 
 
 ct = "Concurrent Sorts";
@@ -161,6 +163,7 @@ runAllSort(1024, "Uranium Sort",            2);
 runAllSort(1024, "Tim Sort",                5);
 runAllSort(2048, "Andrey's Merge",          8);
 runAllSort(2048, "Buf Merge 2",             3, rotations.index("Helium"));
+runAllSort(2048, "Proportion Extend Merge", 8);
 
 
 ct = "Block Merge Sorts";
@@ -184,6 +187,12 @@ runAllSort(1024, "MSD Radix Sort",     4, 4);
 runAllSort(1024, "American Flag Sort", 4, 128);
 runAllSort(1024, "Feature Sort",       3);
 runAllSort(1024, "Static Sort",        3);
+
+
+ct = "Pancake Sorts";
+runAllSort(64, "Pancake Sort",      1);
+runAllSort(64, "Optimized Pancake", 1);
+runAllSort(64, "Adjacency Pancake", 2);
 
 
 ct = "Impractical Sorts";

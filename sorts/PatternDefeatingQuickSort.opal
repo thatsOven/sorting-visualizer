@@ -1,4 +1,4 @@
-use MaxHeapSort;
+use MaxHeapSort, adaptLow;
 
 namespace PDQSort {
     new int insertSortThreshold    = 24,
@@ -480,11 +480,13 @@ new function pdqSortRun(array) {
     "Quick Sorts",
     "Branchless Pattern-Defeating QuickSort",
     "Branchless PDQ",
+    usesDynamicAux = True,
     enabled = False
 );
 new function branchlessPdqSortRun(array) {
     new list leftOffsets  = sortingVisualizer.createValueArray(PDQSort.blockSize + PDQSort.cachelineSize),
              rightOffsets = sortingVisualizer.createValueArray(PDQSort.blockSize + PDQSort.cachelineSize);
+    sortingVisualizer.setAdaptAux(lambda arrays: adaptLow(arrays, (leftOffsets, rightOffsets)));
 
     PDQSort.loop(array, 0, len(array), PDQSort.log(len(array)), True, leftOffsets, rightOffsets);
 }

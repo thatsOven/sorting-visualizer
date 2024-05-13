@@ -16,7 +16,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.5.11";
+new str VERSION = "2024.5.12";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -872,6 +872,7 @@ new class SortingVisualizer {
                 if aux {
                     this.__garbageCollect();
                     adapted = this.__adaptAux(this.__auxArrays);
+                    $call auxSect
                 } else {
                     adapted = None;
                 }
@@ -893,8 +894,7 @@ new class SortingVisualizer {
                     this.__visual.fastDraw(this.array, hList);
                 }
 
-                if aux {
-                    $call auxSect
+                if aux {   
                     this.__visual.fastDrawAux(adapted, auxList);
                 }
 
@@ -1085,6 +1085,7 @@ new class SortingVisualizer {
                 if aux {
                     this.__garbageCollect();
                     adapted = this.__adaptAux(this.__auxArrays);
+                    $call auxSect
                 } else {
                     adapted = None;
                 }
@@ -1116,8 +1117,6 @@ new class SortingVisualizer {
                 }
                 
                 if aux {
-                    $call auxSect
-
                     if lazy {
                         this.__visual.fastDrawAux(adapted, auxList);
                     } else {

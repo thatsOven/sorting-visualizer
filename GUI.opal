@@ -861,7 +861,6 @@ new class GUI {
                     case settingsSaveButton {
                         new dynamic oldSound   = this.__sv.settings["sound"],
                                     oldProfile = this.__sv.settings["profile"],
-                                    oldBitrate = this.__sv.settings["bitrate"],
                                     resX       = resolutionXSetting.get_text(),
                                     resY       = resolutionYSetting.get_text(),
                                     bitrate    = bitrateSetting.get_text();

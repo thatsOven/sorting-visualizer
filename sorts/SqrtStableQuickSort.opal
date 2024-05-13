@@ -1,10 +1,26 @@
-use binaryInsertionSort;
-use grailSortGivenAux;
+use binaryInsertionSort, grailSortGivenAux, adaptLow;
 
 new class SqrtStableQuickSort {
     new int SMALL_SORT = 32;
 
-    new classmethod buildBlocks(array, a, b, p) {
+    new method __init__(rot = None) {
+        if rot is None {
+            this.rotate = sortingVisualizer.getRotation(
+                id = sortingVisualizer.getUserSelection(
+                    [r.name for r in sortingVisualizer.rotations],
+                    "Select rotation algorithm (default: Helium)"
+                )
+            ).indexedFn;
+        } else {
+            this.rotate = sortingVisualizer.getRotation(name = rot).indexedFn;
+        }
+
+        this.zeros = None;
+        this.ones  = None;
+        this.keys  = None;
+    }
+
+    new method buildBlocks(array, a, b, p) {
         this.zeroPtr = 0;
         this.onePtr  = 0;
 
@@ -63,7 +79,7 @@ new class SqrtStableQuickSort {
         return last, a + (zeroKey * this.bufLen), r;
     }
 
-    new classmethod sortBlocks(array, a, k) {
+    new method sortBlocks(array, a, k) {
         new int c;
 
         for i = 0; i < k; i++ {
@@ -79,7 +95,7 @@ new class SqrtStableQuickSort {
         }
     }
 
-    new classmethod oopPartition(array, a, b, p) {
+    new method oopPartition(array, a, b, p) {
         this.zeroPtr = 0;
         this.onePtr  = 0;
 
@@ -107,7 +123,7 @@ new class SqrtStableQuickSort {
         return a + r;
     }
 
-    new classmethod partition(array, a, b, p) {
+    new method partition(array, a, b, p) {
         if b - a <= this.bufLen {
             return this.oopPartition(array, a, b, p);
         } elif b - a <= this.bufLen * 2 {
@@ -165,7 +181,7 @@ new class SqrtStableQuickSort {
         return m + this.zeroPtr;
     }
 
-    new classmethod getPivot(array, a, b) {
+    new method getPivot(array, a, b) {
         new int sqrt = pow2Sqrt(b - a),
                 g    = (b - a) // sqrt;
 
@@ -178,7 +194,7 @@ new class SqrtStableQuickSort {
         return this.zeros[sqrt // 2].copy();
     }
 
-    new classmethod quickSorter(array, a, b, d) {
+    new method quickSorter(array, a, b, d) {
         while b - a > this.SMALL_SORT {
             if checkSorted(array, a, b) {
                 return;
@@ -208,11 +224,16 @@ new class SqrtStableQuickSort {
         binaryInsertionSort(array, a, b);
     }
 
-    new classmethod sort(array, a, b) {
+    new method __adaptAux(arrays) {
+        return adaptLow(arrays, (this.keys, ));
+    }
+
+    new method sort(array, a, b) {
         new int sqrt = pow2Sqrt(b - a);
 
         this.bufLen = sqrt;
 
+        sortingVisualizer.setAdaptAux(this.__adaptAux);
         this.zeros = sortingVisualizer.createValueArray(sqrt);
         this.ones  = sortingVisualizer.createValueArray(sqrt);
         this.keys  = sortingVisualizer.createValueArray(((b - a - 1) // sqrt) + 1);
@@ -221,27 +242,12 @@ new class SqrtStableQuickSort {
     }
 }
 
-main {
-    SqrtStableQuickSort.rotate = sortingVisualizer.getRotation(
-        name = "Helium"
-    ).indexedFn;
-}
-
 @Sort(
     "Quick Sorts",
     "Sqrt Stable QuickSort",
-    "Sqrt Stable Quick"
+    "Sqrt Stable Quick",
+    usesDynamicAux = True
 );
 new function sqrtStableQuickSortRun(array) {
-    new dynamic rotate = sortingVisualizer.getRotation(
-        id = sortingVisualizer.getUserSelection(
-            [r.name for r in sortingVisualizer.rotations],
-            "Select rotation algorithm (default: Helium)"
-        )
-    ).indexedFn;
-    
-    new dynamic oldRotate = SqrtStableQuickSort.rotate;
-    SqrtStableQuickSort.rotate = rotate;
-    SqrtStableQuickSort.sort(array, 0, len(array));
-    SqrtStableQuickSort.rotate = oldRotate;
+    SqrtStableQuickSort().sort(array, 0, len(array));
 }
