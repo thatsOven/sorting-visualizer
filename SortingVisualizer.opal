@@ -480,7 +480,7 @@ new class SortingVisualizer {
                 throw VisualizerException(f'Invalid sort name "{name}"');
             }
         } elif name is None {
-            if id in range(0, len(this.sorts)) {
+            if id in range(0, len(this.sorts[category])) {
                 this.__runSortById(category, id);
             } else {
                 throw VisualizerException(f'Invalid sort ID "{id}"');

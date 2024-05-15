@@ -44,6 +44,22 @@ new class BitArray {
         }
     }
 
+    new method setXor(idx, val) {
+        assert idx >= 0 && idx < this.size;
+
+        new int s  = idx * this.w,
+                i1 = this.pa + s + this.w;
+        for i = this.pa + s, j = this.pb + s; i < i1; i++, j++, val >>= 1 {
+            if (val & 1) == 1 {
+                this.flipBit(i, j);
+            }
+        }
+
+        if val > 0 {
+            IO.out("Warning: Word too large\n");
+        }
+    }   
+
     new method get(idx) {
         assert idx >= 0 && idx < this.size;
 
@@ -87,5 +103,14 @@ new class BitArray {
         } 
 
         IO.out("Warning: Integer underflow\n");
+    }
+
+    new method swap(a, b) {
+        assert a >= 0 && a < this.size;
+        assert b >= 0 && b < this.size;
+
+        new int tmp = this.get(a);
+        this.set(a, this.get(b));
+        this.set(b, tmp);
     }
 }

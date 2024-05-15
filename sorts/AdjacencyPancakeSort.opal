@@ -100,9 +100,9 @@ new class AdjacencyPancakeSort  {
                         this.reversal(array, a, k);
                     } else {
                         this.reversal(array, a, j + 1);
-						this.reversal(array, a, j);
-						this.reversal(array, a, k + 1);
-						this.reversal(array, a, a + k - j);
+                        this.reversal(array, a, j);
+                        this.reversal(array, a, k + 1);
+                        this.reversal(array, a, a + k - j);
                     }
                 }
             } else {

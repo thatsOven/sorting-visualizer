@@ -99,6 +99,7 @@ abstract: new class Visual {
     abstract: new method drawAux(array, indices); # draws the aux array in that visual style 
 
     new method fastDraw(array, indices) {
+        sortingVisualizer.graphics.fill((0, 0, 0));
         this.draw(array, indices);
     }
 

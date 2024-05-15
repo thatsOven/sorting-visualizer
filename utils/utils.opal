@@ -295,18 +295,25 @@ new function LLPartition(array, a, b) {
     return i;
 }
 
-new function findMinMaxValue(array, a, b) {
-    new Value currMin = array[a].copy(),
-              currMax = currMin;
+new function findMinMaxIndices(array, a, b) {
+    new int currMin = a,
+            currMax = a;
 
     for i = a + 1; i < b; i++ {
-        if array[i] < currMin {
-            currMin = array[i].copy();
-        } elif array[i] > currMax {
-            currMax = array[i].copy();
+        if array[i] < array[currMin] {
+            currMin = i;
+        } elif array[i] > array[currMax] {
+            currMax = i;
         }
     }
+
     return currMin, currMax;
+}
+
+new function findMinMaxValue(array, a, b) {
+    new int min_, max_;
+    min_, max_ = findMinMaxIndices(array, a, b);
+    return array[min_].copy(), array[max_].copy();
 }
 
 new function findMinMax(array, a, b) {

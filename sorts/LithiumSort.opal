@@ -40,18 +40,7 @@
  
 use blockSwap, backwardBlockSwap, compareValues,
     compareIntToValue, insertToRight, lrBinarySearch, 
-    binaryInsertionSort, log2, BufMerge2;
-
-new class LithiumBitArray: BitArray {
-    new method swap(a, b) {
-        assert a >= 0 && a < this.size;
-        assert b >= 0 && b < this.size;
-
-        new int tmp = this.get(a);
-        this.set(a, this.get(b));
-        this.set(b, tmp);
-    }
-}
+    binaryInsertionSort, log2, BufMerge2, BitArray;
 
 new class LithiumSort {
     new int RUN_SIZE           = 32,
@@ -560,7 +549,7 @@ new class LithiumSort {
         if this.checkValidBitArray(array, a, m1, size) {
             m3 = m2 - ((m2 - m3) // this.blockLen) * this.blockLen;
 
-            new LithiumBitArray bits = LithiumBitArray(array, a, m1 - size, nW, w);
+            new BitArray bits = BitArray(array, a, m1 - size, nW, w);
             this.combine(array, m3, m2, b, bits);
             bits.free();
         } else {
@@ -594,7 +583,7 @@ new class LithiumSort {
                 this.rotate(array, m4, m1, m3);
             }
 
-            new LithiumBitArray bits = LithiumBitArray(array, m3, b - size, nW, w);
+            new BitArray bits = BitArray(array, m3, b - size, nW, w);
             this.combine(array, a, m4, m5, bits);
             bits.free();
         } else {
@@ -674,7 +663,7 @@ new class LithiumSort {
             new dynamic bits;
             new bool dualBuf = this.dualBuf;
             if this.checkValidBitArray(array, a, a + twoR, size) {
-                bits = LithiumBitArray(array, a, a + twoR - size, nW, w);
+                bits = BitArray(array, a, a + twoR - size, nW, w);
             } else {
                 bits = None;
                 this.dualBuf = False;

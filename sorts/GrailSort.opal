@@ -1018,6 +1018,8 @@ new function lazyStableSortRun(array) {
         )
     ).lengthFn;
 
+    new dynamic oldRotate = GrailSort.grailRotate;
     GrailSort.grailRotate = rotate;
     GrailSort.grailLazyStableSort(array, 0, len(array));
+    GrailSort.grailRotate = oldRotate;
 }

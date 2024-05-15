@@ -269,7 +269,7 @@ namespace PacheSort {
 }
 
 @Sort(
-    "Partition Sorts",
+    "Hybrid Sorts",
     "Pache Sort",
     "Pache Sort"
 );

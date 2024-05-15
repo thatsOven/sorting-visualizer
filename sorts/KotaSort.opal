@@ -89,10 +89,10 @@ namespace KotaSort {
     new classmethod pingPongMerge(array, a, m1, m, m2, b, p) {
         new int p1   = p + m - a, 
                 pEnd = p + b - a;
-			
-		this.mergeTo(array, a, m1, m, p);
-		this.mergeTo(array, m, m2, b, p1);
-		this.mergeTo(array, p, p1, pEnd, a);
+            
+        this.mergeTo(array, a, m1, m, p);
+        this.mergeTo(array, m, m2, b, p1);
+        this.mergeTo(array, p, p1, pEnd, a);
     }
 
     new classmethod inPlaceMergeBW(array, a, m, b) {

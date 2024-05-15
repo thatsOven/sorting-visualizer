@@ -96,18 +96,19 @@ runAllSort(512,  "Tree Sort",        5, killers = {
 runAllSort(2048, "Max Heap Sort",   15);
 runAllSort(2048, "Smooth Sort",     10);
 runAllSort(2048, "Poplar Heap",     10);
-runAllSort(1024, "Weak Heap Sort",   5);
-runAllSort(1024, "Patience Sort",   10);
+runAllSort(2048, "Weak Heap Sort",  15);
+runAllSort(2048, "Patience Sort",   20);
 
 
 ct = "Concurrent Sorts";
-runAllSort(1024, "Bose Nelson",             7);
-runAllSort(2048, "Bose Nelson (Parallel)",  1);
-runAllSort(1024, "Fold Sort",               7);
-runAllSort(1024, "Bitonic Sort",            5);
-runAllSort(2048, "Bitonic Sort (Parallel)", 1);
-runAllSort(1024, "Pairwise",                5);
-runAllSort(1024, "Odd Even Merge",          5);
+runAllSort(1024, "Bose Nelson",               7);
+runAllSort(2048, "Bose Nelson (Parallel)",    1);
+runAllSort(1024, "Fold Sort",                 7);
+runAllSort(1024, "Bitonic Sort",              5);
+runAllSort(2048, "Bitonic Sort (Parallel)",   1);
+runAllSort(1024, "Pairwise",                  5);
+runAllSort(1024, "Odd Even Merge",            5);
+runAllSort(2048, "Odd Even Merge (Parallel)", 1);
 
 
 ct = "Quick Sorts";
@@ -147,46 +148,52 @@ runAllSort(1024, "Stackless Quick",          4, pivotSelections.index("Median of
 runAllSort(1024, "Dual Pivot Quick",         4, killers = centerKillers);
 runAllSort(2048, "Median-Of-16 A. Quick",   10);
 runAllSort(2048, "PDQ Sort",                10); 
-runAllSort(1024, "Aeos Quick",               3);
-runAllSort(1024, "Log Sort",                 3, 0);
+runAllSort(2048, "Aeos Quick",               8);
+runAllSort(2048, "Log Sort",                 8, 0);
 
 
 ct = "Merge Sorts";
-runAllSort(1024, "Merge Sort",              8);
-runAllSort(2048, "Merge Sort (Parallel)",   2);
-runAllSort(1024, "Bottom Up Merge",         4);
-runAllSort(256,  "Lazy Stable",             4, rotations.index("Gries-Mills"));
-runAllSort(1024, "Rotate Merge",            3, rotations.index("Gries-Mills"));
-runAllSort(2048, "Rotate Merge (Parallel)", 1, rotations.index("Gries-Mills"));
-runAllSort(1024, "Adaptive Rotate Merge",   5, 128);
-runAllSort(1024, "Uranium Sort",            2);
-runAllSort(1024, "Tim Sort",                5);
-runAllSort(2048, "Andrey's Merge",          8);
-runAllSort(2048, "Buf Merge 2",             3, rotations.index("Helium"));
-runAllSort(2048, "Proportion Extend Merge", 8);
+runAllSort(2048, "Merge Sort",              16);
+runAllSort(2048, "Merge Sort (Parallel)",    2);
+runAllSort(2048, "Bottom Up Merge",          8);
+runAllSort(256,  "Lazy Stable",              4, rotations.index("Gries-Mills"));
+runAllSort(1024, "Rotate Merge",             3, rotations.index("Gries-Mills"));
+runAllSort(2048, "Rotate Merge (Parallel)",  1, rotations.index("Gries-Mills"));
+runAllSort(2048, "Adaptive Rotate Merge",   10, 256);
+runAllSort(2048, "Uranium Sort",             6);
+runAllSort(2048, "Tim Sort",                10);
+runAllSort(2048, "New Shuffle Merge",       12, rotations.index("Gries-Mills"));
+runAllSort(2048, "Andrey's Merge",           8);
+runAllSort(2048, "Buf Merge 2",              3, rotations.index("Helium"));
+runAllSort(2048, "Proportion Extend Merge",  8);
 
 
 ct = "Block Merge Sorts";
-runAllSort(2048, "Wiki Sort",     7, [0, rotations.index("Triple Reversal")]);
-runAllSort(2048, "Grail Sort",    7, [0, rotations.index("Gries-Mills")]);
-runAllSort(2048, "Helium Sort",   3, 0);
-runAllSort(1024, "Hydrogen Sort", 2);
-runAllSort(2048, "Kota Sort",     7, rotations.index("Cycle Reverse"));
-runAllSort(1024, "Ecta Sort",     3);
-runAllSort(2048, "Lithium Sort",  4);
+runAllSort(2048, "Wiki Sort",          7, [0, rotations.index("Triple Reversal")]);
+runAllSort(2048, "Grail Sort",         7, [0, rotations.index("Gries-Mills")]);
+runAllSort(2048, "Helium Sort",        3, 0);
+runAllSort(2048, "Hydrogen Sort",      4);
+runAllSort(2048, "Kota Sort",          7, rotations.index("Cycle Reverse"));
+runAllSort(2048, "Ecta Sort",          6);
+runAllSort(2048, "Lithium Sort",       4);
+runAllSort(2048, "Kita Sort",          6);
+runAllSort(2048, "Chalice Sort",       6);
+runAllSort(2048, "Advanced Log Merge", 6, [0, rotations.index("Cycle Reverse")]);
+runAllSort(1024, "Remi Sort",          8);
 
 
-ct = "Partition Sorts";
-runAllSort(1024, "Pache Sort", 5);
+ct = "Hybrid Sorts";
+runAllSort(256,  "In-Place Stable Cycle", 0.5, rotations.index("Cycle Reverse"));
+runAllSort(1024, "Pache Sort",              5);
 
 
 ct = "Distribution Sorts";
-runAllSort(1024, "Counting Sort",      4);
-runAllSort(1024, "LSD Radix Sort",     4, 4);
-runAllSort(1024, "MSD Radix Sort",     4, 4);
-runAllSort(1024, "American Flag Sort", 4, 128);
-runAllSort(1024, "Feature Sort",       3);
-runAllSort(1024, "Static Sort",        3);
+runAllSort(2048, "Counting Sort",      8);
+runAllSort(2048, "LSD Radix Sort",     8, 4);
+runAllSort(2048, "MSD Radix Sort",     8, 4);
+runAllSort(2048, "American Flag Sort", 8, 128);
+runAllSort(2048, "Feature Sort",       6);
+runAllSort(2048, "Static Sort",        6);
 
 
 ct = "Pancake Sorts";
