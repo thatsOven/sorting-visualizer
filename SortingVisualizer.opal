@@ -1654,6 +1654,8 @@ new class SortingVisualizer {
 
         try {
             exec(threadCode);
+        } catch StopAlgorithm {
+            this.__stopAlgorithm();
         } catch Exception as e {
             this.__reportException(e);
         }
