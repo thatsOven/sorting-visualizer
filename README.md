@@ -21,7 +21,7 @@ The visualizer consists of three main menus:
 		- Run threads: Runs a thread that's been previously created;
 		- Thread builder: Enables the user to create threads;
 
-While an algorithm is running, the "S" key on your keyboard can be pressed to skip the sort.
+While an algorithm is running, the "S" key on your keyboard can be pressed to skip it.
 
 # Settings
 ### Show text
