@@ -772,10 +772,6 @@ new class SortingVisualizer {
     }
 
     new method __getWaveformFromIdx(i, adapted) {
-        if i.silent {
-            return;
-        }
-
         new dynamic tmp;
 
         if i.aux is not None && len(this.__auxArrays) != 0 {
@@ -792,7 +788,7 @@ new class SortingVisualizer {
     }
 
     $macro playSound(hList, adapted)
-        this.graphics.playWaveforms([this.__getWaveformFromIdx(x, adapted) for x in hList[:min(len(hList), POLYPHONY_LIMIT)]]);
+        this.graphics.playWaveforms([this.__getWaveformFromIdx(x, adapted) for x in [y for y in hList if not y.silent][:min(len(hList), POLYPHONY_LIMIT)]]);
     $end
 
     new method __partitionIndices(hList) {
@@ -1126,7 +1122,7 @@ new class SortingVisualizer {
                 this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
                 
                 new dynamic currWave = this.__getWaveformFromIdx(hList[0], adapted);
-                for h in hList[:min(len(hList), POLYPHONY_LIMIT)] {
+                for h in [x for x in hList if not x.silent][:min(len(hList), POLYPHONY_LIMIT)] {
                     currWave += this.__getWaveformFromIdx(h, adapted);
                 }
 
