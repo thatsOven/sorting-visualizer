@@ -1462,7 +1462,7 @@ new class SortingVisualizer {
         this.__gui.userWarn(this.__currentlyRunning, message);
     }
 
-    new method __reportException(e) {
+    new method __reportException(e, msg = None) {
         if this.__prepared {
             this.resetAux();
             this.resetAdaptAux();
@@ -1472,7 +1472,12 @@ new class SortingVisualizer {
         new str f = formatException(e);
         IO.out(f, IO.endl);
         this.__gui.saveBackground();
-        this.__gui.userWarn("Exception occurred", f);
+
+        if msg is not None {
+            this.__gui.userWarn("Exception occurred", msg + "\n" + f);
+        } else {
+            this.__gui.userWarn("Exception occurred", f);
+        }
     }
 
     new method getKillerIds(killers, distribution) {
@@ -1745,6 +1750,14 @@ new class SortingVisualizer {
         return this.__gui.fileDialog(allowed, initPath);
     }
 
+    new method __wrappedFinalizeRender() {
+        try {
+            this.__finalizeRender();
+        } catch Exception as e {
+            this.__reportException(e, "An error occurred while finalizing the render. Is ffmpeg installed?");
+        }
+    }
+
     new method __prepare(group) {
         new dynamic attr = getattr(this, group);
         Utils.Iterables.stableSort(attr);
@@ -1816,7 +1829,7 @@ new class SortingVisualizer {
                         } 
 
                         this.__resetShufThread();
-                        this.__finalizeRender();
+                        this.__wrappedFinalizeRender();
 
                         this.__gui.saveBackground();
                         new int opt = this.__gui.selection("Done", "Continue?", [
@@ -1828,7 +1841,7 @@ new class SortingVisualizer {
                 case 1 {
                     new dict runOpts = this.__gui.runAll();
                     $include os.path.join(HOME_DIR, "threads", "runAllSorts.opal")
-                    this.__finalizeRender();
+                    this.__wrappedFinalizeRender();
                     this.__gui.userWarn("Finished", "All sorts have been visualized.");
                 }
                 case 2 {
@@ -1840,7 +1853,7 @@ new class SortingVisualizer {
                     match sel {
                         case 0 {
                             this.__selectThread("Thread", True, True);
-                            this.__finalizeRender();
+                            this.__wrappedFinalizeRender();
                         }
                         case 1 {
                             $include os.path.join(HOME_DIR, "threadBuilder", "ThreadBuilder.opal")
