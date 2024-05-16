@@ -76,6 +76,7 @@ enum ArrayState {
 }
 
 new class VisualizerException: Exception {}
+new class StopAlgorithm: Exception {}
 
 new class SortingVisualizer {
     new str SETTINGS_FILE = os.path.join(HOME_DIR, "config.json"),
@@ -127,6 +128,7 @@ new class SortingVisualizer {
 
         this.__checking = False;
         this.__prepared = False;
+        this.__skipKey  = False;
 
         this.__autoUserValues = Queue();
         this.__shufThread     = None;
@@ -159,6 +161,18 @@ new class SortingVisualizer {
         }    
     }
 
+    new method __keyDown(event) {
+        if event.key == K_s {
+            this.__skipKey = True;
+        }
+    }
+
+    new method __keyUp(event) {
+        if event.key == K_s {
+            this.__skipKey = False;
+        }
+    }
+
     new method __initGraphics() {
         new dynamic res = Vector().fromList(this.settings["resolution"]);
         this.__fontSize = round(((res.x / 1280.0) + (res.y / 720.0)) * 11);
@@ -171,6 +185,8 @@ new class SortingVisualizer {
 
         this.__audioChs = this.graphics.getAudioChs()[2];
         this.graphics.event(QUIT)(lambda _: sys.exit(0));
+        this.graphics.event(KEYDOWN)(this.__keyDown);
+        this.graphics.event(KEYUP)(this.__keyUp);
     }
 
     new method __loadSettings() {
@@ -833,7 +849,11 @@ new class SortingVisualizer {
         }
     $end
 
-    $macro handleThreadedHighlight
+    $macro handleThreadedHighlightAndSkip
+        if this.__skipKey {
+            throw StopAlgorithm();
+        }
+
         if this.__parallel && threading.get_ident() != this.__mainThread {
             while True {
                 with this.__videoGenFlagLock {
@@ -853,7 +873,7 @@ new class SortingVisualizer {
     $end
 
     new method multiHighlightAdvanced(hList) {
-        $call handleThreadedHighlight
+        $call handleThreadedHighlightAndSkip
 
         new dynamic sTime = default_timer();
         hList = [x for x in (hList + this.highlights) if x is not None];
@@ -1068,7 +1088,7 @@ new class SortingVisualizer {
     }
 
     new method __renderedHighlight(hList) {
-        $call handleThreadedHighlight
+        $call handleThreadedHighlightAndSkip
 
         hList = [x for x in (hList + this.highlights) if x is not None];
         hList = [x for x in hList if x.idx is not None];
@@ -1500,6 +1520,13 @@ new class SortingVisualizer {
         }
     }
 
+    new method __stopAlgorithm() {
+        this.drawFullArray();
+        this.renderStats();
+        this.__gui.saveBackground();
+        this.__gui.userWarn("Done", "Algorithm stopped.");
+    }
+
     new method runSortingProcess(distribution, length, unique, shuffle, categoryName, sortName, speed = 1.0, mult = 1.0, killers = {}) {
         try {
             this.generateArray(distribution, shuffle, length, unique);
@@ -1515,7 +1542,9 @@ new class SortingVisualizer {
             }
 
             this.runSort(categoryName, name = sortName);
-            this.resetSpeed();
+            this.resetSpeed();  
+        } catch StopAlgorithm {
+            this.__stopAlgorithm();
         } catch Exception as e {
             this.__reportException(e);
         }   
@@ -1834,6 +1863,8 @@ new class SortingVisualizer {
                             this.generateArray(runOpts["distribution"], runOpts["shuffle"], runOpts["array-size"], runOpts["unique"]);
                             this.setSpeed(runOpts["speed"]);
                             this.runSort(this.categories[runOpts["category"]], id = runOpts["sort"]);
+                        } catch StopAlgorithm {
+                            this.__stopAlgorithm();
                         } catch Exception as e {
                             this.__reportException(e);
                         } 

@@ -12,6 +12,17 @@ To properly run the visualizer from source, you will need to install the Python 
 
 To use render mode, ffmpeg needs to be properly installed on your system.
 
+# Usage
+The visualizer consists of three main menus:
+- Run sort: Lets you pick all settings to run a specific sort and visualize it;
+- Run all sorts: Lets you pick a distribution, shuffle, and visual style to run every sort on. This is the mode that's used to create videos such as [the example](https://youtu.be/iZjOP4Htz3c);
+- Threads: 
+	- Threads are sequences of actions that are defined through the thread builder, useful to make videos about a certain topic or algorithm. The "Threads" menu has two submenus:
+		- Run threads: Runs a thread that's been previously created;
+		- Thread builder: Enables the user to create threads;
+
+While an algorithm is running, the "S" key on your keyboard can be pressed to skip the sort.
+
 # Settings
 ### Show text
 If set to `False`, the visualizer will hide the text in the top left corner.
