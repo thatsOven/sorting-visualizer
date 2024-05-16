@@ -217,3 +217,28 @@ new function adaptLow(arrays, lowArrays) {
 
     return result;
 }
+
+new class DotsVisual: LineVisual {
+    new method prepare() {
+        LineVisual.prepare(this);
+        this.lineLengthConst = (sortingVisualizer.graphics.resolution.y - this.lineSize) / sortingVisualizer.arrayMax;
+    }
+
+    new method onAuxOn(length) {
+        LineVisual.onAuxOn(this, length);
+
+        this.lineLengthConst = (sortingVisualizer.graphics.resolution.y * (3.0 / 4) - 2 - this.lineSize) / sortingVisualizer.arrayMax;
+
+        this.auxResolution = sortingVisualizer.graphics.resolution.copy();
+        this.auxResolution.y //= 4;
+
+        this.auxLineLengthConst = (this.auxResolution.y - this.auxLineSize) / sortingVisualizer.auxMax;
+    }
+
+    new method onAuxOff() {
+        LineVisual.onAuxOff(this);
+
+        this.lineLengthConst = (sortingVisualizer.graphics.resolution.y - this.lineSize) / sortingVisualizer.arrayMax;
+        this.top             = 0;
+    }
+}

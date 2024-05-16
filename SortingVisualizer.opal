@@ -16,7 +16,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.5.12";
+new str VERSION = "2024.5.16";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -267,7 +267,9 @@ new class SortingVisualizer {
         if this.settings["render"] && !this.settings["lazy-render"] {
             this.__visual.draw(this.array, {});
         } else {
-            this.__visual.fastDraw(this.array, {i: None for i in range(len(this.array))});
+            if this.__visual.fastDraw(this.array, {i: None for i in range(len(this.array))}) {
+                this.__visual.draw(this.array, {});
+            }
         }
     }
 
@@ -564,7 +566,7 @@ new class SortingVisualizer {
                         hList = (
                             {x: (0, 0, 255) for x in range(currentIdx)} | 
                             {x: (0, 255, 0) for x in range(currentIdx, len(this.array))}
-                        ) if this.settings["render"] else None
+                        ) 
                     );
 
                     return ArrayState.SORTED;
@@ -574,7 +576,7 @@ new class SortingVisualizer {
                     hList = (
                         {x: (0, 0, 255) for x in range(currentIdx)} | 
                         {x: (0, 255, 0) for x in range(currentIdx, len(this.array))}
-                    ) if this.settings["render"] else None
+                    )
                 );
                 currentIdx += len(stabilityCheck[unique]);
             }
@@ -585,7 +587,7 @@ new class SortingVisualizer {
             new int p = min(sUntil, eq);
             this.sweep(0,               p, (0, 255, 0));
             this.sweep(p, len(this.array), (255, 0, 0), 
-                hList = {x: (0, 255, 0) for x in range(p)} if this.settings["render"] else None
+                hList = {x: (0, 255, 0) for x in range(p)}
             );
 
             if sUntil != len(this.array) - 1 {
@@ -859,7 +861,7 @@ new class SortingVisualizer {
 
         static {
             new int length;
-            new bint aux;
+            new bint hasFast = True, aux;
         }
 
         if len(hList) != 0 {
@@ -891,7 +893,11 @@ new class SortingVisualizer {
                     this.graphics.fill((0, 0, 0));
                     this.__visual.draw(this.array, hList);
                 } else {
-                    this.__visual.fastDraw(this.array, hList);
+                    if this.__visual.fastDraw(this.array, hList) {
+                        hasFast = False;
+                        this.graphics.fill((0, 0, 0));
+                        this.__visual.draw(this.array, hList);
+                    }
                 }
 
                 if aux {   
@@ -902,7 +908,7 @@ new class SortingVisualizer {
 
                 $call update
                 
-                if !this.__parallel {
+                if (!this.__parallel) || (!hasFast) {
                     for highlight in hList {
                         hList[highlight] = None;
                     }
@@ -1242,8 +1248,14 @@ new class SortingVisualizer {
     }
 
     new method sweep(a, b, color, hList = None) {
+        if hList is None {
+            hList = {};
+        }
+
         this.renderStats();
         this.__checking = True;
+
+        static: new bint hasFast = True;
 
         this.setSpeed(len(this.array) / 128.0);
         new dynamic sleep = max(this.__sleep, MIN_SLEEP);
@@ -1251,14 +1263,27 @@ new class SortingVisualizer {
         
         for i = a; i < b; i++ {
             new dynamic sTime = default_timer();
-            this.__visual.fastDraw(this.array, {i: color});
+
+            if hasFast {
+                if this.__visual.fastDraw(this.array, {i: color}) {
+                    hasFast = False;
+                    hList[i] = color;
+                }
+            } else {
+                hList[i] = color;
+            }
 
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
 
                 this.graphics.playWaveforms([this.__getWaveformFromIdx(HighlightInfo(i, None, color), None)]);
 
-                if len(this.__forceLoadedIndices) != 0 && i <= this.__forceLoadedIndicesList[-1] {
+                if hasFast {
+                    if len(this.__forceLoadedIndices) != 0 && i <= this.__forceLoadedIndicesList[-1] {
+                        this.renderStats();
+                    }
+                } else {
+                    this.__visual.draw(this.array, hList);
                     this.renderStats();
                 }
             
