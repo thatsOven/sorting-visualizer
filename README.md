@@ -255,6 +255,7 @@ The `Visual` class contains two abstract methods:
 - `drawAux(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: like `draw`, but draws the aux array.
 
 The class also provides three methods that get called in specific scenarios and can be overridden. By default, they do nothing:
+- `init()`: gets called when the graphic system is re-initialized (usually when the resolution is changed). Useful to change data that relies on the resolution.
 - `prepare()`: precomputes data for the visual style;
 - `onAuxOn(length)`: gets called when aux is turned on or constants are to recompute. Useful to prepare data;
 - `onAuxOff()`: gets called when aux mode is turned off. Useful to restore old values.

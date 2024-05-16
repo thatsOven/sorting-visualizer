@@ -91,6 +91,7 @@ abstract: new class Visual {
         sortingVisualizer.addVisual(this);
     }
 
+    new method init()          {} # gets called whenever the graphics system gets reinitialized. useful to compute data when resolution changes
     new method prepare()       {} # precomputes data for the visual style based on the array
     new method onAuxOn(length) {} # gets called when aux is turned on or constants are to recompute. useful to prepare data
     new method onAuxOff()      {} # gets called when aux mode is turned off. useful to restore old values

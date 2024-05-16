@@ -242,3 +242,16 @@ new class DotsVisual: LineVisual {
         this.top             = 0;
     }
 }
+
+new class BaseDataTrace: LineVisual {
+    new method init() {
+        this.oldArray = None;
+        this.mainSurf = Surface(sortingVisualizer.graphics.resolution.toList(2));
+
+        this.oldAux  = None;
+        this.auxSurf = Surface((
+            sortingVisualizer.graphics.resolution.x, 
+            sortingVisualizer.graphics.resolution.y // 4
+        ));
+    }
+}

@@ -26,7 +26,7 @@ package functools:   import total_ordering;
 package itertools:   import chain;
 package traceback:   import format_exception;
 package pygame_gui:  import UIManager, elements, windows;
-package pygame:      import Rect, image, display;
+package pygame:      import Rect, Surface, image, display;
 package sf2_loader:  import sf2_loader;
 package pygame.time: import Clock;
 package scipy:       import signal, io;
@@ -187,6 +187,10 @@ new class SortingVisualizer {
         this.graphics.event(QUIT)(lambda _: sys.exit(0));
         this.graphics.event(KEYDOWN)(this.__keyDown);
         this.graphics.event(KEYUP)(this.__keyUp);
+
+        for visual in this.visuals {
+            visual.init();
+        }
     }
 
     new method __loadSettings() {
@@ -1122,7 +1126,7 @@ new class SortingVisualizer {
                 this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
                 
                 new dynamic currWave = this.__getWaveformFromIdx(hList[0], adapted);
-                for h in hList[1:min(len(hList), POLYPHONY_LIMIT)] {
+                for h in hList[:min(len(hList), POLYPHONY_LIMIT)] {
                     currWave += this.__getWaveformFromIdx(h, adapted);
                 }
 
@@ -1820,6 +1824,10 @@ new class SortingVisualizer {
         }
 
         IO.out(f"{tot} sorts loaded.\n");
+
+        for visual in this.visuals {
+            visual.init();
+        }
 
         new Shuffle threadShuf = Shuffle("Run thread");
         threadShuf.func = this.__threadShuf;
