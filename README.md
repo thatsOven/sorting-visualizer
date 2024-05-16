@@ -94,7 +94,7 @@ An `HighlightInfo` object contains more information for each highlight. Internal
 `record HighlightInfo(index: int, aux: list[Value] | None = None, color: tuple[int, int, int] | None = None, silent: bool = False);`
 - `index`: contains the array index to be highlighted;
 - `aux`: stores a pointer to the auxiliary array where the highlight came from. If `None`, the highlight came from the main array;
-- `color`: the color that the highlight will have;
+- `color`: the color that the highlight will have. If `None`, the color will be set to the default highlight color for the current visual style;
 - `silent`: whether the highlight should not produce sound. Useful for color coding.
 
 Queued highlights are stored in a list (`sortingVisualizer.highlights`) that can be edited manually for advanced operations. In a multithreaded context, it should be edited while the relative lock (`sortingVisualizer.highlightsLock`) is acquired. This is done automatically in the `queue` methods.
@@ -179,7 +179,7 @@ new function mySort(array) {
     # your code here
 }
 ```
-Like in shuffles, the sort class provides a `usesDynamicAux` argument for the same purpose.
+Like in shuffles, the sort class provides a `usesDynamicAux` argument for the same purpose. The sort class also provides an `enabled` argument, that can be set to `False` for sorts that aren't ready for use. Those sorts will only be added to the sorts list if `DEBUG_MODE` is set to `True`
 ## Adding new pivot selections
 Pivot selections are algorithms used to select a pivot in partitioning sorts that require one. The visualizer provides a set of pivot selections for those algorithms to use, and the user can pick the one they prefer to experiment with. The process to adding one is very similar to adding a shuffle. The file needs to be added in the `pivotSelection` folder, and provide a run function:
 ```
@@ -236,8 +236,8 @@ new class MyVisual: Visual {
 }
 ```
 - `highlightColor`: a tuple containing 3 values (0, 255) in the RGB format;
-- `refreshMode`: can either be `RefreshMode.STANDARD` for line-like visuals that intersect with the text, `RefreshMode.NOREFRESH` for visuals that don't need forced indices reloading, and `RefreshMode.FULL` for visuals that need the whole array to be refreshed at all times.
-- `outOfText`: a boolean that indicates whether the visual draws over text. If it doesn't (True), the visualizer will draw a black rectangle under the text, to refresh it.
+- `refreshMode`: can either be `RefreshMode.STANDARD` for line-like visuals that intersect with the text, `RefreshMode.NOREFRESH` for visuals that don't need forced indices reloading, and `RefreshMode.FULL` for visuals that need the whole array to be refreshed at all times. Note that this is only relevant for `fastDraw`;
+- `outOfText`: a boolean that indicates whether the visual draws over text. If it doesn't (True), the visualizer will draw a black rectangle under the text, to refresh it. This also only relevant for `fastDraw`
 
 The `Visual` class contains two abstract methods: 
 - `draw(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: draws the main array. `indices` contains the list of highlighted indices, each mapped to a color. If the mapped color is `None` the visual should draw those indices like they're not highlighted;
