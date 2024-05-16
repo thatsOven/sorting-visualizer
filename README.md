@@ -81,12 +81,12 @@ For array operations that don't work properly with the `Value` class, the visual
 - `sortingVisualizer.swap(array: list, a: int, b: int)`.
 ## Manual highlights
 The visualizer provides eight methods for manual highlighting:
-- `sortingVisualizer.highlight(index: int, aux: bool = False)`: highlights the given index;
-- `sortingVisualizer.multiHighlight(indices: list[int], aux: bool = False)`: highlights a list of indices.
+- `sortingVisualizer.highlight(index: int, aux: list | None = None)`: highlights the given index;
+- `sortingVisualizer.multiHighlight(indices: list[int], aux: list | None = None)`: highlights a list of indices.
 - `sortingVisualizer.highlightAdvanced(index: HighlightInfo)`: highlights a `HighlightInfo` object;
 - `sortingVisualizer.multiHighlightAdvanced(indices: list[HighlightInfo])`: highlights a list of `HighlightInfo` objects;
-- `sortingVisualizer.queueHighlight(index: int, aux: bool = False)`: adds the given index to the list of highlights that will be visualized with the next update;
-- `sortingVisualizer.queueMultiHighlight(indices: list[int], aux: bool = False)`: like `queueHighlight`, but accepts a list of indices;
+- `sortingVisualizer.queueHighlight(index: int, aux: list | None = None)`: adds the given index to the list of highlights that will be visualized with the next update;
+- `sortingVisualizer.queueMultiHighlight(indices: list[int], aux: list | None = None)`: like `queueHighlight`, but accepts a list of indices;
 - `sortingVisualizer.queueHighlightAdvanced(index: HighlightInfo)`: like `queueHighlight`, but uses a `HighlightInfo` object;
 - `sortingVisualizer.queueMultiHighlightAdvanced(indices: list[HighlightInfo])`: like `queueHighlightAdvanced`, but accepts a list of `HighlightInfo` objects;
 
