@@ -908,7 +908,7 @@ new class SortingVisualizer {
 
                 $call update
                 
-                if (!this.__parallel) || (!hasFast) {
+                if hasFast && !this.__parallel {
                     for highlight in hList {
                         hList[highlight] = None;
                     }
@@ -1078,7 +1078,7 @@ new class SortingVisualizer {
 
         static {
             new int  length;
-            new bint aux;
+            new bint hasFast = False, aux;
         }
 
         if len(hList) != 0 {
@@ -1116,7 +1116,11 @@ new class SortingVisualizer {
                 }
 
                 if lazy {
-                    this.__visual.fastDraw(this.array, hList);
+                    if this.__visual.fastDraw(this.array, hList) {
+                        hasFast = False;
+                        this.graphics.fill((0, 0, 0));
+                        this.__visual.draw(this.array, hList);
+                    }
                 } else {
                     this.graphics.fill((0, 0, 0));
                     this.__visual.draw(this.array, hList);
@@ -1142,7 +1146,7 @@ new class SortingVisualizer {
 
                 $call checkCompress
                 
-                if lazy {
+                if lazy && hasFast {
                     for highlight in hList {
                         hList[highlight] = None;
                     }
@@ -1311,8 +1315,11 @@ new class SortingVisualizer {
 
         this.setSpeed(len(this.array) / 128.0);
 
-        new dynamic lazy = this.settings["lazy-render"];
-        new dynamic tSleep = max(INV_RENDER_FRAMES, this.__sleep);
+        static {
+            new bint  lazy   = this.settings["lazy-render"];
+            new float tSleep = max(INV_RENDER_FRAMES, this.__sleep);
+        }
+        
         this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
 
         for i = a; i < b; i++ {
@@ -1321,7 +1328,10 @@ new class SortingVisualizer {
             new dynamic hInfo = HighlightInfo(i, None, color);
             
             if lazy {
-                this.__visual.fastDraw(this.array, {i: color});
+                if this.__visual.fastDraw(this.array, {i: color}) {
+                    lazy = False;
+                    hList[i] = color;
+                }
             } else {
                 hList[i] = color;
             }
