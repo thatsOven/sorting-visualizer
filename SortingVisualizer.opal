@@ -1644,7 +1644,7 @@ new class SortingVisualizer {
         this.drawFullArray();
     }
 
-    new method __loadThreadAndRun(thread, initGraph = False) {
+    new method __loadThreadAndRun(thread) {
         new auto f = open(thread, "r");
         new str threadCode = "";
         for line in f {
@@ -1682,7 +1682,7 @@ new class SortingVisualizer {
         return True;
     }
 
-    new method __selectThread(title, run, initGraph = False) {
+    new method __selectThread(title, run) {
         new list threads = [];
         new dynamic ldir;
         ldir = os.listdir(os.path.join(HOME_DIR, "threads"));
@@ -1704,7 +1704,7 @@ new class SortingVisualizer {
         }
 
         if run {
-            this.__loadThreadAndRun(path, initGraph);
+            this.__loadThreadAndRun(path);
         } else {
             return path;
         }
