@@ -1336,8 +1336,8 @@ new class SortingVisualizer {
         this.setSpeed(len(this.array) / 128.0);
 
         static {
-            new bint  lazy   = this.settings["lazy-render"];
-            new float tSleep = max(INV_RENDER_FRAMES, this.__sleep);
+            new bint   lazy   = this.settings["lazy-render"];
+            new double tSleep = max(INV_RENDER_FRAMES, this.__sleep);
         }
         
         this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
