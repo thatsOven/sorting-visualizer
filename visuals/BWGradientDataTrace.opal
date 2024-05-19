@@ -7,8 +7,7 @@ new class BWGradientDataTrace: BaseDataTrace {
     new method __init__() {
         super.__init__(
             "B/W Gradient Data Trace",
-            (255, 0, 0),
-            RefreshMode.NOREFRESH
+            (255, 0, 0)
         );
     }
 

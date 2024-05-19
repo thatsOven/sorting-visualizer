@@ -2,7 +2,8 @@ new class RainbowBarGraph: LineVisual {
     new method __init__() {
         super().__init__(
             "Rainbow Bar Graph",
-            (255, 255, 255)
+            (255, 255, 255),
+            RefreshMode.LINES
         );
     }
 

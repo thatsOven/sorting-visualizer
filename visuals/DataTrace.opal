@@ -7,8 +7,7 @@ new class DataTrace: BaseDataTrace {
     new method __init__() {
         super.__init__(
             "Data Trace",
-            (255, 255, 255),
-            RefreshMode.NOREFRESH
+            (255, 255, 255)
         );
     }
 

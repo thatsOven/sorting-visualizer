@@ -3,7 +3,7 @@ new class BWGradientCircle: CircleVisual {
         super().__init__(
             "B/W Gradient Circle",
             (255, 0, 0),
-            RefreshMode.NOREFRESH, True
+            outOfText = True
         );
     }
 

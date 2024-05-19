@@ -36,7 +36,7 @@ use exec, getattr, eval;
 $define FRAME_NAME os.path.join(SortingVisualizer.IMAGE_BUF, str(this.__currFrame).zfill(FRAME_DIGS) + ".jpg")
 
 enum RefreshMode {
-    STANDARD, NOREFRESH, FULL
+    LINES, NOREFRESH
 }
 
 enum RotationMode {
@@ -134,8 +134,7 @@ new class SortingVisualizer {
         this.__autoUserValues = Queue();
         this.__shufThread     = None;
 
-        this.__forceLoadedIndices     = {};
-        this.__forceLoadedIndicesList = [];
+        this.__lastTextIndex = 0;
         
         this.__rtHighlightFn = this.multiHighlightAdvanced;
         this.__rtSweepFn     = this.sweep;
@@ -286,21 +285,15 @@ new class SortingVisualizer {
 
     new method drawFullArray() {
         this.graphics.fill((0, 0, 0));
-        if this.settings["render"] && !this.settings["lazy-render"] {
-            this.__visual.draw(this.array, {});
-        } else {
-            if this.__visual.fastDraw(this.array, {i: None for i in range(len(this.array))}) {
-                this.__visual.draw(this.array, {});
-            }
-        }
+        this.__visual.draw(this.array, {});
     }
 
     new method __getSizes() {
         this.getMax();
         this.__visual.prepare();
         this.__prepared = True;
-        this.__forceLoadedIndices     = {};
-        this.__forceLoadedIndicesList = [];
+        
+        this.__lastTextIndex = 0;
 
         new int worstCaseTextWidth;
 
@@ -308,7 +301,7 @@ new class SortingVisualizer {
             return;
         } else {
             match this.__visual.refresh {
-                case RefreshMode.STANDARD {
+                case RefreshMode.LINES {
                     if this.settings["show-text"] {
                         worstCaseTextWidth = round(35 * (this.__fontSize / 2.25));
                     } else {
@@ -318,13 +311,9 @@ new class SortingVisualizer {
                 case RefreshMode.NOREFRESH {
                     return;
                 }
-                case RefreshMode.FULL {
-                    worstCaseTextWidth = this.graphics.resolution.x;
-                }
             }
 
-            this.__forceLoadedIndices     = {i: None for i in range(round(Utils.translate(worstCaseTextWidth, 0, this.graphics.resolution.x, 0, len(this.array))))};
-            this.__forceLoadedIndicesList = sorted([x for x in this.__forceLoadedIndices]);
+            this.__lastTextIndex = round(Utils.translate(worstCaseTextWidth, 0, this.graphics.resolution.x, 0, len(this.array)));
         }
     }
 
@@ -913,8 +902,11 @@ new class SortingVisualizer {
         $call prepareHighlights
 
         static {
-            new int length;
-            new bint hasFast = True, aux;
+            new int  length;
+            new bint doFast = (
+                this.__lastTextIndex == 0 && 
+                len(hList) < min(this.graphics.resolution.x, len(this.array))
+            ) && !this.__parallel, aux;
         }
 
         if len(hList) != 0 {
@@ -932,15 +924,15 @@ new class SortingVisualizer {
                     hList = this.__partitionIndices(hList)[0];
                 }
 
-                if this.__parallel {
-                    this.graphics.fill((0, 0, 0));
-                    this.__visual.draw(this.array, hList);
-                } else {
+                if doFast {
                     if this.__visual.fastDraw(this.array, hList) {
-                        hasFast = False;
+                        doFast = False;
                         this.graphics.fill((0, 0, 0));
                         this.__visual.draw(this.array, hList);
                     }
+                } else {
+                    this.graphics.fill((0, 0, 0));
+                    this.__visual.draw(this.array, hList);
                 }
 
                 if aux {   
@@ -951,12 +943,12 @@ new class SortingVisualizer {
 
                 $call update
                 
-                if hasFast && !this.__parallel {
+                if doFast {
                     for highlight in hList {
                         hList[highlight] = None;
                     }
 
-                    this.__visual.fastDraw(this.array, hList | this.__forceLoadedIndices);
+                    this.__visual.fastDraw(this.array, hList);
                 }
                 
                 this.__soundSample = this.__currSample;
@@ -1114,13 +1106,16 @@ new class SortingVisualizer {
         $call handleThreadedHighlightAndSkip
         $call prepareHighlights
 
-        new dynamic lazy = this.settings["lazy-render"] && !this.__parallel;
-
         this.graphics.updateEvents();
 
         static {
             new int  length;
-            new bint hasFast = False, aux;
+            new bint doFast = (
+                this.__lastTextIndex == 0 && 
+                len(hList) < min(this.graphics.resolution.x, len(this.array))
+            );
+
+            new bint lazy = this.settings["lazy-render"] && doFast && !this.__parallel, aux;
         }
 
         if len(hList) != 0 {
@@ -1149,7 +1144,7 @@ new class SortingVisualizer {
 
                 if lazy {
                     if this.__visual.fastDraw(this.array, hList) {
-                        hasFast = False;
+                        doFast = False;
                         this.graphics.fill((0, 0, 0));
                         this.__visual.draw(this.array, hList);
                     }
@@ -1178,12 +1173,12 @@ new class SortingVisualizer {
 
                 $call checkCompress
                 
-                if lazy && hasFast {
+                if lazy {
                     for highlight in hList {
                         hList[highlight] = None;
                     }
 
-                    this.__visual.fastDraw(this.array, hList | this.__forceLoadedIndices);
+                    this.__visual.fastDraw(this.array, hList);
                 }
                 
                 this.__tmpSleep = 0;
@@ -1320,7 +1315,7 @@ new class SortingVisualizer {
         this.renderStats();
         this.__checking = True;
 
-        static: new bint hasFast = True;
+        static: new bint doFast = True;
 
         this.setSpeed(len(this.array) / 128.0);
         new dynamic sleep = max(this.__sleep, MIN_SLEEP);
@@ -1329,9 +1324,9 @@ new class SortingVisualizer {
         for i = a; i < b; i++ {
             new dynamic sTime = default_timer();
 
-            if hasFast {
+            if doFast {
                 if this.__visual.fastDraw(this.array, {i: color}) {
-                    hasFast = False;
+                    doFast = False;
                     hList[i] = color;
                 }
             } else {
@@ -1343,8 +1338,8 @@ new class SortingVisualizer {
 
                 this.graphics.playWaveforms([this.__getWaveformFromIdx(HighlightInfo(i, None, color), None)]);
 
-                if hasFast {
-                    if len(this.__forceLoadedIndices) != 0 && i <= this.__forceLoadedIndicesList[-1] {
+                if doFast {
+                    if i <= this.__lastTextIndex {
                         this.renderStats();
                     }
                 } else {
@@ -1404,7 +1399,7 @@ new class SortingVisualizer {
                 $call mixAudio(tSleep)
                 
                 if lazy {
-                    if len(this.__forceLoadedIndices) != 0 && i <= this.__forceLoadedIndicesList[-1] {
+                    if i <= this.__lastTextIndex { 
                         this.renderStats();
                     }
                 } else {

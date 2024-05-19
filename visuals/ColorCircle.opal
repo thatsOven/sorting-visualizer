@@ -3,7 +3,7 @@ new class ColorCircle: CircleVisual {
         super().__init__(
             "Color Circle",
             (255, 255, 255),
-            RefreshMode.NOREFRESH, True
+            outOfText = True
         );
     }
 

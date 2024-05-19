@@ -2,7 +2,8 @@ new class BWGradientBarGraph: LineVisual {
     new method __init__() {
         super().__init__(
             "B/W Gradient Bar Graph",
-            (255, 0, 0)
+            (255, 0, 0),
+            RefreshMode.LINES
         );
     }
 

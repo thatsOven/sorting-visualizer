@@ -4,7 +4,8 @@ new class ScatterPlot: DotsVisual {
     new method __init__() {
         super.__init__(
             "Scatter Plot",
-            (255, 0, 0)
+            (255, 0, 0),
+            RefreshMode.LINES
         );
     }
 

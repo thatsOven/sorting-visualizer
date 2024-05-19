@@ -2,7 +2,8 @@ new class ScrambledRainbowBarGraph: LineVisual {
     new method __init__() {
         super.__init__(
             "Scrambled Scheme Rainbow Bar Graph",
-            (255, 255, 255)
+            (255, 255, 255),
+            RefreshMode.LINES
         );
     }
 

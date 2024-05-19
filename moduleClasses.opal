@@ -82,7 +82,7 @@ new class Distribution {
 
 @total_ordering;
 abstract: new class Visual {
-    new method __init__(name, highlightColor = (255, 0, 0), refreshMode = RefreshMode.STANDARD, outOfText = False) {
+    new method __init__(name, highlightColor = (255, 0, 0), refreshMode = RefreshMode.NOREFRESH, outOfText = False) {
         this.name           = name;
         this.highlightColor = highlightColor;
         this.refresh        = refreshMode;

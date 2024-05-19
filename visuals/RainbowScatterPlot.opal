@@ -4,7 +4,8 @@ new class RainbowScatterPlot: DotsVisual {
     new method __init__() {
         super.__init__(
             "Rainbow Scatter Plot",
-            (255, 255, 255)
+            (255, 255, 255),
+            RefreshMode.LINES
         );
     }
 

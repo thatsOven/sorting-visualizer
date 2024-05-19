@@ -2,7 +2,8 @@ new class WhiteBarGraph: LineVisual {
     new method __init__() {
         super().__init__(
             "Bar Graph",
-            (255, 0, 0)
+            (255, 0, 0),
+            RefreshMode.LINES
         );
     }
 
