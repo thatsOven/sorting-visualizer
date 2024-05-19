@@ -271,5 +271,5 @@ namespace PDQSort {
     "PDQ Sort"
 );
 new function pdqSortRun(array) {
-    PDQSort.loop(array, 0, len(array), PDQSort.log(len(array)), False);
+    PDQSort.loop(array, 0, len(array), PDQSort.log(len(array)));
 }

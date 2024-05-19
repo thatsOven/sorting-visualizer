@@ -8,7 +8,8 @@ new int FREQUENCY_SAMPLE        = 48000,
         RENDER_FRAMERATE        = 60,
         PREVIEW_MOD             = 5,
         MAX_UNCOMPRESSED_FRAMES = 2048,
-        POLYPHONY_LIMIT         = 4;
+        POLYPHONY_LIMIT         = 4,
+        COLOR_MASK              = 0xFFFFFF;
 
 new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           MIN_SLEEP            = 1.0 / NATIVE_FRAMERATE,
@@ -16,7 +17,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.5.16";
+new str VERSION = "2024.5.19";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -280,6 +281,7 @@ new class SortingVisualizer {
         this.__swaps = 0;
         this.__comps = 0;
         this.time    = 0;
+        this.highlights.clear();
     }
 
     new method drawFullArray() {
@@ -814,22 +816,6 @@ new class SortingVisualizer {
         return internal, aux;
     }
 
-    $macro auxSect
-        if this.__dynamicAux && !this.settings["lazy-aux"] {
-            length = len(adapted);
-
-            new dynamic oldMax = this.auxMax;
-            this.getAuxMax(adapted);    
-
-            if this.__oldAuxLen != length {
-                this.__visual.onAuxOn(length);
-                this.__oldAuxLen = length;
-            } elif this.auxMax != oldMax {
-                this.__visual.onAuxOn(length);
-            }
-        }
-    $end
-
     $macro adaptIndices
         if this.settings["show-aux"] {
             for i in range(len(hList)) {
@@ -872,12 +858,59 @@ new class SortingVisualizer {
         }
     $end
 
+    $macro prepareHighlights
+        hList = [x for x in hList if x is not None && x.idx is not None];
+
+        if len(this.highlights) != 0 {
+            new dynamic setHlist = set(hList);
+
+            for highlight in this.highlights {
+                if highlight is None || highlight.idx is None || highlight in setHlist {
+                    continue;
+                }
+
+                hList.append(highlight);
+            }
+        }
+    $end
+
+    $macro prepareAuxAndGC
+        aux = this.settings["show-aux"] and len(this.__auxArrays) != 0;
+
+        new dynamic adapted;
+        if aux {
+            this.__garbageCollect();
+            aux = aux && len(this.__auxArrays) != 0;
+
+            if aux {
+                adapted = this.__adaptAux(this.__auxArrays);
+
+                if this.__dynamicAux && !this.settings["lazy-aux"] {
+                    length = len(adapted);
+
+                    new dynamic oldMax = this.auxMax;
+                    this.getAuxMax(adapted);    
+
+                    if this.__oldAuxLen != length {
+                        this.__visual.onAuxOn(length);
+                        this.__oldAuxLen = length;
+                    } elif this.auxMax != oldMax {
+                        this.__visual.onAuxOn(length);
+                    }
+                }
+            } else {
+                adapted = None;
+            }
+        } else {
+            adapted = None;
+        }
+    $end
+
     new method multiHighlightAdvanced(hList) {
         $call handleThreadedHighlightAndSkip
 
         new dynamic sTime = default_timer();
-        hList = [x for x in (hList + this.highlights) if x is not None];
-        hList = [x for x in hList if x.idx is not None];
+        $call prepareHighlights
 
         static {
             new int length;
@@ -888,17 +921,7 @@ new class SortingVisualizer {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
                 
-                aux = this.settings["show-aux"] and len(this.__auxArrays) != 0;
-
-                new dynamic adapted;
-                if aux {
-                    this.__garbageCollect();
-                    adapted = this.__adaptAux(this.__auxArrays);
-                    $call auxSect
-                } else {
-                    adapted = None;
-                }
-
+                $call prepareAuxAndGC
                 $call adaptIndices
                 $call playSound(hList, adapted)
 
@@ -1089,9 +1112,8 @@ new class SortingVisualizer {
 
     new method __renderedHighlight(hList) {
         $call handleThreadedHighlightAndSkip
+        $call prepareHighlights
 
-        hList = [x for x in (hList + this.highlights) if x is not None];
-        hList = [x for x in hList if x.idx is not None];
         new dynamic lazy = this.settings["lazy-render"] && !this.__parallel;
 
         this.graphics.updateEvents();
@@ -1105,17 +1127,7 @@ new class SortingVisualizer {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
                 
-                aux = this.settings["show-aux"] and len(this.__auxArrays) != 0;
-
-                new dynamic adapted;
-                if aux {
-                    this.__garbageCollect();
-                    adapted = this.__adaptAux(this.__auxArrays);
-                    $call auxSect
-                } else {
-                    adapted = None;
-                }
-
+                $call prepareAuxAndGC
                 $call adaptIndices
 
                 new dynamic tSleep = max(INV_RENDER_FRAMES, this.__sleep + this.__tmpSleep);
@@ -1226,6 +1238,35 @@ new class SortingVisualizer {
         with this.highlightsLock {
             this.highlights.append(HighlightInfo(index, aux, None));
         }
+    }
+
+    new method setHighlights(hList) {
+        with this.highlightsLock {
+            this.highlights = hList;
+        }
+    }
+
+    new method getColor(n) {
+        if n <= 0 {
+            throw VisualizerException("Number for getColor should be > 0");
+        }
+
+        static: new int origBits, origN, perColor, bits;
+        for origBits = 1, origN = n; origN > 0; origN >>= 1, origBits++ {} 
+        for bits = 3, perColor = 1; bits < origBits; bits += 3, perColor++ {}
+
+        static: new int mask = ~(COLOR_MASK << perColor);
+        new dynamic color = (
+            int(Utils.translate( n >> (perColor << 1) , 0, 2 ** perColor - 1, 0, 255)),
+            int(Utils.translate((n >> perColor) & mask, 0, 2 ** perColor - 1, 0, 255)),
+            int(Utils.translate( n & mask             , 0, 2 ** perColor - 1, 0, 255))
+        );
+
+        if color == (255, 255, 255) || (this.__visual is not None && this.__visual.highlightColor == color) {
+            return this.getColor(n + 1);
+        }
+
+        return color;
     }
 
     new method createThread(fn, *args, **kwargs) {
@@ -1521,6 +1562,8 @@ new class SortingVisualizer {
     }
 
     new method __stopAlgorithm() {
+        this.resetAux();
+        this.resetAdaptAux();
         this.drawFullArray();
         this.renderStats();
         this.__gui.saveBackground();
@@ -1613,7 +1656,7 @@ new class SortingVisualizer {
         this.__baseRefCnts = newRefs;
 
         if len(this.__auxArrays) == 0 {
-            this.__auxMode    = False;
+            this.__auxMode = False;
             this.__visual.onAuxOff();
             this.drawFullArray();
         }

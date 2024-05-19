@@ -91,7 +91,7 @@ For array operations that don't work properly with the `Value` class, the visual
 - `sortingVisualizer.write(array: list, i: int, val)`;
 - `sortingVisualizer.swap(array: list, a: int, b: int)`.
 ## Manual highlights
-The visualizer provides eight methods for manual highlighting:
+The visualizer provides nine methods for manual highlighting:
 - `sortingVisualizer.highlight(index: int, aux: list | None = None)`: highlights the given index;
 - `sortingVisualizer.multiHighlight(indices: list[int], aux: list | None = None)`: highlights a list of indices.
 - `sortingVisualizer.highlightAdvanced(index: HighlightInfo)`: highlights a `HighlightInfo` object;
@@ -100,6 +100,7 @@ The visualizer provides eight methods for manual highlighting:
 - `sortingVisualizer.queueMultiHighlight(indices: list[int], aux: list | None = None)`: like `queueHighlight`, but accepts a list of indices;
 - `sortingVisualizer.queueHighlightAdvanced(index: HighlightInfo)`: like `queueHighlight`, but uses a `HighlightInfo` object;
 - `sortingVisualizer.queueMultiHighlightAdvanced(indices: list[HighlightInfo])`: like `queueHighlightAdvanced`, but accepts a list of `HighlightInfo` objects;
+- `sortingVisualizer.setHighlights(indices: list[HighlightInfo])`: sets a list of `HighlightInfo` objects as the current highlights, replacing the original ones.
 
 An `HighlightInfo` object contains more information for each highlight. Internally, the visualizer also generates those when calling the non-advanced variants of highlights. They are composed like this:
 `record HighlightInfo(index: int, aux: list[Value] | None = None, color: tuple[int, int, int] | None = None, silent: bool = False);`
@@ -107,6 +108,8 @@ An `HighlightInfo` object contains more information for each highlight. Internal
 - `aux`: stores a pointer to the auxiliary array where the highlight came from. If `None`, the highlight came from the main array;
 - `color`: the color that the highlight will have. If `None`, the color will be set to the default highlight color for the current visual style;
 - `silent`: whether the highlight should not produce sound. Useful for color coding.
+
+For dynamic color coding, the visualizer provides a `sortingVisualizer.getColor(n: int) -> tuple[int, int, int]` method, which assigns a color dynamically to a number, as a color id.
 
 Queued highlights are stored in a list (`sortingVisualizer.highlights`) that can be edited manually for advanced operations. In a multithreaded context, it should be edited while the relative lock (`sortingVisualizer.highlightsLock`) is acquired. This is done automatically in the `queue` methods.
 

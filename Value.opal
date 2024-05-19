@@ -1,4 +1,19 @@
-new record HighlightInfo(idx, aux = None, color = None, silent = False);
+new class HighlightInfo {
+    new method __init__(idx, aux = None, color = None, silent = False) {
+        this.idx    = idx;
+        this.aux    = aux;
+        this.color  = color;
+        this.silent = silent;
+    }
+
+    new method __eq__(other) {
+        return this.idx == other.idx && this.aux == other.aux;
+    }
+
+    new method __hash__() {
+        return hash((this.idx, this.aux));
+    }
+}
 
 new class Value {
     new method __init__(value) {
