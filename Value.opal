@@ -7,7 +7,7 @@ new class HighlightInfo {
     }
 
     new method __eq__(other) {
-        return this.idx == other.idx && this.aux == other.aux;
+        return this.idx == other.idx && this.aux is other.aux;
     }
 
     new method __hash__() {
