@@ -11,7 +11,7 @@ new class HighlightInfo {
     }
 
     new method __hash__() {
-        return hash((this.idx, this.aux));
+        return hash((this.idx, id(this.aux)));
     }
 }
 
