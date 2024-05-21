@@ -123,7 +123,7 @@ new class HeliumSort {
                 bl   = this.bufLen if ip else len(this.buffer),
                 min_ = bl if rl != ll && min(bl, rl, ll) > HeliumSort.SMALL_MERGE else 1;
 
-        while ll > min_ and rl > min_ {
+        while (ll > min_ && rl > min_) || (rl < HeliumSort.SMALL_MERGE && rl > 1 && ll < HeliumSort.SMALL_MERGE && ll > 1) {
             if rl < ll {
                 blockSwap(array, a, m, rl);
                 a  += rl;
@@ -556,11 +556,9 @@ new class HeliumSort {
                 arrayCopy(array, a + i * blockLen, this.buffer, 0, blockLen);
                 new int j     = i,
                         next  = this.indices[i].readInt();
-                new Value key = this.keys[i].copy();
 
                 do {
                     bidirArrayCopy(array, a + next * blockLen, array, a + j * blockLen, blockLen);
-                    this.keys[j].write(this.keys[next]);
                     this.indices[j].write(j);
 
                     j = next;
@@ -568,7 +566,6 @@ new class HeliumSort {
                 } while next != i;
 
                 arrayCopy(this.buffer, 0, array, a + j * blockLen, blockLen);
-                this.keys[j].write(key);
                 this.indices[j].write(j);
             }
         }
@@ -775,7 +772,7 @@ new class HeliumSort {
 
             this.mergeBlocks(array, a, midKey, blockQty, this.blockLen, frag, this.keyPos, array);
         } else {
-            this.prepareOOPKeys(blockQty);
+            arrayCopy(this.indices, 0, this.keys, 0, blockQty);
 
             this.blockCycleOOP(
                 array, a, leftBlocks,
