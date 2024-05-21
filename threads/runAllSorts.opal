@@ -1,6 +1,17 @@
+# TODO temporary
+runOpts["unique-div"] = 2; 
+runOpts["size-mlt"]   = 1;
+
 this.setVisual(runOpts["visual"]);
 
 new function runAllSort(size, name, speed, toPush = None, killers = None) {
+    size  *= runOpts["size-mlt"];
+    speed *= runOpts["size-mlt"]; # TODO might need to have some speed scaling factors for each sort
+
+    if needsSeed {
+        this.pushAutoValue(-1);
+    }
+
     if toPush is not None {
         if type(toPush) in (list, tuple) {
             for item in toPush {
@@ -12,7 +23,7 @@ new function runAllSort(size, name, speed, toPush = None, killers = None) {
     }
 
     this.runSortingProcess(
-        runOpts["distribution"], size, autoValue * size // 2, 
+        runOpts["distribution"], size, size // runOpts["unique-div"], 
         runOpts["shuffle"], ct, name, speed * runOpts["speed"], 
         killers = {} if killers is None else killers
     );
@@ -22,12 +33,7 @@ new list pivotSelections = [p.name for p in this.pivotSelections],
          distributions   = [d.name for d in this.distributions],
          rotations       = [r.name for r in this.rotations];
 
-new int autoValue;
-if runOpts["distribution"] == distributions.index("Perlin Noise") {
-    autoValue = -1;
-} else {
-    autoValue = 1;
-}
+new bool needsSeed = runOpts["distribution"] == distributions.index("Perlin Noise");
 
 
 new str ct;
@@ -41,12 +47,13 @@ runAllSort(1024,     "Comb Sort", 10, 1.3);
 
 
 ct = "Insertion Sorts";
-runAllSort(256,  "Insertion Sort",     8);
-runAllSort(256,  "Binary Insertion",   6);
-runAllSort(256,  "Bin. Double Insert", 5);
-runAllSort(256,  "Merge Insert",       5);
-runAllSort(512,  "Shell Sort",         3);
-runAllSort(1024, "Library Sort",       8, killers = {
+runAllSort(256,  "Insertion Sort",        8);
+runAllSort(256,  "Binary Insertion",      6);
+runAllSort(256,  "Bin. Double Insert",    5);
+runAllSort(256,  "Merge Insert",          5);
+runAllSort(512,  "Shell Sort",            3);
+runAllSort(1024, "Shell Sort (Parallel)", 2);
+runAllSort(1024, "Library Sort",          8, killers = {
     "Linear":    ["Reversed", "Reversed Sawtooth", "Partitioned"], 
     "Quadratic": ["Reversed", "Reversed Sawtooth", "Partitioned"], 
     "Quintic":   ["Reversed", "Reversed Sawtooth", "Partitioned", "Final Merge Pass", "Real Final Merge"], 
@@ -104,9 +111,14 @@ ct = "Concurrent Sorts";
 runAllSort(1024, "Bose Nelson",               7);
 runAllSort(2048, "Bose Nelson (Parallel)",    1);
 runAllSort(1024, "Fold Sort",                 7);
+runAllSort(1024, "Fold Sort (Parallel)",      4);
+runAllSort(1024, "3-Smooth Comb",             7);
+runAllSort(2048, "3-Smooth Comb (Parallel)",  2);
 runAllSort(1024, "Bitonic Sort",              5);
 runAllSort(2048, "Bitonic Sort (Parallel)",   1);
 runAllSort(1024, "Pairwise",                  5);
+runAllSort(1024, "Weave",                     5);
+runAllSort(2048, "Weave (Parallel)",          1);
 runAllSort(1024, "Odd Even Merge",            5);
 runAllSort(2048, "Odd Even Merge (Parallel)", 1);
 
