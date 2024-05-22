@@ -189,7 +189,7 @@ runAllSort(2048, "Kota Sort",          7, rotations.index("Cycle Reverse"));
 runAllSort(2048, "Ecta Sort",          6);
 runAllSort(2048, "Lithium Sort",       4);
 runAllSort(2048, "Kita Sort",          6);
-runAllSort(2048, "Chalice Sort",       6);
+runAllSort(2048, "Chalice Sort",       6, rotations.index("Cycle Reverse"));
 runAllSort(2048, "Advanced Log Merge", 6, [0, rotations.index("Cycle Reverse")]);
 runAllSort(1024, "Remi Sort",          8);
 

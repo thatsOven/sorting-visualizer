@@ -32,7 +32,7 @@ new class ChaliceSort {
             this.rotate = sortingVisualizer.getRotation(
                 id = sortingVisualizer.getUserSelection(
                     [r.name for r in sortingVisualizer.rotations],
-                    "Select rotation algorithm (default: Gries-Mills)"
+                    "Select rotation algorithm (default: Cycle Reverse)"
                 )
             ).indexedFn;
         } else {
