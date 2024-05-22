@@ -23,8 +23,7 @@
 # stable merge sort using O(cbrt n) dynamic external buffer
 
 use binaryInsertionSort, bidirArrayCopy, lrBinarySearch, 
-    insertToLeft, compareValues, blockSwap, MaxHeapSort,
-    GrailSort;
+    insertToLeft, compareValues, blockSwap, MaxHeapSort;
 
 new class ChaliceSort {
     new method __init__(rot = None) {
