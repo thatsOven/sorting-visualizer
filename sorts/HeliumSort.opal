@@ -1062,6 +1062,9 @@ new class HeliumSort {
                 keySize = n // sqrtn;
             }
 
+            sortingVisualizer.setAdaptAux(this.__adaptAux);
+            this.buffer = sortingVisualizer.createValueArray(mem - keySize);
+
             new dynamic keysFound, p;
             keysFound, p = this.findKeys(array, a, b, keySize);
             if keysFound is None {
@@ -1073,8 +1076,6 @@ new class HeliumSort {
             if keysFound == keySize {
                 this.sortRuns(array, a, b - keysFound, p);
 
-                sortingVisualizer.setAdaptAux(this.__adaptAux);
-                this.buffer  = sortingVisualizer.createValueArray(mem - keySize);
                 this.indices = sortingVisualizer.createValueArray(keySize);
 
                 this.keyLen = keysFound;
@@ -1084,9 +1085,7 @@ new class HeliumSort {
             } else {
                 this.sortRuns(array, a, b, p);
 
-                sortingVisualizer.setAdaptAux(this.__adaptAux);
-                this.buffer = sortingVisualizer.createValueArray(mem - keySize);
-                this.keys   = sortingVisualizer.createValueArray(keySize);
+                this.keys = sortingVisualizer.createValueArray(keySize);
 
                 this.heliumLoop(array, a, b);
             }
@@ -1103,6 +1102,8 @@ new class HeliumSort {
                 keySize = n // sqrtn;
             }
 
+            this.buffer = sortingVisualizer.createValueArray(mem);
+
             new dynamic keysFound, p;
             keysFound, p = this.findKeys(array, a, b, keySize);
             if keysFound is None {
@@ -1115,8 +1116,6 @@ new class HeliumSort {
             }
 
             this.sortRuns(array, a, b - keysFound, p);
-
-            this.buffer = sortingVisualizer.createValueArray(mem);
 
             this.keyLen = keysFound;
             this.keyPos = b - keysFound;
@@ -1132,6 +1131,10 @@ new class HeliumSort {
             return;
         }
 
+        if mem > 0 {
+            this.buffer = sortingVisualizer.createValueArray(mem);
+        }
+
         new int ideal = sqrtn + keySize;
         new dynamic keysFound, p;
         keysFound, p = this.findKeys(array, a, b, ideal);
@@ -1145,10 +1148,6 @@ new class HeliumSort {
         }
 
         this.sortRuns(array, a, b - keysFound, p);
-
-        if mem > 0 {
-            this.buffer = sortingVisualizer.createValueArray(mem);
-        }
 
         if keysFound == ideal {
             this.blockLen = sqrtn;
@@ -1171,7 +1170,8 @@ new class HeliumSort {
 @Sort(
     "Block Merge Sorts",
     "Helium Sort",
-    "Helium Sort"
+    "Helium Sort",
+    usesDynamicAux = True
 );
 new function heliumGenSortRun(array) {
     new int mem = sortingVisualizer.getUserInput("Insert memory size (or -4 .. -1 for default modes)", "0");
@@ -1183,14 +1183,15 @@ new function heliumGenSortRun(array) {
     "Uranium Sort (Helium strategy 1)",
     "Uranium Sort"
 );
-new function hydrogenSortRun(array) {
+new function uraniumSortRun(array) {
     HeliumSort().sort(array, 0, len(array), -1);
 }
 
 @Sort(
     "Block Merge Sorts",
     "Hydrogen Sort (Helium strategy 2A)",
-    "Hydrogen Sort"
+    "Hydrogen Sort",
+    usesDynamicAux = True
 );
 new function hydrogenSortRun(array) {
     HeliumSort().sort(array, 0, len(array), -2);
