@@ -1,123 +1,251 @@
-use MaxHeapSort;
-use uncheckedInsertionSort;
-use ShellSort;
+use blockSwap, backwardBlockSwap, insertToLeft, insertToRight, bidirArrayCopy;
 
-namespace MedianOfSixteenAdaptiveQuickSort {
-    new classmethod compNSwap(array, a, b, gap, start) {
-        if array[start + (a * gap)] > array[start + (b * gap)] {
-            array[start + (a * gap)].swap(array[start + (b * gap)]);
-        }
-    }
-
-    new list medianOfSixteenSwaps = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-        1, 3, 5, 7, 9, 11, 13, 15, 2, 4, 6, 8, 10, 12, 14, 16,
-        1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 4, 8, 12, 16,
-        1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15, 8, 16,
-        6, 11, 7, 10, 4, 13, 14, 15, 8, 12, 2, 3, 5, 9,
-        2, 5, 8, 14, 3, 9, 12, 15, 6, 7, 10, 11,
-        3, 5, 12, 14, 4, 9, 8, 13,
-        7, 9, 11, 13, 4, 6, 8, 10,
-        4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-        7, 8, 9, 10
-    ];
-
-    new classmethod sortSixteen(array, a, b, gap) {
-        for i = 0; i < len(this.medianOfSixteenSwaps); i += 2 {
-            this.compNSwap(
-                array, this.medianOfSixteenSwaps[i],
-                this.medianOfSixteenSwaps[i+1], gap, a
-            );
-        }
-    }
-
-    new classmethod medianOfSixteen(array, a, b) {
-        new int gap = (b - 1 - a) // 16;
-        MedianOfSixteenAdaptiveQuickSort.sortSixteen(array, a, b, gap);
-        array[a].swap(array[a + (8 * gap)]);
-    }
-
-    new classmethod getSortedRuns(array, a, b) {
-        new bool reverseSorted = True,
-                      isSorted = True;
-
-        for i = a; i < b - 1; i++ {
-            if array[i] > array[i + 1] {
-                isSorted = False;
-            } elif array[i] != array[i + 1] {
-                reverseSorted = False;
-            }
-
-            if (not reverseSorted) and (not isSorted) {
-                return False;
-            }
+new class UtilsIterablesSortMerge {
+    new method __init__(size, aux = None) {
+        if aux is None {
+            this.aux = sortingVisualizer.createValueArray(size);
+        } else {
+            this.aux = aux;
         }
 
-        if reverseSorted and not isSorted {
-            reverse(array, a, b);
-            return True;
-        }
-
-        return isSorted;
+        this.__capacity = size;
     }
 
-    new classmethod __sorter(array, a, b, depth, unbalanced = False) {
-        while b - a > 32 {
-            if this.getSortedRuns(array, a, b) {
-                return;
-            }
-            if depth == 0 {
-                MaxHeapSort.sort(array, a, b);
-                return;
-            }
+    new method rotate(array, a, m, b) {
+        static: new int rl   = b - m,
+                        ll   = m - a,
+                        bl   = 1 if this.aux is None else len(this.aux),
+                        min_ = bl if rl != ll && min(bl, rl, ll) > 8 else 1;
 
-            new int p;
-            if not unbalanced {
-                medianOfThree(array, a, b);
-                p = partition(array, a, b, a);
+        while ll > min_ and rl > min_ {
+            if rl < ll {
+                blockSwap(array, a, m, rl);
+                a  += rl;
+                ll -= rl;
             } else {
-                p = a;
+                b  -= ll;
+                rl -= ll;
+                backwardBlockSwap(array, a, b, ll);
             }
+        }
 
-            new int  left = p - a,
-                    right = b - (p + 1);
-            if (left == 0 or right == 0) or (left / right >= 16 or right / left >= 16) or unbalanced {
-                if b - a > 80 {
-                    array[a].swap(array[p]);
-                    if left < right {
-                        this.__sorter(array, a, p, depth - 1, True);
-                        a = p + 1;
-                    } else {
-                        this.__sorter(array, p + 1, b, depth - 1, True);
-                        b = p;
-                    }
-                    this.medianOfSixteen(array, a, b);
-                    p = partition(array, a + 1, b, a);
+        if rl == 1 {
+            insertToLeft(array, m, a);
+        } elif ll == 1 {
+            insertToRight(array, a, b - 1);
+        }
+            
+        if min_ == 1 || rl <= 1 || ll <= 1 {
+            return;
+        }
+        
+        if rl < ll {
+            bidirArrayCopy(array, m, this.aux, 0, rl);
+            bidirArrayCopy(array, a, array, b - ll, ll);
+            bidirArrayCopy(this.aux, 0, array, a, rl);
+        } else {
+            bidirArrayCopy(array, a, this.aux, 0, ll);
+            bidirArrayCopy(array, m, array, a, rl);
+            bidirArrayCopy(this.aux, 0, array, b - ll, ll);
+        }
+    }
+
+    new method __mergeUp(array, a, m, b) {
+        for i in range(m - a) {
+            this.aux[i].write(array[i + a]);
+        }
+
+        new int aux   = 0,
+                left  = a,
+                right = m;
+
+        for ; left < right and right < b; left++ {
+            if this.aux[aux] <= array[right] {
+                array[left].write(this.aux[aux]);
+                aux++;
+            } else {
+                array[left].write(array[right]);
+                right++;
+            }
+        }
+
+        for ; left < right; left++, aux++ {
+            array[left].write(this.aux[aux]);
+        }
+    }
+
+    new method __mergeDown(array, a, m, b) {
+        for i in range(b - m) {
+            this.aux[i].write(array[i + m]);
+        }
+
+        b--;
+
+        new int aux   = b - m,
+                left  = m - 1,
+                right = b;
+
+        for ; right > left and left >= a; right-- {
+            if this.aux[aux] >= array[left] {
+                array[right].write(this.aux[aux]);
+                aux--;
+            } else {
+                array[right].write(array[left]);
+                left--;
+            }
+        }
+
+        for ; right > left; right--, aux-- {
+            array[right].write(this.aux[aux]);
+        }
+    }
+
+    new method mergeInPlace(array, a, m, b, check = True) {
+        if checkMergeBounds(array, a, m, b, this.rotate) {
+            return;
+        }
+
+        if check {
+            b = lrBinarySearch(array, m,     b, array[m - 1].read());
+            a = lrBinarySearch(array, a, m - 1,     array[m].read(), False);
+        }
+
+        new int i, j, k;
+
+        if m - a <= b - m {
+            i = a;
+            j = m;
+
+            while i < j and j < b {
+                if array[i] > array[j] {
+                    k = lrBinarySearch(array, j, b, array[i].read());
+                    this.rotate(array, i, j, k);
+                    i += k - j;
+                    j = k;
                 } else {
-                    ShellSort.sort(array, a, b);
-                    return;
+                    i++;
                 }
             }
+        } else {
+            i = m - 1;
+            j = b - 1;
 
-            array[a].swap(array[p]);
-
-            depth--;
-            this.__sorter(array, p + 1, b, depth);
-            b = p;
+            while j > i and i >= a {
+                if array[i] > array[j] {
+                    k = lrBinarySearch(array, a, i, array[j].read(), False);
+                    i++;
+                    this.rotate(array, k, i, j + 1);
+                    j -= i - k;
+                    i = k - 1;
+                } else {
+                    j--;
+                }
+            }
         }
-        uncheckedInsertionSort(array, a, b);
     }
 
-    new classmethod sort(array, a, b) {
-        this.__sorter(array, a, b, int(2 * math.log2(len(array))));
+    new method __rotateMerge(array, a, m, m1, m2, m3, b) {
+        this.rotate(array, m1, m, m2);
+
+        if m1 - a > 0 and m3 - m1 > 0 {
+            this.merge(array,  a, m1, m3, False);
+        }
+        m3++;
+        if m2 - m3 > 0 and b - m2 > 0 {
+            this.merge(array, m3, m2,  b, False);
+        }
+    }
+
+    new method merge(array, a, m, b, check = True) {
+        if checkMergeBounds(array, a, m, b, this.rotate) {
+            return;
+        }
+
+        if check {
+            b = lrBinarySearch(array, m,     b, array[m - 1].read());
+            a = lrBinarySearch(array, a, m - 1,     array[m].read(), False);
+        }
+
+        new int size, m1, m2, m3;
+        if b - m < m - a {
+            size = b - m;
+
+            if     size <= 8 {
+                this.mergeInPlace(array, a, m, b, False);
+            } elif size <= this.__capacity {
+                this.__mergeDown(array, a, m, b);
+            } else {
+                m2 = m + size // 2;
+                m1 = lrBinarySearch(array, a, m, array[m2].read(), False);
+                m3 = m2 - (m - m1);
+                m2++;
+
+                this.__rotateMerge(array, a, m, m1, m2, m3, b);
+            }
+        } else {
+            size = m - a;
+
+            if     size <= 8 {
+                this.mergeInPlace(array, a, m, b, False);
+            } elif size <= this.__capacity {
+                this.__mergeUp(array, a, m, b);
+            } else {
+                m1 = a + (m - a) // 2;
+                m2 = lrBinarySearch(array, m, b, array[m1].read());
+                m3 = m1 + (m2 - m);
+
+                this.__rotateMerge(array, a, m, m1, m2, m3, b);
+            }
+        }
+    }
+}
+
+use binaryInsertionSort;
+
+new class UtilsIterablesSort {
+    new method __init__(size, aux = None) {
+        this.__merge = UtilsIterablesSortMerge(size, aux);
+    }
+
+    new classmethod getReversedRuns(array, a, b) {
+        for i = a; i < b - 1; i++ {
+            if array[i] <= array[i + 1] {
+                break;
+            }
+        }
+
+        if i - a > 8 {
+            reverse(array, a, i + 1);
+        }
+
+        return i == b;
+    }
+
+    new method sort(array, a, b) {
+        if this.getReversedRuns(array, a, b) {
+            return;
+        }
+        if b - a > 32 {
+            new int m = a + ((b - a) // 2);
+
+            this.sort(array, a, m);
+            this.sort(array, m, b);
+
+            this.__merge.merge(array, a, m, b);
+        } else {
+           binaryInsertionSort(array, a, b);
+        }
     }
 }
 
 @Sort(
-    "Quick Sorts",
-    "Median-Of-Sixteen Adaptive QuickSort [Utils.Iterables.sort]",
-    "Median-Of-16 A. Quick"
+    "Merge Sorts",
+    "Adaptive Rotate MergeSort [Utils.Iterables.sort]",
+    "Adaptive Rotate Merge"
 );
-new function medianOfSixteenAdaptiveQuickSortRun(array) {
-    MedianOfSixteenAdaptiveQuickSort.sort(array, 0, len(array));
+new function UtilsIterablesSortRun(array) {
+    new int mode;
+    mode = sortingVisualizer.getUserInput("Insert buffer size (default = " + str(len(array) // 8) + ")", str(len(array) // 8));
+
+    UtilsIterablesSort(mode).sort(array, 0, len(array));
 }

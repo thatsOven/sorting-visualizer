@@ -1,12 +1,18 @@
-# TODO temporary
-runOpts["unique-div"] = 2; 
-runOpts["size-mlt"]   = 1;
-
 this.setVisual(runOpts["visual"]);
 
-new function runAllSort(size, name, speed, toPush = None, killers = None) {
+new function runAllSort(size, name, speed, toPush = None, killers = None, speedScale = 1, sizeLimit = None) {
     size  *= runOpts["size-mlt"];
-    speed *= runOpts["size-mlt"]; # TODO might need to have some speed scaling factors for each sort
+    speed *= runOpts["size-mlt"] * runOpts["speed"];
+
+    if runOpts["size-mlt"] > 1 {
+        speed *= speedScale;
+    } 
+
+    int <- size;
+
+    if sizeLimit is not None && size > sizeLimit {
+        size = sizeLimit;
+    }
 
     if needsSeed {
         this.pushAutoValue(-1);
@@ -23,11 +29,17 @@ new function runAllSort(size, name, speed, toPush = None, killers = None) {
     }
 
     this.runSortingProcess(
-        runOpts["distribution"], size, size // runOpts["unique-div"], 
-        runOpts["shuffle"], ct, name, speed * runOpts["speed"], 
+        runOpts["distribution"], size, int(size / runOpts["unique-div"]), 
+        runOpts["shuffle"], ct, name, speed, 
         killers = {} if killers is None else killers
     );
 }
+
+new int SLOW_N_SQUARED_SCALE = 6,
+        N_SQUARED_SCALE      = 4,
+        NLOG2N_SCALE         = 3,
+        C_NLOGN_SCALE        = 2,
+        NLOGN_SCALE          = 1.5;
 
 new list pivotSelections = [p.name for p in this.pivotSelections],
          distributions   = [d.name for d in this.distributions],
@@ -38,22 +50,22 @@ new bool needsSeed = runOpts["distribution"] == distributions.index("Perlin Nois
 
 new str ct;
 ct = "Exchange Sorts";
-runAllSort(256,    "Bubble Sort", 80);
-runAllSort(256,  "Odd-Even Sort", 20);
-runAllSort(128,     "Gnome Sort",  3);
-runAllSort(128, "Sandpaper Sort",  3);
-runAllSort(512,    "Circle Sort",  5);
-runAllSort(1024,     "Comb Sort", 10, 1.3);
+runAllSort(256,    "Bubble Sort", 80, speedScale = N_SQUARED_SCALE);
+runAllSort(256,  "Odd-Even Sort", 20, speedScale = N_SQUARED_SCALE);
+runAllSort(128,     "Gnome Sort",  3, speedScale = SLOW_N_SQUARED_SCALE);
+runAllSort(128, "Sandpaper Sort",  3, speedScale = SLOW_N_SQUARED_SCALE);
+runAllSort(512,    "Circle Sort",  5, speedScale = NLOG2N_SCALE);
+runAllSort(1024,     "Comb Sort", 10, 1.3, speedScale = NLOG2N_SCALE);
 
 
 ct = "Insertion Sorts";
-runAllSort(256,  "Insertion Sort",        8);
-runAllSort(256,  "Binary Insertion",      6);
-runAllSort(256,  "Bin. Double Insert",    5);
-runAllSort(256,  "Merge Insert",          5);
-runAllSort(512,  "Shell Sort",            3);
+runAllSort(256,  "Insertion Sort",        8, speedScale = SLOW_N_SQUARED_SCALE);
+runAllSort(256,  "Binary Insertion",      6, speedScale = SLOW_N_SQUARED_SCALE);
+runAllSort(256,  "Bin. Double Insert",    5, speedScale = N_SQUARED_SCALE);
+runAllSort(256,  "Merge Insert",          5, speedScale = SLOW_N_SQUARED_SCALE);
+runAllSort(512,  "Shell Sort",            3, speedScale = C_NLOGN_SCALE);
 runAllSort(1024, "Shell Sort (Parallel)", 2);
-runAllSort(1024, "Library Sort",          8, killers = {
+runAllSort(1024, "Library Sort",          8, speedScale = NLOGN_SCALE, killers = {
     "Linear":    ["Reversed", "Reversed Sawtooth", "Partitioned"], 
     "Quadratic": ["Reversed", "Reversed Sawtooth", "Partitioned"], 
     "Quintic":   ["Reversed", "Reversed Sawtooth", "Partitioned", "Final Merge Pass", "Real Final Merge"], 
@@ -67,13 +79,13 @@ runAllSort(1024, "Library Sort",          8, killers = {
 
 
 ct = "Selection Sorts";
-runAllSort(128,  "Selection Sort",   3);
-runAllSort(128,  "Double Selection", 3);
-runAllSort(64,   "Cycle Sort",       2);
+runAllSort(128,  "Selection Sort",   3, speedScale = SLOW_N_SQUARED_SCALE);
+runAllSort(128,  "Double Selection", 3, speedScale = SLOW_N_SQUARED_SCALE);
+runAllSort(64,   "Cycle Sort",       2, speedScale = N_SQUARED_SCALE);
 
 
 ct = "Tree Sorts";
-runAllSort(512,  "Tree Sort",        5, killers = {
+runAllSort(512,  "Tree Sort",        5, speedScale = C_NLOGN_SCALE, killers = {
     "Linear": [
         "Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", 
         "Few Random", "Final Merge Pass", "Real Final Merge", "Noisy",
@@ -100,26 +112,26 @@ runAllSort(512,  "Tree Sort",        5, killers = {
         "Scrambled Tail", "Scrambled Head", "Sorted"
     ],
 });
-runAllSort(2048, "Max Heap Sort",   15);
-runAllSort(2048, "Smooth Sort",     10);
-runAllSort(2048, "Poplar Heap",     10);
-runAllSort(2048, "Weak Heap Sort",  15);
-runAllSort(2048, "Patience Sort",   20);
+runAllSort(2048, "Max Heap Sort",   15, speedScale = NLOGN_SCALE);
+runAllSort(2048, "Smooth Sort",     10, speedScale = NLOGN_SCALE);
+runAllSort(2048, "Poplar Heap",     10, speedScale = NLOGN_SCALE);
+runAllSort(2048, "Weak Heap Sort",  15, speedScale = NLOGN_SCALE);
+runAllSort(2048, "Patience Sort",   20, speedScale = C_NLOGN_SCALE);
 
 
 ct = "Concurrent Sorts";
-runAllSort(1024, "Bose Nelson",               7);
+runAllSort(1024, "Bose Nelson",               7, speedScale = NLOG2N_SCALE);
 runAllSort(2048, "Bose Nelson (Parallel)",    1);
-runAllSort(1024, "Fold Sort",                 7);
+runAllSort(1024, "Fold Sort",                 7, speedScale = NLOG2N_SCALE);
 runAllSort(1024, "Fold Sort (Parallel)",      4);
-runAllSort(1024, "3-Smooth Comb",             7);
+runAllSort(1024, "3-Smooth Comb",             7, speedScale = NLOG2N_SCALE);
 runAllSort(2048, "3-Smooth Comb (Parallel)",  2);
-runAllSort(1024, "Bitonic Sort",              5);
+runAllSort(1024, "Bitonic Sort",              5, speedScale = NLOG2N_SCALE);
 runAllSort(2048, "Bitonic Sort (Parallel)",   1);
-runAllSort(1024, "Pairwise",                  5);
-runAllSort(1024, "Weave",                     5);
+runAllSort(1024, "Pairwise",                  5, speedScale = NLOG2N_SCALE);
+runAllSort(1024, "Weave",                     5, speedScale = NLOG2N_SCALE);
 runAllSort(2048, "Weave (Parallel)",          1);
-runAllSort(1024, "Odd Even Merge",            5);
+runAllSort(1024, "Odd Even Merge",            5, speedScale = NLOG2N_SCALE);
 runAllSort(2048, "Odd Even Merge (Parallel)", 1);
 
 
@@ -151,52 +163,51 @@ new dict firstKillers = {
     "Perlin Noise": ["Sorted"]
 };
 
-runAllSort(1024, "LL Quick Sort",            4, pivotSelections.index("First"),  firstKillers);
-runAllSort(1024, "LL Quick Sort (Parallel)", 4, pivotSelections.index("First"),  firstKillers);
-runAllSort(1024, "LR Quick Sort",            4, pivotSelections.index("Middle"), centerKillers);
-runAllSort(1024, "LR Quick Sort (Parallel)", 4, pivotSelections.index("Middle"), centerKillers);
+runAllSort(1024, "LL Quick Sort",            4, pivotSelections.index("First"),  firstKillers,  speedScale = NLOGN_SCALE);
+runAllSort(1024, "LL Quick Sort (Parallel)", 4, pivotSelections.index("First"),  firstKillers,  speedScale = NLOGN_SCALE);
+runAllSort(1024, "LR Quick Sort",            4, pivotSelections.index("Middle"), centerKillers, speedScale = NLOGN_SCALE);
+runAllSort(1024, "LR Quick Sort (Parallel)", 4, pivotSelections.index("Middle"), centerKillers, speedScale = NLOGN_SCALE);
 centerKillers["Linear"].remove("Reversed Sawtooth");
-runAllSort(1024, "Stackless Quick",          4, pivotSelections.index("Median of three (unstable)"), centerKillers);
-runAllSort(1024, "Dual Pivot Quick",         4, killers = centerKillers);
-runAllSort(2048, "Median-Of-16 A. Quick",   10);
-runAllSort(2048, "PDQ Sort",                10); 
-runAllSort(2048, "Aeos Quick",               8);
-runAllSort(2048, "Log Sort",                 8, 0);
+runAllSort(1024, "Stackless Quick",          4, pivotSelections.index("Median of three (unstable)"), centerKillers, speedScale = NLOGN_SCALE);
+runAllSort(1024, "Dual Pivot Quick",         4, killers = centerKillers, speedScale = NLOGN_SCALE);
+runAllSort(2048, "PDQ Sort",                10, speedScale = NLOGN_SCALE); 
+runAllSort(2048, "Aeos Quick",               8, speedScale = NLOGN_SCALE);
+runAllSort(2048, "Log Sort",                 8, 0, speedScale = NLOGN_SCALE);
 
 
 ct = "Merge Sorts";
-runAllSort(2048, "Merge Sort",              16);
+runAllSort(2048, "Merge Sort",              16, speedScale = NLOGN_SCALE);
 runAllSort(2048, "Merge Sort (Parallel)",    2);
-runAllSort(2048, "Bottom Up Merge",          8);
-runAllSort(256,  "Lazy Stable",              4, rotations.index("Gries-Mills"));
-runAllSort(1024, "Rotate Merge",             3, rotations.index("Gries-Mills"));
+runAllSort(2048, "Bottom Up Merge",          8, speedScale = NLOGN_SCALE);
+runAllSort(256,  "Lazy Stable",              4, rotations.index("Gries-Mills"), speedScale = N_SQUARED_SCALE);
+runAllSort(1024, "Rotate Merge",             3, rotations.index("Gries-Mills"), speedScale = NLOG2N_SCALE);
 runAllSort(2048, "Rotate Merge (Parallel)",  1, rotations.index("Gries-Mills"));
-runAllSort(2048, "Adaptive Rotate Merge",   10, 256);
-runAllSort(2048, "Uranium Sort",             6);
-runAllSort(2048, "Tim Sort",                10);
-runAllSort(2048, "New Shuffle Merge",       12, rotations.index("Gries-Mills"));
-runAllSort(2048, "Andrey's Merge",           8);
-runAllSort(2048, "Buf Merge 2",              3, rotations.index("Helium"));
-runAllSort(2048, "Proportion Extend Merge",  8);
+runAllSort(2048, "Adaptive Rotate Merge",   10, 256, speedScale = NLOGN_SCALE);
+runAllSort(2048, "Uranium Sort",             6, speedScale = NLOGN_SCALE);
+runAllSort(2048, "Tim Sort",                10, speedScale = NLOGN_SCALE);
+runAllSort(2048, "New Shuffle Merge",       12, rotations.index("Gries-Mills"), speedScale = C_NLOGN_SCALE);
+runAllSort(2048, "Andrey's Merge",           8, speedScale = NLOGN_SCALE);
+runAllSort(2048, "Buf Merge 2",              5, rotations.index("Helium"), speedScale = NLOGN_SCALE);
+runAllSort(2048, "Proportion Extend Merge",  8, speedScale = NLOGN_SCALE);
 
 
 ct = "Block Merge Sorts";
-runAllSort(2048, "Wiki Sort",          7, [0, rotations.index("Triple Reversal")]);
-runAllSort(2048, "Grail Sort",         7, [0, rotations.index("Gries-Mills")]);
-runAllSort(2048, "Helium Sort",        3, 0);
-runAllSort(2048, "Hydrogen Sort",      4);
-runAllSort(2048, "Kota Sort",          7, rotations.index("Cycle Reverse"));
-runAllSort(2048, "Ecta Sort",          6);
-runAllSort(2048, "Lithium Sort",       4);
-runAllSort(2048, "Kita Sort",          6);
-runAllSort(2048, "Chalice Sort",       6, rotations.index("Cycle Reverse"));
-runAllSort(2048, "Advanced Log Merge", 6, [0, rotations.index("Cycle Reverse")]);
-runAllSort(1024, "Remi Sort",          8);
+runAllSort(2048, "Wiki Sort",          7, [0, rotations.index("Triple Reversal")], speedScale = C_NLOGN_SCALE);
+runAllSort(2048, "Grail Sort",         7, [0, rotations.index("Gries-Mills")], speedScale = C_NLOGN_SCALE);
+runAllSort(2048, "Helium Sort",        3, 0, speedScale = C_NLOGN_SCALE);
+runAllSort(2048, "Hydrogen Sort",      4, speedScale = C_NLOGN_SCALE);
+runAllSort(2048, "Kota Sort",          7, rotations.index("Cycle Reverse"), speedScale = C_NLOGN_SCALE);
+runAllSort(2048, "Ecta Sort",          6, speedScale = C_NLOGN_SCALE);
+runAllSort(2048, "Lithium Sort",       4, speedScale = C_NLOGN_SCALE);
+runAllSort(2048, "Kita Sort",          6, speedScale = C_NLOGN_SCALE);
+runAllSort(2048, "Chalice Sort",       6, rotations.index("Cycle Reverse"), speedScale = C_NLOGN_SCALE);
+runAllSort(2048, "Advanced Log Merge", 6, [0, rotations.index("Cycle Reverse")], speedScale = NLOGN_SCALE);
+runAllSort(1024, "Remi Sort",          8, speedScale = C_NLOGN_SCALE);
 
 
 ct = "Hybrid Sorts";
-runAllSort(256,  "In-Place Stable Cycle", 0.5, rotations.index("Cycle Reverse"));
-runAllSort(1024, "Pache Sort",              5);
+runAllSort(256,  "In-Place Stable Cycle", 0.5, rotations.index("Cycle Reverse"), speedScale = N_SQUARED_SCALE);
+runAllSort(1024, "Pache Sort",              5, speedScale = NLOGN_SCALE);
 
 
 ct = "Distribution Sorts";
@@ -209,12 +220,12 @@ runAllSort(2048, "Static Sort",        6);
 
 
 ct = "Pancake Sorts";
-runAllSort(64, "Pancake Sort",      1);
-runAllSort(64, "Optimized Pancake", 1);
-runAllSort(64, "Adjacency Pancake", 2);
+runAllSort( 64, "Pancake Sort",      1, speedScale = SLOW_N_SQUARED_SCALE);
+runAllSort(128, "Optimized Pancake", 1, speedScale = N_SQUARED_SCALE);
+runAllSort( 64, "Adjacency Pancake", 2, speedScale = SLOW_N_SQUARED_SCALE);
 
 
 ct = "Impractical Sorts";
-runAllSort(64, "Stooge Sort", 7);
-runAllSort(8,    "Bogo Sort", 5);
-runAllSort(8,    "Bozo Sort", 5);
+runAllSort(64, "Stooge Sort", 7, speedScale = 30);
+runAllSort(8,    "Bogo Sort", 5, sizeLimit = 10, speedScale = 64);
+runAllSort(8,    "Bozo Sort", 5, sizeLimit = 10, speedScale = 64);

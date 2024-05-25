@@ -543,11 +543,31 @@ new class GUI {
         this.__runAllPanel.hide();
 
         elements.UILabel(
-            Rect(this.OFFS.x, this.OFFS.y + 20, 100, 20), 
+            Rect(this.OFFS.x, this.OFFS.y + 20, 200, 20), 
+            "Array length multiplier", this.__manager, this.__runAllPanel
+        );
+        this.__runAllSizeMlt = elements.UITextEntryLine(
+            Rect(this.OFFS.x, this.OFFS.y + 40, 200, 20), 
+            this.__manager, this.__runAllPanel, 
+            initial_text = '1'
+        );
+
+        elements.UILabel(
+            Rect(this.OFFS.x + 220, this.OFFS.y + 20, 120, 20), 
+            "Unique divisor", this.__manager, this.__runAllPanel
+        );
+        this.__runAllUniqueDiv = elements.UITextEntryLine(
+            Rect(this.OFFS.x + 220, this.OFFS.y + 40, 120, 20), 
+            this.__manager, this.__runAllPanel, 
+            initial_text = '2'
+        );
+
+        elements.UILabel(
+            Rect(this.__sv.graphics.resolution.x - this.OFFS.x * 2 - 120, this.OFFS.y + 20, 100, 20), 
             "Speed", this.__manager, this.__runAllPanel
         );
         this.__runAllSpeed = elements.UITextEntryLine(
-            Rect(this.OFFS.x, this.OFFS.y + 40, 100, 20), 
+            Rect(this.__sv.graphics.resolution.x - this.OFFS.x * 2 - 120, this.OFFS.y + 40, 100, 20), 
             this.__manager, this.__runAllPanel, 
             initial_text = '1'
         );
@@ -602,12 +622,35 @@ new class GUI {
 
         new function __internal(event) {
             if event.ui_element == this.__runAllButton {
-                new dynamic speed = this.__runAllSpeed.get_text();
+                new dynamic speed     = this.__runAllSpeed.get_text(),
+                            sizeMlt   = this.__runAllSizeMlt.get_text(),
+                            uniqueDiv = this.__runAllUniqueDiv.get_text();
 
                 if checkType(speed, float) {
                     float <- speed;
                 } else {
                     this.userWarn("Error", "Invalid speed value. Please retry.");
+                    return;
+                }
+
+                if checkType(sizeMlt, float) {
+                    float <- sizeMlt;
+                } else {
+                    this.userWarn("Error", "Invalid size multiplier value. Please retry.");
+                    return;
+                }
+
+                if checkType(sizeMlt, float) {
+                    float <- sizeMlt;
+                } else {
+                    this.userWarn("Error", "Invalid size multiplier value. Please retry.");
+                    return;
+                }
+
+                if checkType(uniqueDiv, float) {
+                    float <- uniqueDiv;
+                } else {
+                    this.userWarn("Error", "Invalid unique divisor value. Please retry.");
                     return;
                 }
 
@@ -639,6 +682,8 @@ new class GUI {
 
                 return {
                     "speed"       : speed,
+                    "size-mlt"    : sizeMlt,
+                    "unique-div"  : uniqueDiv,
                     "distribution": dist,
                     "shuffle"     : shuf,
                     "visual"      : vis

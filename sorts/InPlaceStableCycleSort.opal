@@ -289,7 +289,7 @@ new class InPlaceStableCycleSort {
         return False;
     }
 
-    new classmethod stableCycleDest(array, a1, b1, b, p, piv, cmp) {
+    new classmethod stableCycleDest(array, a, a1, b1, b, p, piv, cmp) {
         new int d = a1,
                 e = 0;
 
@@ -297,7 +297,7 @@ new class InPlaceStableCycleSort {
             new int pCmp = compareValues(array[i], piv);
             new bool bit = pCmp == cmp || pCmp == 0;
 
-            new Value val  = array[p + i] if bit else array[i];
+            new Value val  = array[p + i - a] if bit else array[i];
             new int   vCmp = compareValues(val, array[a1]);
 
             if vCmp == -1 {
@@ -325,8 +325,8 @@ new class InPlaceStableCycleSort {
         return d;
     }
 
-    new classmethod stableCycle(array, a1, b, p, piv, cmp) {
-        for i = a1; i < b; i++ {
+    new classmethod stableCycle(array, a, b, p, piv, cmp) {
+        for i = a; i < b; i++ {
             new int pCmp = compareValues(array[i], piv);
             new bool bit = pCmp == cmp || pCmp == 0;
 
@@ -334,60 +334,51 @@ new class InPlaceStableCycleSort {
                 new int j = i;
 
                 while True {
-                    new int k = this.stableCycleDest(array, i, j, b, p, piv, cmp);
+                    new int k = this.stableCycleDest(array, a, i, j, b, p, piv, cmp);
 
                     if k == i {
                         break;
                     }
 
                     new Value t = array[i].copy();
-                    array[i    ].write(array[k]);
-                    array[k    ].write(array[p + k]);
-                    array[p + k].write(t);
+                    array[i        ].write(array[k]);
+                    array[k        ].write(array[p + k - a]);
+                    array[p + k - a].write(t);
 
                     j = k;
                 }
 
-                array[i].swap(array[p + i]);
+                array[i].swap(array[p + i - a]);
             }
         }
     }
 
-    new method sort(array, length) {
+    new method sort(array, a, b) {
+        new int length = b - a;
+
         if length <= 32 {
-            binaryInsertionSort(array, 0, length);
+            binaryInsertionSort(array, a, b);
             return;
         }
 
-        new Value piv = this.selectMedian(array, 0, length);
-        if this.partition(array, 0, length, piv) {
+        new Value piv = this.selectMedian(array, a, b);
+        if this.partition(array, a, b, piv) {
             return;
         }
 
-        new int n = length // 2,
-                p = (length + 1) // 2;
-        for ; array[n - 1] == array[p]; n--, p++ {}
+        new int m2   = lrBinarySearch(array, a,  b, piv, False),
+                m1   = lrBinarySearch(array, a, m2, piv, True),
+                h1   = m1 - a,
+                h2   = b - m2,
+                hMax = max(h1, h2),
+                a1   = a + hMax,
+                b1   = b - hMax;
 
-        if array[p] == piv {
-            new int p1    = p,
-                    bSize = 1;
-            for p1++; p1 < length && array[p1] == piv; p1++, bSize++ {}
+        this.stableCycle(array, a, a + h1, b1, piv, 1);
+        blockSwap(array, a + h1, b1 + h1, hMax - h1);
 
-            this.stableCycle(array, 0, n, p, piv, 1);
-            blockSwap(array, 0, p, bSize);
-            this.stableCycle(array, bSize, n, p, piv, -1);
-        } elif array[n - 1] == piv {
-            new int n1    = n,
-                    bSize = 1;
-            for n1--; n1 > 0 && array[n1 - 1] == piv; n1--, bSize++ {}
-
-            this.stableCycle(array, 0, n1, p, piv, 1);
-            blockSwap(array, n1, length - bSize, bSize);
-            this.stableCycle(array, 0, n, p, piv, -1);
-        } else {
-            this.stableCycle(array, 0, n, p, piv, 1);
-            this.stableCycle(array, 0, n, p, piv, -1);
-        }
+        blockSwap(array, a, b1, hMax - h2);
+        this.stableCycle(array, a1 - h2, a1, b - h2, piv, -1);
     }
 }
 
@@ -397,5 +388,5 @@ new class InPlaceStableCycleSort {
     "In-Place Stable Cycle"
 );
 new function inPlaceStableCycleRun(array) {
-    InPlaceStableCycleSort().sort(array, len(array));
+    InPlaceStableCycleSort().sort(array, 0, len(array));
 }

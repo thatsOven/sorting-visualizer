@@ -17,7 +17,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.5.22";
+new str VERSION = "2024.5.25";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -1839,7 +1839,7 @@ new class SortingVisualizer {
 
     new method __prepare(group) {
         new dynamic attr = getattr(this, group);
-        Utils.Iterables.stableSort(attr);
+        Utils.Iterables.sort(attr);
         IO.out(f"{len(attr)} {group} loaded.\n");
     }
 
@@ -1851,11 +1851,11 @@ new class SortingVisualizer {
         this.__prepare("rotations");
         this.__prepare("sounds");
 
-        Utils.Iterables.stableSort(this.categories);
+        Utils.Iterables.sort(this.categories);
         
         static: new int tot = 0;
         for list_ in this.sorts {
-            Utils.Iterables.stableSort(this.sorts[list_]);
+            Utils.Iterables.sort(this.sorts[list_]);
             tot += len(this.sorts[list_]);
         }
 
