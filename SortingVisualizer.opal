@@ -17,7 +17,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.5.25";
+new str VERSION = "2024.5.26";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -93,6 +93,8 @@ new class SortingVisualizer {
 
         this.highlights     = [];
         this.highlightsLock = threading.Lock();
+        this.__marks        = {};
+        this.__marksLock    = threading.Lock();
 
         this.distributions = [];
         this.shuffles      = [];
@@ -373,6 +375,7 @@ new class SortingVisualizer {
             this.array[i].stabIdx = i;
         }
 
+        this.clearAllMarks();
         this.resetAux();
         this.resetAdaptAux();
         this.renderStats();
@@ -473,6 +476,7 @@ new class SortingVisualizer {
 
         this.sorts[category][id].func(this.array);
 
+        this.clearAllMarks();
         this.resetAux();
         this.resetAdaptAux();
 
@@ -850,15 +854,30 @@ new class SortingVisualizer {
     $macro prepareHighlights
         hList = [x for x in hList if x is not None && x.idx is not None];
 
-        if len(this.highlights) != 0 {
-            new dynamic setHlist = set(hList);
+        static: new bint doHighlights = len(this.highlights) != 0,
+                         doMarks      = len(this.__marks)    != 0;
 
+        if doHighlights || doMarks {
+            new dynamic setHlist = set(hList);
+        }
+
+        if doHighlights {
             for highlight in this.highlights {
                 if highlight is None || highlight.idx is None || highlight in setHlist {
                     continue;
                 }
 
                 hList.append(highlight);
+            }
+        }
+
+        if doMarks {
+            for mark in this.__marks.values() {
+                if mark is None || mark.idx is None || mark in setHlist {
+                    continue;
+                }
+
+                hList.append(mark);
             }
         }
     $end
@@ -1235,9 +1254,31 @@ new class SortingVisualizer {
         }
     }
 
-    new method setHighlights(hList) {
-        with this.highlightsLock {
-            this.highlights = hList;
+    new method markArrayAdvanced(id, hInfo) {
+        with this.__marksLock {
+            this.__marks[id] = hInfo;
+        }
+    }
+
+    new method markArray(id, idx, aux = None, color = None) {
+        with this.__marksLock {
+            this.__marks[id] = HighlightInfo(idx, aux, color);
+        }
+    }
+
+    new method clearMark(id) {
+        with this.__marksLock {
+            if id not in this.__marks {
+                throw VisualizerException("Trying to clear nonexistent mark");
+            }
+
+            del this.__marks[id];
+        }
+    }
+
+    new method clearAllMarks() {
+        with this.__marksLock {
+            this.__marks.clear();
         }
     }
 
@@ -1280,7 +1321,9 @@ new class SortingVisualizer {
 
             try {
                 fn(*args, **kwargs);
-            } catch Exception as e {
+            } 
+            ignore StopAlgorithm; 
+            catch Exception as e {
                 exception = e;
             }
                 
@@ -1290,14 +1333,18 @@ new class SortingVisualizer {
         new dynamic t = threading.Thread(target = __fn, daemon = True);
         t.start();
 
-        while running {
-            time.sleep(0.005); # this fixes some freezing issues (???)
+        try {
+            while running {
+                time.sleep(0.005); # this fixes some freezing issues (???)
 
-            with this.highlightsLock {
-                this.multiHighlightAdvanced([]);
+                with this.highlightsLock {
+                    this.multiHighlightAdvanced([]);
+                }
             }
+        } catch StopAlgorithm {
+            this.__stopAlgorithm();
         }
-
+        
         t.join();
 
         if exception is not None {
@@ -1535,6 +1582,8 @@ new class SortingVisualizer {
             this.renderStats();
         }
 
+        this.clearAllMarks();
+
         new str f = formatException(e);
         IO.out(f, IO.endl);
         this.__gui.saveBackground();
@@ -1557,6 +1606,7 @@ new class SortingVisualizer {
     }
 
     new method __stopAlgorithm() {
+        this.clearAllMarks();
         this.resetAux();
         this.resetAdaptAux();
         this.drawFullArray();

@@ -91,7 +91,7 @@ For array operations that don't work properly with the `Value` class, the visual
 - `sortingVisualizer.write(array: list, i: int, val)`;
 - `sortingVisualizer.swap(array: list, a: int, b: int)`.
 ## Manual highlights
-The visualizer provides nine methods for manual highlighting:
+The visualizer provides twelve methods for manual highlighting:
 - `sortingVisualizer.highlight(index: int, aux: list | None = None)`: highlights the given index;
 - `sortingVisualizer.multiHighlight(indices: list[int], aux: list | None = None)`: highlights a list of indices.
 - `sortingVisualizer.highlightAdvanced(index: HighlightInfo)`: highlights a `HighlightInfo` object;
@@ -100,7 +100,10 @@ The visualizer provides nine methods for manual highlighting:
 - `sortingVisualizer.queueMultiHighlight(indices: list[int], aux: list | None = None)`: like `queueHighlight`, but accepts a list of indices;
 - `sortingVisualizer.queueHighlightAdvanced(index: HighlightInfo)`: like `queueHighlight`, but uses a `HighlightInfo` object;
 - `sortingVisualizer.queueMultiHighlightAdvanced(indices: list[HighlightInfo])`: like `queueHighlightAdvanced`, but accepts a list of `HighlightInfo` objects;
-- `sortingVisualizer.setHighlights(indices: list[HighlightInfo])`: sets a list of `HighlightInfo` objects as the current highlights, replacing the original ones.
+- `sortingVisualizer.markArray(id: Any, index: int, aux: list | None = None, color: tuple[int, int, int] | None = None)`: marks the array persistently until the end of the current algorithm. `id` can be any hashable object;
+- `sortingVisualizer.markArrayAdvanced(id: Any, index: HighlightInfo)`: like `markArray`, but uses a `HighlightInfo` object;
+- `sortingVisualizer.clearMark(id: Any)`: clears a mark precedently set through `markArray`, given its `id`. Throws a `VisualizerException` if the `id` of the given mark does not exist;
+- `sortingVisualizer.clearAllMarks()`: clears all marks set through `markArray`.
 
 An `HighlightInfo` object contains more information for each highlight. Internally, the visualizer also generates those when calling the non-advanced variants of highlights. They are composed like this:
 `record HighlightInfo(index: int, aux: list[Value] | None = None, color: tuple[int, int, int] | None = None, silent: bool = False);`
