@@ -1,4 +1,4 @@
-use UtilsIterablesStableSort;
+use UtilsIterablesSort;
 
 new class FeatureSort {
     new method sortSubarray(subarray, mainArray) {
@@ -6,7 +6,7 @@ new class FeatureSort {
         if l <= 1 {
             return;
         }
-        UtilsIterablesStableSort(len(mainArray), mainArray).sort(subarray, 0, l);
+        UtilsIterablesSort(len(mainArray), mainArray).sort(subarray, 0, l);
     }
 
     new method __adaptAux(_) {

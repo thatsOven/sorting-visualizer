@@ -1,17 +1,26 @@
 this.setVisual(runOpts["visual"]);
 
-new function runAllSort(size, name, speed, toPush = None, killers = None, speedScale = 1, sizeLimit = None) {
+new function runAllSort(size, name, speed, toPush = None, killers = None, speedScale = 1, sizeLimit = None, uniqueLimit = 2, minSize = 4) {
     size  *= runOpts["size-mlt"];
     speed *= runOpts["size-mlt"] * runOpts["speed"];
 
     if runOpts["size-mlt"] > 1 {
         speed *= speedScale;
-    } 
+    } elif runOpts["size-mlt"] < 1 {
+        speed /= speedScale;
+    }
 
     int <- size;
 
     if sizeLimit is not None && size > sizeLimit {
         size = sizeLimit;
+    } elif size < minSize {
+        size = minSize;
+    }
+
+    new int unique = size // runOpts["unique-div"];
+    if unique < uniqueLimit {
+        unique = uniqueLimit;
     }
 
     if needsSeed {
@@ -29,7 +38,7 @@ new function runAllSort(size, name, speed, toPush = None, killers = None, speedS
     }
 
     this.runSortingProcess(
-        runOpts["distribution"], size, int(size / runOpts["unique-div"]), 
+        runOpts["distribution"], size, unique, 
         runOpts["shuffle"], ct, name, speed, 
         killers = {} if killers is None else killers
     );

@@ -640,15 +640,13 @@ new class GUI {
                     return;
                 }
 
-                if checkType(sizeMlt, float) {
-                    float <- sizeMlt;
-                } else {
-                    this.userWarn("Error", "Invalid size multiplier value. Please retry.");
-                    return;
-                }
-
                 if checkType(uniqueDiv, float) {
                     float <- uniqueDiv;
+
+                    if uniqueDiv < 1 {
+                        this.userWarn("Error", "Minimum unique divisor is 1.");
+                        return;
+                    }
                 } else {
                     this.userWarn("Error", "Invalid unique divisor value. Please retry.");
                     return;
