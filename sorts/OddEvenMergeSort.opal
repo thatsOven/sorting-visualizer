@@ -80,7 +80,7 @@ new function oddEvenMergeSortRun(array) {
 
 @Sort(
     "Concurrent Sorts",
-    "Parallel Odd Even Merge Sort",
+    "Odd Even Merge Sort (Parallel)",
     "Odd Even Merge (Parallel)"
 );
 new function oddEvenMergeSortRun(array) {
