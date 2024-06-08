@@ -24,9 +24,9 @@
 # Lithium Sort
 # 
 # A conceptually optimal in-place block merge sorting algorithm.
-# This algorithm introduces some ideas, that in conjunction with a heavier usage of
-# scrolling buffers, code optimizations and other tricks (like the ones in Holy GrailSort),
-# minimizes moves and comparisons for every step of the in-place block merge sorting procedure.
+# This algorithm introduces some ideas, that in conjunction with code optimizations and 
+# other tricks (like the ones in Holy GrailSort), minimizes moves and comparisons for 
+# every step of the in-place block merge sorting procedure.
 # 
 # Time complexity: O(n log n) best/average/worst
 # Space complexity: O(1)
@@ -50,6 +50,15 @@ new class LithiumSort {
 
     new method __init__() {
         this.bufLen = 0;
+    }
+
+    new classmethod multiTriSwap(array, a, b, c, len) {
+        for i in range(len) {
+            new Value t = array[a + i].copy();
+            array[a + i].write(array[b + i]);
+            array[b + i].write(array[c + i]);
+            array[c + i].write(t);
+        }
     }
 
     new method rotate(array, a, m, b) {
@@ -179,6 +188,52 @@ new class LithiumSort {
         }
     }
 
+    new method mergeRestWithBufferFW(array, a, m, b, pLen, left) {
+        new int l = this.bufPos,
+                r = m,
+                o = a,
+                e = l + pLen;
+
+        for ; l < e && r < b; o++ {
+            new int cmp = compareValues(array[l], array[r]);
+            if cmp <= 0 if left else cmp < 0 {
+                array[o].swap(array[l]);
+                l++;
+            } else {
+                array[o].swap(array[r]);
+                r++;
+            }
+        }
+
+        for ; l < e; o++, l++ {
+            array[o].swap(array[l]);
+        }
+    }
+
+    new classmethod mergeWithScrollingBufferFW(array, a, m, b, p, left) {
+        new int i = a,
+                j = m;
+
+        for ; i < m && j < b; p++ {
+            new int cmp = compareValues(array[i], array[j]);
+            if cmp <= 0 if left else cmp < 0 {
+                array[p].swap(array[i]);
+                i++;
+            } else {
+                array[p].swap(array[j]);
+                j++;
+            }
+        }
+
+        if i > p {
+            for ; i < m; p++, i++ {
+                array[p].swap(array[i]);
+            }
+        }
+
+        return j;
+    }
+
     new classmethod shift(array, a, m, b, left) {
         if left {
             if m == b {
@@ -255,69 +310,25 @@ new class LithiumSort {
     }
 
     new method blockSelect(array, bits, a, leftBlocks, rightBlocks, blockLen) {
-        new int i1 = 0,
-                tm = leftBlocks,
-                j1 = tm,
-                k  = 0,
-                tb = tm + rightBlocks;
+        new int total = leftBlocks + rightBlocks;
 
-        while k < j1 && j1 < tb {
-            if array[a + (i1 + 1) * blockLen - 1] <= 
-               array[a + (j1 + 1) * blockLen - 1] 
-            {
-                if i1 > k {
-                    blockSwap(
-                        array, 
-                        a + k * blockLen, 
-                        a + i1 * blockLen, 
-                        blockLen
-                    );
+        for j = 0, k = leftBlocks + 1; j < k - 1; j++ {
+            new int min = j;
+
+            for i = max(leftBlocks - 1, j + 1); i < k; i++ {
+                new int cmp = compareValues(array[a + (i + 1) * blockLen - 1], array[a + (min + 1) * blockLen - 1]);
+
+                if cmp < 0 || (cmp == 0 && this.compareKeys(array, bits, i, min) < 0) {
+                    min = i;
                 }
-
-                this.swapKeys(array, bits, k, i1);
-                k++;
-
-                i1 = k;
-                for i = max(k + 1, tm); i < j1; i++ {
-                    if this.compareKeys(array, bits, i, i1) < 0 {
-                        i1 = i;
-                    }
-                }
-            } else {
-                blockSwap(
-                    array, 
-                    a + k * blockLen, 
-                    a + j1 * blockLen, 
-                    blockLen
-                );
-
-                this.swapKeys(array, bits, k, j1);
-                j1++;
-
-                if i1 == k {
-                    i1 = j1 - 1;
-                }
-                k++;
-            }
-        }
-
-        while k < j1 - 1 {
-            if i1 > k {
-                blockSwap(
-                    array, 
-                    a + k * blockLen, 
-                    a + i1 * blockLen, 
-                    blockLen
-                );
             }
 
-            this.swapKeys(array, bits, k, i1);
-            k++;
+            if min != j {
+                blockSwap(array, a + j * blockLen, a + min * blockLen, blockLen);
+                this.swapKeys(array, bits, j, min);
 
-            i1 = k;
-            for i = k + 1; i < j1; i++ {
-                if this.compareKeys(array, bits, i, i1) < 0 {
-                    i1 = i;
+                if k < total && min == k - 1 {
+                    k++;
                 }
             }
         }
@@ -331,7 +342,52 @@ new class LithiumSort {
         }
     }
 
-    new method mergeBlocks(array, a, midKey, blockQty, blockLen, lastLen, bits) {
+    new method mergeBlocksWithBuf(array, a, midKey, leftBlocks, rightBlocks, b, blockLen, bits) {
+        new int t  = leftBlocks + rightBlocks,
+                a1 = a + blockLen,
+                i  = a1,
+                j  = a,
+                k  = -1,
+                l  = -1,
+                r  = leftBlocks - 1;
+
+        new bool left = True;
+        while l < leftBlocks && r < t {
+            if left {
+                do {
+                    j += blockLen;
+                    l++;
+                    k++;
+                } while l < leftBlocks && this.compareMidKey(array, bits, k, midKey);
+
+                if l == leftBlocks {
+                    i = this.mergeWithScrollingBufferFW(array, i, j, b, i - blockLen, True);
+                    this.mergeRestWithBufferFW(array, i - blockLen, i, b, blockLen, True);
+                } else {
+                    i = this.mergeWithScrollingBufferFW(array, i, j, j + blockLen - 1, i - blockLen, True);
+                }
+
+                left = False;
+            } else {
+                do {
+                    j += blockLen;
+                    r++;
+                    k++;
+                } while r < t && !this.compareMidKey(array, bits, k, midKey);
+
+                if r == t {
+                    this.shift(array, i - blockLen, i, b, False);
+                    blockSwap(array, this.bufPos, b - blockLen, blockLen);
+                } else {
+                    i = this.mergeWithScrollingBufferFW(array, i, j, j + blockLen - 1, i - blockLen, False);
+                }
+
+                left = True;
+            }
+        }
+    }
+
+    new method mergeBlocksLazy(array, a, midKey, blockQty, blockLen, lastLen, bits) {
         new int f = a;
         new bool left = this.compareMidKey(array, bits, 0, midKey);
         
@@ -447,7 +503,7 @@ new class LithiumSort {
         }
     }
 
-    new method getBlocksIndices(array, a, leftBlocks, rightBlocks, blockLen, indices, bits) {
+    new method getBlocksIndicesLazy(array, a, leftBlocks, rightBlocks, blockLen, indices, bits) {
         new int l = 0,
                 m = leftBlocks,
                 r = m,
@@ -477,13 +533,76 @@ new class LithiumSort {
         }
     }
 
-    new method prepareKeys(bits, q) {
+    new method getBlocksIndices(array, a, leftBlocks, rightBlocks, blockLen, indices, bits) {
+        new int m = leftBlocks - 1,
+                l = m,
+                r = leftBlocks,
+                b = r + rightBlocks,
+                o = 0;
+
+        if l != -1 {
+            new int lb = a + (l + 1) * blockLen - 1;
+            while True {
+                if r == b || array[lb] <= array[a + (r + 1) * blockLen - 1] {
+                    bits.set(o, l);
+                    indices.set(o, l);
+                    o++;
+                    break;
+                }
+
+                bits.set(o, r);
+                indices.set(o, r);
+                o++;
+                r++;
+            }
+
+            if l != 0 {
+                l = 0;
+
+                for ; l < m && r < b; o++ {
+                    if array[a + (l + 1) * blockLen - 1] <= array[a + (r + 1) * blockLen - 1] {
+                        bits.set(o, l);
+                        indices.set(o, l);
+                        l++;
+                    } else {
+                        bits.set(o, r);
+                        indices.set(o, r);
+                        r++;
+                    }
+                }
+
+                for ; l < m; o++, l++ {
+                    bits.set(o, l);
+                    indices.set(o, l);
+                }
+            }
+        }
+
+        for ; r < b; o++, r++ {
+            bits.set(o, r);
+            indices.set(o, r);
+        }
+    }
+
+    new method prepareKeysLazy(bits, q) {
         for i in range(q) {
             bits.set(i, i);
         }
     }
 
-    new method combine(array, a, m, b, bits, indices) {
+    new method prepareKeys(bits, q, leftBlocks) {
+        for i = 0; i < leftBlocks - 1; i++ {
+            bits.set(i, i + 1);
+        }
+
+        bits.set(i, 0);
+
+        for i++; i < q; i++ {
+            bits.set(i, i);
+        }
+    }
+
+    new method combine(array, a, m, b, bits, indices, lazy) {
         if b - m <= this.bufLen {
             this.mergeWithBufferBW(array, a, m, b, True);
             return;
@@ -499,35 +618,48 @@ new class LithiumSort {
                     frag        = (b - a) - blockQty * this.blockLen;
 
             new dynamic midKey;
-            if bits is None {
-                binaryInsertionSort(array, this.keyPos, this.keyPos + blockQty + 1);
-                midKey = array[this.keyPos + leftBlocks];
-
-                this.blockSelect(
-                    array, bits, a, leftBlocks,
-                    rightBlocks, this.blockLen
-                );
-            } else {
-                midKey = leftBlocks;
-
-                if indices is None {
-                    this.prepareKeys(bits, blockQty);
-
-                    this.blockSelect(
-                        array, bits, a, leftBlocks,
-                        rightBlocks, this.blockLen
-                    );
+            if lazy {
+                if bits is None {
+                    binaryInsertionSort(array, this.keyPos, this.keyPos + blockQty + 1);
+                    midKey = array[this.keyPos + leftBlocks].copy();
+                    this.blockSelect(array, bits, a, leftBlocks, rightBlocks, this.blockLen);
                 } else {
-                    this.getBlocksIndices(array, a, leftBlocks, rightBlocks, this.blockLen, indices, bits);
-                    this.blockCycle(array, a, b, this.blockLen, indices);
-                }
-            }
+                    midKey = leftBlocks;
 
-            this.mergeBlocks(
-                array, a, midKey,
-                blockQty, this.blockLen,
-                frag, bits
-            );
+                    if indices is None {
+                        this.prepareKeysLazy(bits, blockQty);
+                        this.blockSelect(array, bits, a, leftBlocks, rightBlocks, this.blockLen);
+                    } else {
+                        this.getBlocksIndicesLazy(array, a, leftBlocks, rightBlocks, this.blockLen, indices, bits);
+                        this.blockCycle(array, a, b, this.blockLen, indices);
+                    }
+                }
+
+                this.mergeBlocksLazy(array, a, midKey, blockQty, this.blockLen, frag, bits);
+            } else {
+                this.multiTriSwap(array, this.bufPos, m - this.blockLen, a, this.blockLen);
+                leftBlocks--;
+                blockQty--;
+
+                if bits is None {
+                    binaryInsertionSort(array, this.keyPos, this.keyPos + blockQty + 1);
+                    midKey = array[this.keyPos + leftBlocks].copy();
+                    insertToRight(array, this.keyPos, this.keyPos + leftBlocks - 1);
+                    this.blockSelect(array, bits, a + this.blockLen, leftBlocks, rightBlocks, this.blockLen);
+                } else {
+                    midKey = leftBlocks;
+
+                    if indices is None {
+                        this.prepareKeys(bits, blockQty, leftBlocks);
+                        this.blockSelect(array, bits, a + this.blockLen, leftBlocks, rightBlocks, this.blockLen);
+                    } else {
+                        this.getBlocksIndices(array, a + this.blockLen, leftBlocks, rightBlocks, this.blockLen, indices, bits);
+                        this.blockCycle(array, a + this.blockLen, b, this.blockLen, indices);
+                    }
+                }
+
+                this.mergeBlocksWithBuf(array, a, midKey, leftBlocks, rightBlocks, b, this.blockLen, bits);
+            }
         }
     }
 
@@ -539,21 +671,19 @@ new class LithiumSort {
     }
 
     new method noBitsBLenCalc(twoR) {
-        new int kLen = this.keyLen,
-                kBuf = (kLen + (kLen & 1)) // 2,
-                bLen = 1, target;
+        new int sqrtTwoR = 1;
+        for ; sqrtTwoR * sqrtTwoR < twoR; sqrtTwoR *= 2 {}
 
-        if kBuf >= twoR // kBuf {
-            this.bufLen = kBuf;
-            this.bufPos = this.keyPos + this.keyLen - kBuf;
-            target = kBuf;
+        new int kCnt = twoR // sqrtTwoR + 1;
+        if kCnt < this.keyLen {
+            this.bufLen = this.keyLen - kCnt;
+            this.bufPos = this.keyPos + kCnt;
         } else {
+            for ; twoR // sqrtTwoR + 1 > this.keyLen; sqrtTwoR *= 2 {}
             this.bufLen = 0;
-            target = twoR // kLen;
         }
 
-        for ; bLen <= target; bLen *= 2 {}
-        this.blockLen = bLen;
+        this.blockLen = sqrtTwoR;
     }
 
     new method resetBuf() {
@@ -605,7 +735,9 @@ new class LithiumSort {
             this.strat3BLenCalc(twoR, bB - bA);
         }
 
-        new int nW   = twoR // this.blockLen,
+        new bool lazy = this.blockLen > this.bufLen;
+
+        new int nW   = twoR // this.blockLen - int(!(lazy || this.dualBuf)),
                 w    = log2(nW) + 1,
                 size = nW * w;
 
@@ -615,7 +747,7 @@ new class LithiumSort {
             new BitArray bits    = BitArray(array, bA       , bB - size * 2, nW, w),
                          indices = BitArray(array, bA + size, bB - size    , nW, w); 
 
-            this.combine(array, a, m, b, bits, indices);
+            this.combine(array, a, m, b, bits, indices, lazy);
 
             bits.free();
             indices.free();
@@ -623,7 +755,7 @@ new class LithiumSort {
             a, m, b, frag = this.adjust(array, a, m, b, aSub);
 
             new BitArray bits = BitArray(array, bA, bB - size, nW, w);
-            this.combine(array, a, m, b, bits, None);
+            this.combine(array, a, m, b, bits, None, lazy);
             bits.free();
         } else {
             this.noBitsBLenCalc(twoR);
@@ -631,7 +763,7 @@ new class LithiumSort {
 
             new bool dualBuf = this.dualBuf;
             this.dualBuf = False;
-            this.combine(array, a, m, b, None, None);
+            this.combine(array, a, m, b, None, None, lazy);
             this.dualBuf = dualBuf;
             this.resetBuf();
         }
@@ -738,12 +870,14 @@ new class LithiumSort {
                 this.strat3BLenCalc(twoR, r);
             }
 
-            new int nW   = twoR // this.blockLen,
+            new bool lazy    = this.blockLen > this.bufLen,
+                     dualBuf = this.dualBuf;
+
+            new int nW   = twoR // this.blockLen - int(!(lazy || dualBuf)),
                     w    = log2(nW) + 1,
                     size = nW * w;
 
             new dynamic bits, indices;
-            new bool dualBuf = this.dualBuf;
             if (!dualBuf) && this.checkValidBitArray(array, a, a + twoR, size * 2) {
                 bits    = BitArray(array, a       , a + twoR - size * 2, nW, w);
                 indices = BitArray(array, a + size, a + twoR - size    , nW, w);
@@ -758,11 +892,11 @@ new class LithiumSort {
             }
 
             for ; i < b - twoR; i += twoR {
-                this.combine(array, i, i + r, i + twoR, bits, indices);
+                this.combine(array, i, i + r, i + twoR, bits, indices, lazy);
             }
 
             if i + r < b {
-                this.combine(array, i, i + r, b, bits, indices);
+                this.combine(array, i, i + r, b, bits, indices, lazy);
             }
 
             if bits is None {
