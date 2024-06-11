@@ -1044,7 +1044,7 @@ new class HeliumSort {
             }
 
             if keysFound <= HeliumSort.MAX_STRAT5_UNIQUE {
-                this.inPlaceMergeSort(array, a, b);
+                this.inPlaceMergeSort(array, a, b, False);
                 return;
             }
 
@@ -1071,7 +1071,7 @@ new class HeliumSort {
         }
 
         if keysFound <= HeliumSort.MAX_STRAT5_UNIQUE {
-            this.inPlaceMergeSort(array, a, b);
+            this.inPlaceMergeSort(array, a, b, False);
             return;
         }
 
