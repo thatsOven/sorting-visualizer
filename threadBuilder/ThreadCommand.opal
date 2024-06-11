@@ -58,7 +58,7 @@ new class ThreadCommand {
                 name = sortingVisualizer.shuffles[this.__id].name;
             }
             case "SORT" {
-                name = sortingVisualizer.sorts[sortingVisualizer.categories[this.__lengthC]][this.__id].listName;
+                name = sortingVisualizer.sorts[this.__lengthC][this.__id].listName;
             }
             case "SPEED" {
                 name = "SET | " + str(this.__id);
