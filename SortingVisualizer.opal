@@ -736,16 +736,16 @@ new class SortingVisualizer {
     new method __defaultAdaptAux(arrays) {
         new dynamic result;
 
+        static {
+            new int   max_;
+            new float mlt;
+        }
+
         if len(this.__nonOrigAuxs) == 0 {
             result = list(chain.from_iterable(arrays));
         } else {
             result = [];
-
-            static {
-                new int   max_;
-                new float mlt;
-            }
-
+            
             for array in arrays {
                 if id(array) in this.__nonOrigAuxs {
                     max_ = array[0].value;
