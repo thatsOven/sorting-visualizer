@@ -2063,7 +2063,7 @@ new class SortingVisualizer {
 
                     match sel {
                         case 0 {
-                            this.__selectThread("Thread", True, True);
+                            this.__selectThread("Thread", True);
                             this.__wrappedFinalizeRender();
                         }
                         case 1 {
