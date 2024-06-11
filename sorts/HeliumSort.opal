@@ -1016,7 +1016,6 @@ new class HeliumSort {
 
             this.sortRuns(array, a, b, p);
 
-            sortingVisualizer.setAdaptAux(this.__adaptAux);
             this.buffer = sortingVisualizer.createValueArray(mem - keySize);
             this.keys   = sortingVisualizer.createValueArray(keySize);
             sortingVisualizer.setNonOrigAux(this.keys);
