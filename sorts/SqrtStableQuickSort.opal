@@ -1,4 +1,4 @@
-use binaryInsertionSort, grailSortGivenAux, adaptLow;
+use binaryInsertionSort, grailSortGivenAux;
 
 new class SqrtStableQuickSort {
     new int SMALL_SORT = 32;
@@ -224,19 +224,15 @@ new class SqrtStableQuickSort {
         binaryInsertionSort(array, a, b);
     }
 
-    new method __adaptAux(arrays) {
-        return adaptLow(arrays, (this.keys, ));
-    }
-
     new method sort(array, a, b) {
         new int sqrt = pow2Sqrt(b - a);
 
         this.bufLen = sqrt;
 
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
         this.zeros = sortingVisualizer.createValueArray(sqrt);
         this.ones  = sortingVisualizer.createValueArray(sqrt);
         this.keys  = sortingVisualizer.createValueArray(((b - a - 1) // sqrt) + 1);
+        sortingVisualizer.setNonOrigAux(this.keys);
 
         this.quickSorter(array, a, b, 2 * math.log2(b - a));
     }
@@ -245,8 +241,7 @@ new class SqrtStableQuickSort {
 @Sort(
     "Quick Sorts",
     "Sqrt Stable QuickSort",
-    "Sqrt Stable Quick",
-    usesDynamicAux = True
+    "Sqrt Stable Quick"
 );
 new function sqrtStableQuickSortRun(array) {
     SqrtStableQuickSort().sort(array, 0, len(array));

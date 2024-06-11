@@ -65,7 +65,7 @@
 use reverse, arrayCopy, blockSwap, backwardBlockSwap, 
     compareValues, compareIntToValue, insertToLeft,
     checkMergeBounds, lrBinarySearch, binaryInsertionSort,
-    bidirArrayCopy, adaptLow;
+    bidirArrayCopy;
 
 new class HeliumSort {
     new int RUN_SIZE           = 32,
@@ -945,10 +945,6 @@ new class HeliumSort {
         }
     }
 
-    new method __adaptAux(arrays) {
-        return adaptLow(arrays, (this.keys, this.indices));
-    }
-
     new method sort(array, a, b, mem) {
         new int n = b - a;
         if n <= HeliumSort.SMALL_SORT {
@@ -992,10 +988,10 @@ new class HeliumSort {
             
             this.sortRuns(array, a, b, p);
 
-            sortingVisualizer.setAdaptAux(this.__adaptAux);
             this.buffer  = sortingVisualizer.createValueArray(mem - 2 * keySize);
             this.indices = sortingVisualizer.createValueArray(keySize);
             this.keys    = sortingVisualizer.createValueArray(keySize);
+            sortingVisualizer.setNonOrigAux(this.indices, this.keys);
             
             this.blockLen = sqrtn;
 
@@ -1023,6 +1019,7 @@ new class HeliumSort {
             sortingVisualizer.setAdaptAux(this.__adaptAux);
             this.buffer = sortingVisualizer.createValueArray(mem - keySize);
             this.keys   = sortingVisualizer.createValueArray(keySize);
+            sortingVisualizer.setNonOrigAux(this.keys);
 
             this.blockLen = sqrtn;
 
@@ -1103,8 +1100,7 @@ new class HeliumSort {
 @Sort(
     "Block Merge Sorts",
     "Helium Sort",
-    "Helium Sort",
-    usesDynamicAux = True
+    "Helium Sort"
 );
 new function heliumGenSortRun(array) {
     new int mem = sortingVisualizer.getUserInput("Insert memory size (or -4 .. -1 for default modes)", "0");
@@ -1123,8 +1119,7 @@ new function uraniumSortRun(array) {
 @Sort(
     "Block Merge Sorts",
     "Hydrogen Sort (Helium strategy 2)",
-    "Hydrogen Sort",
-    usesDynamicAux = True
+    "Hydrogen Sort"
 );
 new function hydrogenSortRun(array) {
     HeliumSort().sort(array, 0, len(array), -2);

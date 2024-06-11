@@ -3,6 +3,7 @@ new class WeakHeapSort {
         this.array  = array;
         this.length = length;
         this.bits   = sortingVisualizer.createValueArray((this.length + 7) // 8);
+        sortingVisualizer.setNonOrigAux(this.bits);
     }
 
     new method getBitwiseFlag(x) {
@@ -58,8 +59,7 @@ new class WeakHeapSort {
 @Sort(
     "Tree Sorts",
     "Weak Heap Sort",
-    "Weak Heap Sort",
-    usesDynamicAux = True
+    "Weak Heap Sort"
 );
 new function weakHeapSortRun(array) {
     WeakHeapSort(array, len(array)).sort();

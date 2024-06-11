@@ -16,6 +16,7 @@ new class TreeSort {
         this.lower = sortingVisualizer.createValueArray(len(array));
         this.upper = sortingVisualizer.createValueArray(len(array));
         this.tmp   = sortingVisualizer.createValueArray(len(array));
+        sortingVisualizer.setNonOrigAux(this.lower, this.upper);
 
         for i = 1; i < len(array); i++ {
             new int c = 0;
@@ -46,8 +47,7 @@ new class TreeSort {
 @Sort(
     "Tree Sorts",
     "Tree Sort",
-    "Tree Sort",
-    usesDynamicAux = True
+    "Tree Sort"
 );
 new function treeSortRun(array) {
     TreeSort().sort(array);

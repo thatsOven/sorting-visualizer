@@ -16,6 +16,7 @@ new class TimSort {
 
         this.runBase = sortingVisualizer.createValueArray(stackLen);
         this.runLen  = sortingVisualizer.createValueArray(stackLen);
+        sortingVisualizer.setNonOrigAux(this.runBase, this.runLen);
 
         this.tmp = sortingVisualizer.createValueArray((this.len >> 1)
                                                    if (this.len < 2 * TimSort.INITIAL_TMP_STORAGE_LENGTH)
@@ -558,8 +559,7 @@ new class TimSort {
 @Sort(
     "Merge Sorts",
     "Tim Sort",
-    "Tim Sort",
-    usesDynamicAux = True
+    "Tim Sort"
 );
 new function timSortRun(array) {
     TimSort(array, len(array)).sort(array, 0, len(array));

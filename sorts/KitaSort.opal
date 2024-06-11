@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-use bidirArrayCopy, binaryInsertionSort, adaptLow;
+use bidirArrayCopy, binaryInsertionSort;
 
 new class KitaSort {
     new method __init__() {
@@ -242,10 +242,6 @@ new class KitaSort {
         }
     }
 
-    new method __adaptAux(arrays) {
-        return adaptLow(arrays, (this.tags, this.tTmp));
-    }
-
     new method sort(array, a, b) {
         new int length = b - a;
 
@@ -259,10 +255,10 @@ new class KitaSort {
                 tLen   = length // bLen,
                 bufLen = 2 * bLen;
 
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
         this.buf  = sortingVisualizer.createValueArray(bufLen);
         this.tags = sortingVisualizer.createValueArray(tLen);
         this.tTmp = sortingVisualizer.createValueArray(tLen);
+        sortingVisualizer.setNonOrigAux(this.tags, this.tTmp);
 
         new int b1 = b - length % bLen,
                 j  = 1;
@@ -305,8 +301,7 @@ new class KitaSort {
 @Sort(
     "Block Merge Sorts",
     "Kita Sort",
-    "Kita Sort",
-    usesDynamicAux = True
+    "Kita Sort"
 );
 new function kitaSortRun(array) {
     KitaSort().sort(array, 0, len(array));

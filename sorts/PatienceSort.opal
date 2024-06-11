@@ -47,14 +47,10 @@ new class PatienceSort {
         return a;
     }
 
-    new method __adaptAux(arrays) {
-        return adaptLow(arrays, (this.loc, this.heap));
-    }
-
     new method sort(array, length) {
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
         this.tmp = sortingVisualizer.createValueArray(length);
         this.loc = sortingVisualizer.createValueArray(length);
+        sortingVisualizer.setNonOrigAux(this.loc);
 
         new int size = 1;
         this.tmp[0].write(array[0]);
@@ -74,6 +70,7 @@ new class PatienceSort {
             this.pa   = sortingVisualizer.createValueArray(size);
             this.pb   = sortingVisualizer.createValueArray(size);
             this.heap = sortingVisualizer.createValueArray(size);
+            sortingVisualizer.setNonOrigAux(this.pa, this.pb, this.heap);
                     
             for i = 0; i < length; i++ {
                 this.pa[this.loc[i].readInt()]++;
@@ -98,8 +95,7 @@ new class PatienceSort {
 @Sort(
     "Tree Sorts",
     "Patience Sort",
-    "Patience Sort",
-    usesDynamicAux = True
+    "Patience Sort"
 );
 new function patienceSortRun(array) {
     PatienceSort().sort(array, len(array));

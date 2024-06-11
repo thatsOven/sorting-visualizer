@@ -1,6 +1,6 @@
 # https://github.com/bhauth/shelfsort
 
-use arrayCopy, adaptLow;
+use arrayCopy;
 
 new class ShelfSort {
     new int SMALL_SORT = 4;
@@ -264,10 +264,6 @@ new class ShelfSort {
         }
     }
 
-    new method __adaptAux(arrays) {
-        return adaptLow(arrays, (this.indicesA, this.indicesB));
-    }
-
     new method sort(array, start, size) {
         new int logSize = 0,
                       v = size;
@@ -282,10 +278,10 @@ new class ShelfSort {
             this.smallSort(array, start + i);
         }
 
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
         this.scratch  = sortingVisualizer.createValueArray(scratchSize);
         this.indicesA = sortingVisualizer.createValueArray(scratchSize);
         this.indicesB = sortingVisualizer.createValueArray(scratchSize);
+        sortingVisualizer.setNonOrigAux(this.indicesA, this.indicesB);
 
         new int sortedZoneSize = ShelfSort.SMALL_SORT, runLen, i;
         for ; sortedZoneSize < scratchSize // 2; sortedZoneSize *= 2 {
@@ -359,8 +355,7 @@ new class ShelfSort {
 @Sort(
     "Block Merge Sorts",
     "Shelf Sort",
-    "Shelf Sort",
-    usesDynamicAux = True
+    "Shelf Sort"
 );
 new function shelfSortRun(array) {
     ShelfSort().sort(array, 0, len(array));

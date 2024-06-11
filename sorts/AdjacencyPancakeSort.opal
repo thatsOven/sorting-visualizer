@@ -63,6 +63,7 @@ new class AdjacencyPancakeSort  {
         }
 
         this.keys = sortingVisualizer.createValueArray(N);
+        sortingVisualizer.setNonOrigAux(this.keys);
 
         for j = a; j < b; j++ {
             new int c = 0;

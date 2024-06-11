@@ -5,6 +5,7 @@ new function countingSort(array, a, b) {
 
     new dynamic counts = sortingVisualizer.createValueArray(max_ + 1),
                 output = sortingVisualizer.createValueArray(b - a);
+    sortingVisualizer.setNonOrigAux(counts, output);
 
     arrayCopy(array, a, output, 0, b - a);
 
@@ -27,8 +28,7 @@ new function countingSort(array, a, b) {
 @Sort(
     "Distribution Sorts",
     "Counting Sort",
-    "Counting Sort",
-    usesDynamicAux = True
+    "Counting Sort"
 );
 new function countingSortRun(array) {
     countingSort(array, 0, len(array));

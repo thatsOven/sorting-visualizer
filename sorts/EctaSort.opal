@@ -23,7 +23,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-use binaryInsertionSort, arrayCopy, adaptLow;
+use binaryInsertionSort, arrayCopy;
 
 new class EctaSort {
     new method __init__() {
@@ -186,10 +186,6 @@ new class EctaSort {
         this.blockCycle(array, buf, tags, a, bLen, (b - a) // bLen);
     }
 
-    new method __adaptAux(arrays) {
-        return adaptLow(arrays, (this.tags, ));
-    }
-
     new method sort(array, a, b) {
         if b - a <= 32 {
             binaryInsertionSort(array, a, b);
@@ -212,9 +208,9 @@ new class EctaSort {
 
         sortingVisualizer.setSpeed(speed);
 
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
-        new dynamic buf = sortingVisualizer.createValueArray(bufLen);
-        this.tags       = sortingVisualizer.createValueArray(tLen);
+        new dynamic buf  = sortingVisualizer.createValueArray(bufLen),
+                    tags = sortingVisualizer.createValueArray(tLen);
+        sortingVisualizer.setNonOrigAux(tags);
 
         for ; 4 * j <= bufLen; j *= 4 {
             for i = a; i + 2 * j < b; i += 4 * j {
@@ -234,7 +230,7 @@ new class EctaSort {
 
         for ; j < b - a; j *= 2 {
             for i = a; i + j + bufLen < b; i += 2 * j {
-                this.blockMerge(array, buf, this.tags, i, i + j, min(i + 2 * j, b), bLen);
+                this.blockMerge(array, buf, tags, i, i + j, min(i + 2 * j, b), bLen);
             }
 
             if i + j < b {
@@ -247,8 +243,7 @@ new class EctaSort {
 @Sort(
     "Block Merge Sorts",
     "Ecta Sort",
-    "Ecta Sort",
-    usesDynamicAux = True
+    "Ecta Sort"
 );
 new function ectaSortRun(array) {
     EctaSort().sort(array, 0, len(array));

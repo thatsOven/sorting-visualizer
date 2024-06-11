@@ -175,49 +175,6 @@ new class CircleVisual: BaseCircleVisual {
     }
 }
 
-new function adaptLow(arrays, lowArrays) {
-    new dynamic result = [],
-                lowIds = [id(array) for array in lowArrays];
-
-    static {
-        new int   max_;
-        new float mlt;
-    }
-
-    for array in arrays {
-        if id(array) in lowIds {
-            max_ = array[0].value;
-            for item in array[1:] {
-                if item.value > max_ {
-                    max_ = item.value;
-                }
-            }
-
-            if max_ == 0 || sortingVisualizer.auxMax == 0 {
-                mlt = 1;
-            } else {
-                mlt = sortingVisualizer.auxMax / (max_ * 1.5);
-            }
-
-            for orig in array {
-                new Value val = orig.copy();
-
-                if val.value < 0 {
-                    val.value = 0;
-                } else {
-                    val.value *= mlt;
-                }
-                
-                result.append(val);
-            }
-        } else {
-            result += array;
-        }
-    }
-
-    return result;
-}
-
 new class DotsVisual: LineVisual {
     new method prepare() {
         LineVisual.prepare(this);

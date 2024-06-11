@@ -52,6 +52,7 @@ new class LibrarySort {
         this.temp = sortingVisualizer.createValueArray(length);
         this.cnts = sortingVisualizer.createValueArray(maxLevel + 2);
         this.locs = sortingVisualizer.createValueArray(length - maxLevel);
+        sortingVisualizer.setNonOrigAux(this.cnts, this.locs);
 
         for i = j, k = 0; i < length; i++ {
             if this.R * j == i {
@@ -76,8 +77,7 @@ new class LibrarySort {
 @Sort(
     "Insertion Sorts",
     "Library Sort",
-    "Library Sort",
-    usesDynamicAux = True
+    "Library Sort"
 );
 new function librarySortRun(array) {
     LibrarySort().sort(array, len(array));

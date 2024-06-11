@@ -121,7 +121,10 @@ To create a new array, the visualizer provides  `sortingVisualizer.createValueAr
 - `fn(arrays: list[list]) -> list[Value]`: set this function to properly convert your array in a list of `Value`s that the visualizer can work with;
 - `idxFn(idx: int, aux: list) -> int`: this function can be set to adapt the highlighted indices to the resulting `list[Value]` for visualization purposes.
 
+You can mark arrays as not containing elements from the original array by using `sortingVisualizer.setNonOrigAux(*arrays)`, this will allow for better visualizations. Note that this method automatically marks the algorithm as [using dynamic aux](#adding-new-shuffles) since this requires dynamic computations.
+
 Deleting an array, or making it go out of scope, while the array is being visualized, will automatically remove the array from the visualization thanks to the dedicated garbage collector.
+
 You can also disable highlights from a given array using the `sortingVisualizer.setInvisibleArray(array: list[Value])` method.
 ## Using rotations and pivot selections provided by the visualizer
 To fetch a specific rotation or pivot selection algorithm, `sortingVisualizer.getPivotSelection(id: Optional[int] = None, name: Optional[str] = None)` and `sortingVisualizer.getRotation(id: Optional[int] = None, name: Optional[str] = None)` can be used. You can either pass the name of the algorithm to the function, like this:
@@ -236,7 +239,7 @@ new function myDistribution(array, length) {
 }
 ```
 ## Working with threads
-The visualizer usually operates in a sequential manner, so, to properly visualize parallel sorts, it's sufficient to call the algorithm's main function in `sortingVisualizer.runParallel(fn: Callable, *args, **kwargs)`, so that the visualizer can create a separate sort thread and run the visualization code on the main thread (since pygame has to run on the main thread), as well as properly handle highlighting. To create a thread inside of such an algorithm, `sortingVisualizer.createThread(fn: Callable, *args, **kwargs)` should be used to avoid program freezing. This is equivalent to creating a daemon thread, so, if a thread needs to be created separately, it should also be marked as a daemon. 
+The visualizer usually operates in a sequential manner, so, to properly visualize parallel sorts, it's sufficient to call the algorithm's main function in `sortingVisualizer.runParallel(fn: Callable, *args, **kwargs)`, so that the visualizer can create a separate sort thread and run the visualization code on the main thread (since pygame has to run on the main thread), as well as properly handle highlighting. To create a thread inside of such an algorithm, `sortingVisualizer.createThread(fn: Callable, *args, **kwargs)` should be used to avoid program freezing and crashing.
 
 ## Adding visual styles
 To add a visual style, a class needs to be created and inherit from the `Visual` class. That way, visuals are automatically added. Said file needs to be added in the `visuals` folder. Example:

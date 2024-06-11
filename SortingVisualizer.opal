@@ -17,7 +17,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.6.8";
+new str VERSION = "2024.6.11";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -89,6 +89,7 @@ new class SortingVisualizer {
         this.array = [];
         this.__auxArrays   = [];
         this.__baseRefCnts = [];
+        this.__nonOrigAuxs = set();
         this.__verifyArray = None;
 
         this.highlights     = [];
@@ -376,7 +377,7 @@ new class SortingVisualizer {
         }
 
         this.clearAllMarks();
-        this.resetAux();
+        this.__resetAux();
         this.resetAdaptAux();
         this.renderStats();
 
@@ -463,6 +464,7 @@ new class SortingVisualizer {
     new method __runSortById(category, id) {
         this.resetStats();
         this.__dynamicAux       = this.sorts[category][id].dynAux;
+        this.__usesDynamicAux   = this.__dynamicAux;
         this.__currentlyRunning = this.sorts[category][id].name;
         this.__currentCategory  = category;
 
@@ -477,7 +479,7 @@ new class SortingVisualizer {
         this.sorts[category][id].func(this.array);
 
         this.clearAllMarks();
-        this.resetAux();
+        this.__resetAux();
         this.resetAdaptAux();
 
         this.printArrayState();
@@ -525,7 +527,7 @@ new class SortingVisualizer {
             }
         }
 
-        return 1 if maxVal == 0 else maxVal + 1;
+        return 1 if maxVal < 0 else maxVal + 1;
     }
 
     new method getMax() {
@@ -534,9 +536,9 @@ new class SortingVisualizer {
 
     new method getAuxMax(array = None) {
         if array is None {
-            this.auxMax = float(this.getMaxViaKey(this.__adaptAux(this.__auxArrays)));
+            this.auxMax = max(float(this.getMaxViaKey(this.__adaptAux(this.__auxArrays))), this.arrayMax);
         } else {
-            this.auxMax = float(this.getMaxViaKey(array));
+            this.auxMax = max(float(this.getMaxViaKey(array)), this.arrayMax);
         }
     }
 
@@ -577,6 +579,10 @@ new class SortingVisualizer {
 
             for unique in stabilityCheck {
                 if this.checkSorted(stabilityCheck[unique], lambda x : x.stabIdx) != len(stabilityCheck[unique]) - 1 {
+                    this.sweep(0, currentIdx, (0, 0, 255), 
+                        hList = {x: (0, 255, 0) for x in range(len(this.array))}
+                    );
+
                     this.sweep(currentIdx, len(this.array), (255, 255, 0), 
                         hList = (
                             {x: (0, 0, 255) for x in range(currentIdx)} | 
@@ -587,14 +593,12 @@ new class SortingVisualizer {
                     return ArrayState.SORTED;
                 }
 
-                this.sweep(currentIdx, currentIdx + len(stabilityCheck[unique]), (0, 0, 255), 
-                    hList = (
-                        {x: (0, 0, 255) for x in range(currentIdx)} | 
-                        {x: (0, 255, 0) for x in range(currentIdx, len(this.array))}
-                    )
-                );
                 currentIdx += len(stabilityCheck[unique]);
             }
+
+            this.sweep(0, len(this.array), (0, 0, 255), 
+                hList = {x: (0, 255, 0) for x in range(len(this.array))}
+            );
 
             return ArrayState.STABLY_SORTED;
 
@@ -730,9 +734,52 @@ new class SortingVisualizer {
     }
 
     new method __defaultAdaptAux(arrays) {
-        new dynamic result = list(chain.from_iterable(arrays));
+        new dynamic result;
+
+        if len(this.__nonOrigAuxs) == 0 {
+            result = list(chain.from_iterable(arrays));
+        } else {
+            result = [];
+
+            static {
+                new int   max_;
+                new float mlt;
+            }
+
+            for array in arrays {
+                if id(array) in this.__nonOrigAuxs {
+                    max_ = array[0].value;
+                    for item in array[1:] {
+                        if item.value > max_ {
+                            max_ = item.value;
+                        }
+                    }
+
+                    if max_ == 0 || this.auxMax == 0 {
+                        mlt = 1;
+                    } else {
+                        mlt = this.auxMax / (max_ * 1.1);
+                    }
+
+                    for orig in array {
+                        new Value val = orig.copy();
+
+                        if val.value <= 0 {
+                            val.value = 0;
+                        } else {
+                            val.value *= mlt;
+                        }
+                        
+                        result.append(val);
+                    }
+                } else {
+                    result += array;
+                }
+            }
+        }
+
         if len(result) == 0 {
-            return [Value(0)];
+            result = [Value(0)];
         }
 
         return result;
@@ -749,6 +796,14 @@ new class SortingVisualizer {
         }
 
         return idx;
+    }
+
+    new method setNonOrigAux(*args) {
+        this.__dynamicAux = True;
+
+        for aux in args {
+            this.__nonOrigAuxs.add(id(aux));
+        }
     }
 
     new method setAdaptAux(func, idxFn = None) {
@@ -1306,7 +1361,13 @@ new class SortingVisualizer {
     }
 
     new method createThread(fn, *args, **kwargs) {
-        return threading.Thread(target = lambda: fn(*args, **kwargs), daemon = True);
+        new function __fn() {
+            try {
+                fn(*args, **kwargs);
+            } ignore StopAlgorithm;
+        }
+
+        return threading.Thread(target = __fn, daemon = True);
     }
 
     new method runParallel(fn, *args, **kwargs) {
@@ -1577,7 +1638,7 @@ new class SortingVisualizer {
 
     new method __reportException(e, msg = None) {
         if this.__prepared {
-            this.resetAux();
+            this.__resetAux();
             this.resetAdaptAux();
             this.renderStats();
         }
@@ -1607,7 +1668,7 @@ new class SortingVisualizer {
 
     new method __stopAlgorithm() {
         this.clearAllMarks();
-        this.resetAux();
+        this.__resetAux();
         this.resetAdaptAux();
         this.drawFullArray();
         this.renderStats();
@@ -1687,18 +1748,27 @@ new class SortingVisualizer {
     new method __garbageCollect() {
         new dynamic newAuxs = [],
                     newRefs = [];
-        static: new int i;
+        static: new int i, id_;
         for i = 0; i < len(this.__auxArrays); i++ {
             if sys.getrefcount(this.__auxArrays[i]) > this.__baseRefCnts[i] {
                 newAuxs.append(this.__auxArrays[i]);
                 newRefs.append(this.__baseRefCnts[i]);
             } else {
+                id_ = id(this.__auxArrays[i]);
+                if id_ in this.__nonOrigAuxs {
+                    this.__nonOrigAuxs.remove(id_);
+                }
+
                 this.__auxArrays[i].clear();
             }
         }
 
         this.__auxArrays   = newAuxs;
         this.__baseRefCnts = newRefs;
+
+        if len(this.__nonOrigAuxs) == 0 && !this.__usesDynamicAux {
+            this.__dynamicAux = False;
+        }
 
         if len(this.__auxArrays) == 0 {
             this.__auxMode = False;
@@ -1725,11 +1795,17 @@ new class SortingVisualizer {
 
     new method resetAux() {
         this.__auxArrays.clear();
+        this.__nonOrigAuxs.clear();
         this.__baseRefCnts.clear();
-        this.__dynamicAux = False;
-        this.__auxMode    = False;
+        this.__auxMode = False;
         this.__visual.onAuxOff();
         this.drawFullArray();
+    }
+
+    new method __resetAux() {
+        this.resetAux();
+        this.__dynamicAux = False;
+        this.__usesDynamicAux = False;
     }
 
     new method __loadThreadAndRun(thread) {

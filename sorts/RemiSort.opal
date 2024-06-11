@@ -23,7 +23,7 @@
 # stable sorting algorithm that guarantees worst case performance of
 # O(n log n) comparisons and O(n) moves in O(n^2/3) memory
 
-use KWayMerge, compareValues, bidirArrayCopy, adaptLow;
+use KWayMerge, compareValues, bidirArrayCopy;
 
 new class RemiSort {
     new method __init__() {
@@ -237,10 +237,6 @@ new class RemiSort {
         this.blockCycle(array, a1, bLen, (b - a1) // bLen);
     }
 
-    new method __adaptAux(arrays) {
-        return adaptLow(arrays, (this.keys, this.heap, this.p, this.pa));
-    }
-
     new method sort(array, a, b) {
         new int length = b - a;
 
@@ -248,10 +244,9 @@ new class RemiSort {
                 rLen = bLen * bLen,
                 rCnt = (length - 1) // rLen + 1;
 
-        sortingVisualizer.setAdaptAux(this.__adaptAux);
-
         if rCnt < 2 {
             this.keys = sortingVisualizer.createValueArray(length);
+            sortingVisualizer.setNonOrigAux(this.keys);
 
             for i in range(length) {
                 this.keys[i].write(i);
@@ -266,6 +261,7 @@ new class RemiSort {
         this.heap = sortingVisualizer.createValueArray(rCnt);
         this.p    = sortingVisualizer.createValueArray(rCnt);
         this.pa   = sortingVisualizer.createValueArray(rCnt);
+        sortingVisualizer.setNonOrigAux(this.keys, this.heap, this.p, this.pa);
 
         for i in range(rLen) {
             this.keys[i].write(i);
@@ -284,8 +280,7 @@ new class RemiSort {
 @Sort(
     "Block Merge Sorts",
     "Remi Sort",
-    "Remi Sort",
-    usesDynamicAux = True
+    "Remi Sort"
 );
 new function remiSortRun(array) {
     RemiSort().sort(array, 0, len(array));
