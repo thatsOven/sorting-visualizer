@@ -3,5 +3,6 @@ copy: {
     "sounds": folder,
     "resources": folder,
     "profiles": folder,
+    "threads": folder,
     "config.json": file
 }
