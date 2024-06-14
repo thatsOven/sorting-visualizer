@@ -493,11 +493,6 @@ new class HeliumSort {
         return True;
     }
 
-    new method optiMerge(array, a, m, b, buf) {
-        a, b = this.reduceMergeBounds(array, a, m, b);
-        return this.optiSmartMerge(array, a, m, b, buf, True);
-    }
-
     new method getBlocksIndices(array, a, leftBlocks, rightBlocks, blockLen) {
         new int l = 0,
                 m = leftBlocks,
@@ -721,12 +716,25 @@ new class HeliumSort {
         }
     }
 
-    new method hydrogenCombine(array, a, m, b) {
-        if checkMergeBounds(array, a, m, b, this.rotate) {
-            return;
+    new method combineReduce(array, a, m, b) {
+        if checkMergeBounds(array, a, m, b) {
+            return None, None;
         }
 
-        if this.optiMerge(array, a, m, b, this.bufPos) {
+        new int oldA = a;
+        a, b = this.reduceMergeBounds(array, a, m, b);
+
+        if this.optiSmartMerge(array, a, m, b, this.bufPos, True) {
+            return None, None;
+        }
+
+        a = max(oldA, m - ((m - a) / this.blockLen + 1) * this.blockLen);
+        return a, b;
+    }
+
+    new method hydrogenCombine(array, a, m, b) {
+        a, b = this.combineReduce(array, a, m, b);
+        if a is None {
             return;
         }
 
@@ -743,11 +751,8 @@ new class HeliumSort {
     }
 
     new method heliumCombine(array, a, m, b) {
-        if checkMergeBounds(array, a, m, b, this.rotate) {
-            return;
-        }
-
-        if this.optiMerge(array, a, m, b, this.bufPos) {
+        a, b = this.combineReduce(array, a, m, b);
+        if a is None {
             return;
         }
 
