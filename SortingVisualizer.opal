@@ -117,11 +117,12 @@ new class SortingVisualizer {
         this.arrayMax = 1.0;
         this.auxMax   = 1.0;
 
-        this.__auxMode    = False;
-        this.__dynamicAux = False;
-        this.__adaptAux   = this.__defaultAdaptAux;
-        this.__adaptIdx   = this.__defaultAdaptIdx;
-        this.__oldAuxLen  = 0;
+        this.__auxMode        = False;
+        this.__dynamicAux     = False;
+        this.__usesDynamicAux = False;
+        this.__adaptAux       = this.__defaultAdaptAux;
+        this.__adaptIdx       = this.__defaultAdaptIdx;
+        this.__oldAuxLen      = 0;
         
         this.__tmpSleep   = 0;
         this.__unitSample = this.__makeSample(UNIT_SAMPLE_DURATION);
@@ -365,6 +366,7 @@ new class SortingVisualizer {
     new method __runShuffleById(id, placeHolder, ndPlaceHolder) {
         this.resetStats();
         this.__dynamicAux       = this.shuffles[id].dynAux;
+        this.__usesDynamicAux   = this.__dynamicAux;
         this.__currentlyRunning = this.shuffles[id].name;
         this.__currentCategory  = "Shuffles";
 
