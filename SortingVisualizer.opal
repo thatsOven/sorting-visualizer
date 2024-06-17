@@ -1750,13 +1750,14 @@ new class SortingVisualizer {
     new method __garbageCollect() {
         new dynamic newAuxs = [],
                     newRefs = [];
-        static: new int i, id_;
+
+        static: new int i;
         for i = 0; i < len(this.__auxArrays); i++ {
             if sys.getrefcount(this.__auxArrays[i]) > this.__baseRefCnts[i] {
                 newAuxs.append(this.__auxArrays[i]);
                 newRefs.append(this.__baseRefCnts[i]);
             } else {
-                id_ = id(this.__auxArrays[i]);
+                new dynamic id_ = id(this.__auxArrays[i]);
                 if id_ in this.__nonOrigAuxs {
                     this.__nonOrigAuxs.remove(id_);
                 }
