@@ -757,7 +757,7 @@ new class LithiumSort {
 
             new bool strat1 = this.strat1;
             this.strat1 = False;
-            this.combine(array, a, m, b, None, None, lazy);
+            this.combine(array, a, m, b, None, None, this.blockLen > this.bufLen);
             this.strat1 = strat1;
             this.resetBuf();
         }
@@ -883,6 +883,7 @@ new class LithiumSort {
                 indices = None;
                 this.strat1 = False;
                 this.noBitsBLenCalc(twoR);
+                lazy = this.blockLen > this.bufLen;
             }
 
             for ; i < b - twoR; i += twoR {
