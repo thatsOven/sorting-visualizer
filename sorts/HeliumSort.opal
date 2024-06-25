@@ -728,7 +728,7 @@ new class HeliumSort {
             return None, None;
         }
 
-        a = max(oldA, m - ((m - a) / this.blockLen + 1) * this.blockLen);
+        a = max(oldA, m - ((m - a) // this.blockLen + 1) * this.blockLen);
         return a, b;
     }
 
