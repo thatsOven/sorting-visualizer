@@ -36,7 +36,6 @@ new class DataTrace: BaseDataTrace {
             pos.x = 0;
 
             if len(array) > sortingVisualizer.graphics.resolution.x {
-                oldIdx = 0;
                 unchecked: repeat sortingVisualizer.graphics.resolution.x {
                     idx = int(Utils.translate(
                         pos.x, 0, sortingVisualizer.graphics.resolution.x, 
@@ -50,12 +49,10 @@ new class DataTrace: BaseDataTrace {
                     }
 
                     pos.x++;
-                    oldIdx = idx;
                 }
             } else {
                 new dynamic vec = Vector(this.lineSize, 1);
 
-                oldIdx = -1;
                 for i = this.lineSize // 2; i < sortingVisualizer.graphics.resolution.x; i += this.lineSize {
                     idx = int(Utils.translate(
                         i - this.lineSize // 2, 0, sortingVisualizer.graphics.resolution.x, 
@@ -69,8 +66,6 @@ new class DataTrace: BaseDataTrace {
                     } else {
                         sortingVisualizer.graphics.fastRectangle(pos, vec, hsvToRgb(array[idx].value * this.colorConstant), 0, True, this.mainSurf);
                     }
-
-                    oldIdx = idx;
                 }
             }
         }

@@ -17,7 +17,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.6.11";
+new str VERSION = "2024.6.28";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -27,7 +27,7 @@ package functools:   import total_ordering;
 package itertools:   import chain;
 package traceback:   import format_exception;
 package pygame_gui:  import UIManager, elements, windows;
-package pygame:      import Rect, Surface, image, display;
+package pygame:      import Rect, Surface, image, display, sprite;
 package sf2_loader:  import sf2_loader;
 package pygame.time: import Clock;
 package scipy:       import signal, io;
@@ -80,10 +80,10 @@ new class VisualizerException: Exception {}
 new class StopAlgorithm: Exception {}
 
 new class SortingVisualizer {
-    new str SETTINGS_FILE = os.path.join(HOME_DIR, "config.json"),
-            IMAGE_BUF     = os.path.join(HOME_DIR, "frames"),
+    new str IMAGE_BUF     = os.path.join(HOME_DIR, "frames"),
             PROFILES      = os.path.join(HOME_DIR, "profiles"),
-            SOUND_CONFIG  = os.path.join(HOME_DIR, "sounds", "config");
+            CONFIG        = os.path.join(HOME_DIR, "config"),
+            SETTINGS_FILE = os.path.join(CONFIG,   "SortingVisualizer.json");
 
     new method __init__() {
         this.array = [];
@@ -1937,12 +1937,6 @@ new class SortingVisualizer {
         }
     }
 
-    new method _makeSoundConfFolder() {
-        if !os.path.exists(SortingVisualizer.SOUND_CONFIG) {
-            os.mkdir(SortingVisualizer.SOUND_CONFIG);
-        }
-    }
-
     new method __makeImageBufFolder() {
         if !os.path.exists(SortingVisualizer.IMAGE_BUF) {
             try {
@@ -1990,6 +1984,9 @@ new class SortingVisualizer {
 
         IO.out(f"{tot} sorts loaded.\n");
 
+        this.__gui.setSv(this);
+        this._setSound(name = this.settings["sound"]);
+
         for visual in this.visuals {
             visual.init();
         }
@@ -1997,16 +1994,6 @@ new class SortingVisualizer {
         new Shuffle threadShuf = Shuffle("Run thread");
         threadShuf.func = this.__threadShuf;
         this.addShuffle(threadShuf);
-
-        try {
-            this._makeSoundConfFolder();
-        } catch Exception as e {
-            this.__gui.userWarn("Error", f"Unable to create sound configuration folder. Exception:\n{formatException(e)}");
-            sys.exit(1);
-        }
-
-        this.__gui.setSv(this);
-        this._setSound(name = this.settings["sound"]);
 
         while True {
             if this.settings["render"] {

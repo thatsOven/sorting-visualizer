@@ -19,6 +19,8 @@ new class LineVisual: Visual {
         } else {
             this.lineSize = 1;
         }
+
+        this.top = 0;
     }
 
     new method onAuxOn(length) {

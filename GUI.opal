@@ -829,10 +829,10 @@ new class GUI {
             tool_tip_text = "Performs the sound initialization process. Used to change sound specific settings"
         );
 
-        new dynamic soundDeleteConf = elements.UIButton(
+        new dynamic resetConf = elements.UIButton(
             Rect(this.SETTINGS_WIN_SIZE.x - this.OFFS.x - 250, this.SETTINGS_WIN_SIZE.y - 120, 250, 30),       
-            "Delete sound config", this.__manager, settingsPanel, 
-            tool_tip_text = "Deletes sounds settings"
+            "Reset configuration", this.__manager, settingsPanel, 
+            tool_tip_text = "Resets the selected configuration file"
         );
 
         new dynamic settingsBackButton = elements.UIButton(
@@ -891,15 +891,31 @@ new class GUI {
                         this.__sv._refreshSoundConf();
                         this.userWarn("Success", "Sound configuration was reset");
                     }
-                    case soundDeleteConf {
-                        try {
-                            shutil.rmtree(SortingVisualizer.SOUND_CONFIG);
-                            this.__sv._makeSoundConfFolder();
-                        } catch Exception as e {
-                            this.userWarn("Error", f"Unable to delete sound settings or restore folder. Exception:\n{formatException(e)}");
-                        } success {
-                            this.userWarn("Success", "Sound settings deleted");
+                    case resetConf {
+                        this.userWarn("Settings", "Select configuration to reset");
+                        new dynamic file = this.fileDialog({"json"}, SortingVisualizer.CONFIG),
+                                    name = os.path.basename(file);
+                        
+                        if name == "SortingVisualizer.json" {
+                            this.userWarn("Error", "Cannot delete SortingVisualizer configuration.");
+                            return;
                         }
+
+                        if (
+                            this.selection(
+                                "Settings", 
+                                f'Are you sure you want to delete "{name}"?', 
+                                ["Yes", "No"]
+                            ) == 0
+                        ) {
+                            try {
+                                os.remove(file);
+                            } catch Exception as e {
+                                this.userWarn("Error", f"Unable to delete configuration. Exception:\n{formatException(e)}");
+                            } success {
+                                this.userWarn("Success", "Configuration deleted");
+                            }
+                        } 
                     }
                     case settingsSaveButton {
                         new dynamic oldSound   = this.__sv.settings["sound"],

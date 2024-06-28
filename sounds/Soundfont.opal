@@ -7,14 +7,14 @@ new class _FakeMPNote {
 new class Soundfont: Sound {
     new method __init__() {
         super.__init__("Soundfont");
-        this._soundFont  = None;
+        this._soundFont = None;
     }
 
     new method prepare() {
         sortingVisualizer.setCurrentlyRunning("Soundfont sound system");
 
         while True {
-            new dynamic fileName = os.path.join(SortingVisualizer.SOUND_CONFIG, "Soundfont.json");
+            new dynamic fileName = os.path.join(SortingVisualizer.CONFIG, "Soundfont.json");
             if os.path.exists(fileName) {
                 new dynamic config;
 

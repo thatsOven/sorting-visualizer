@@ -1,8 +1,7 @@
 source: "SortingVisualizer.opal",
 copy: {
-    "sounds": folder,
     "resources": folder,
     "profiles": folder,
     "threads": folder,
-    "config.json": file
+    "config": folder
 }
