@@ -1,5 +1,14 @@
 package colorsys: import hsv_to_rgb;
 
+# https://www.pygame.org/docs/ref/image.html
+new set SUPPORTED_IMAGE_FORMATS = {
+    "bmp", "gif", "jpg", "jpeg", "lbm", 
+    "pbm", "pgm", "ppm", "webp", "pcx", 
+    "pnm", "svg", "tga", "tiff", "png", 
+    "xpm"
+};
+SUPPORTED_IMAGE_FORMATS |= set(x.upper() for x in SUPPORTED_IMAGE_FORMATS);
+
 new function hsvToRgb(h, s = 1, v = 1) {
     return tuple(round(i * 255) for i in hsv_to_rgb(h, s, v));
 }

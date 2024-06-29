@@ -7,15 +7,6 @@ new class _CustomImageChunk: sprite.Sprite {
     }
 }
 
-# https://www.pygame.org/docs/ref/image.html
-new set _SUPPORTED_IMAGE_FORMATS = {
-    "bmp", "gif", "jpg", "jpeg", "lbm", 
-    "pbm", "pgm", "ppm", "webp", "pcx", 
-    "pnm", "svg", "tga", "tiff", "png", 
-    "xpm"
-};
-Visuals._SUPPORTED_IMAGE_FORMATS |= set(x.upper() for x in Visuals._SUPPORTED_IMAGE_FORMATS);
-
 new class CustomImage: LineVisual {
     new method __init__() {
         super.__init__(
@@ -77,7 +68,7 @@ new class CustomImage: LineVisual {
                     "configuration through the visualizer's settings."
                 ) == 0
             ) {
-                new dynamic file = sortingVisualizer.fileDialog(Visuals._SUPPORTED_IMAGE_FORMATS);
+                new dynamic file = sortingVisualizer.fileDialog(SUPPORTED_IMAGE_FORMATS);
 
                 try {
                     this.image = image.load(file);
