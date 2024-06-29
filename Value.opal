@@ -15,6 +15,22 @@ new class HighlightInfo {
     }
 }
 
+@total_ordering;
+new class VerifyValue {
+    new method __init__(value, stabIdx) {
+        this.value   = value;
+        this.stabIdx = stabIdx;
+    }
+
+    new method __eq__(other) {
+        return this.value == other.value;
+    }
+
+    new method __lt__(other) {
+        return this.value < other.value;
+    }
+}
+
 new class Value {
     new method __init__(value) {
         this.value   = value;

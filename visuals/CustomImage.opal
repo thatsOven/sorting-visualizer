@@ -23,7 +23,7 @@ new class CustomImage: LineVisual {
             (255, 255, 255)
         );
 
-        this.image  = None;
+        this.image = None;
 
         this.defaultChunks = [];
 
@@ -56,11 +56,13 @@ new class CustomImage: LineVisual {
                 }
 
                 try {
-                    this.image = sortingVisualizer.graphics.loadImage(config["file"], sortingVisualizer.graphics.resolution);
+                    this.image = image.load(config["file"]);
                 } catch Exception as e {
                     sortingVisualizer.userWarn(f"Unable to load image. Exception:\n{formatException(e)}");
                     return;
                 }
+
+                this.image = transform.smoothscale(this.image, sortingVisualizer.graphics.resolution.toList(2));
 
                 return;
             } 
@@ -78,11 +80,13 @@ new class CustomImage: LineVisual {
                 new dynamic file = sortingVisualizer.fileDialog(Visuals.CustomImage.SUPPORTED_IMAGE_FORMATS);
 
                 try {
-                    this.image = sortingVisualizer.graphics.loadImage(file, sortingVisualizer.graphics.resolution);
+                    this.image = image.load(file);
                 } catch Exception as e {
                     sortingVisualizer.userWarn(f"Unable to load image. Exception:\n{formatException(e)}");
                     return;
                 }
+
+                this.image = transform.smoothscale(this.image, sortingVisualizer.graphics.resolution.toList(2));
 
                 config = {
                     "file": file
@@ -110,15 +114,20 @@ new class CustomImage: LineVisual {
 
         super.prepare();
 
-        this.chunks.clear();
+        static: new int length = len(sortingVisualizer.array), i;
 
-        for x = 0; x + this.lineSize < sortingVisualizer.graphics.resolution.x; x += this.lineSize {            
-            this.chunks.append(this.image.subsurface((x, 0, this.lineSize, sortingVisualizer.graphics.resolution.y)));
+        this.chunks.clear();
+        this.chunks = [None for _ in range(length)];
+
+        for i = 0; i < length; i++ {
+            new dynamic x = int(Utils.translate(i, 0, length, 0, sortingVisualizer.graphics.resolution.x - this.lineSize));
+            
+            this.chunks[sortingVisualizer.verifyArray[i].stabIdx] = this.image.subsurface(
+                (x, 0, this.lineSize, sortingVisualizer.graphics.resolution.y)
+            );
         }
 
         this.defaultChunks = this.chunks.copy();
-
-        this.mapFactor = len(this.chunks) / sortingVisualizer.arrayMax;
     }
 
     new method onAuxOn(length) {
@@ -130,8 +139,15 @@ new class CustomImage: LineVisual {
         new dynamic ySize  = sortingVisualizer.graphics.resolution.y - this.top, 
                     yStart = sortingVisualizer.graphics.resolution.y // 2 - ySize // 2;
 
-        for x = 0; x + this.lineSize < sortingVisualizer.graphics.resolution.x; x += this.lineSize {
-            this.chunks.append(this.image.subsurface((x, yStart, this.lineSize, ySize)));
+        static: new int length = len(sortingVisualizer.array), i;
+        this.chunks = [None for _ in range(length)];
+
+        for i = 0; i < length; i++ {
+            new dynamic x = int(Utils.translate(i, 0, length, 0, sortingVisualizer.graphics.resolution.x - this.lineSize));
+            
+            this.chunks[sortingVisualizer.verifyArray[i].stabIdx] = this.image.subsurface(
+                (x, yStart, this.lineSize, ySize)
+            );
         }
 
         yStart = sortingVisualizer.graphics.resolution.y // 2 - this.top // 2;
@@ -154,40 +170,13 @@ new class CustomImage: LineVisual {
 
         new dynamic ySize = sortingVisualizer.graphics.resolution.y - this.top, idx;
 
-        if len(array) > sortingVisualizer.graphics.resolution.x {
-            for x in range(sortingVisualizer.graphics.resolution.x) {
-                idx = int(Utils.translate(
-                    x, 0, sortingVisualizer.graphics.resolution.x, 
-                    0, len(array)
-                ));
-
-                new dynamic item = array[idx], chunk;
-
-                if item.value < 0 {
-                    chunk = this.chunks[0].copy();
-                } else {
-                    chunk = this.chunks[int(item.value * this.mapFactor)].copy();
-                }
-
-                this.group.add(Visuals._CustomImageChunk(chunk, (x, this.top, this.lineSize, ySize)));
-            }
-        } else {
-            for x = 0; x < sortingVisualizer.graphics.resolution.x; x += this.lineSize {
-                idx = int(Utils.translate(
-                    x, 0, sortingVisualizer.graphics.resolution.x, 
-                    0, len(array)
-                ));
+        for x = 0; x < sortingVisualizer.graphics.resolution.x; x += this.lineSize {
+            idx = int(Utils.translate(
+                x, 0, sortingVisualizer.graphics.resolution.x, 
+                0, len(array)
+            ));
                     
-                new dynamic item = array[idx], chunk;
-
-                if item.value < 0 {
-                    chunk = this.chunks[0].copy();
-                } else {
-                    chunk = this.chunks[int(item.value * this.mapFactor)].copy();
-                }
-
-                this.group.add(Visuals._CustomImageChunk(chunk, (x, this.top, this.lineSize, ySize)));
-            }
+            this.group.add(Visuals._CustomImageChunk(this.chunks[array[idx].stabIdx].copy(), (x, this.top, this.lineSize, ySize)));
         }
 
         this.group.draw(sortingVisualizer.graphics.screen);
@@ -204,7 +193,7 @@ new class CustomImage: LineVisual {
             pos.x = Utils.translate(
                 idx, 0, len(array), 0, 
                 sortingVisualizer.graphics.resolution.x // this.lineSize
-            ) * this.lineSize + (this.lineSize // 2);
+            ) * this.lineSize;
 
             if pos.x in drawn {
                 continue;
@@ -223,40 +212,21 @@ new class CustomImage: LineVisual {
 
         new dynamic idx;
 
-        if len(array) > sortingVisualizer.graphics.resolution.x {
-            for x in range(sortingVisualizer.graphics.resolution.x) {
-                idx = int(Utils.translate(
-                    x, 0, sortingVisualizer.graphics.resolution.x, 
-                    0, len(array)
-                ));
-
-                new dynamic item = array[idx], chunk;
-
-                if item.value < 0 {
-                    chunk = this.auxChunks[0].copy();
-                } else {
-                    chunk = this.auxChunks[int(item.value * this.auxMapFactor)].copy();
-                }
-
-                this.auxGroup.add(Visuals._CustomImageChunk(chunk, (x, 0, this.auxLineSize, this.top)));
-            }
-        } else {
-            for x = 0; x < sortingVisualizer.graphics.resolution.x; x += this.auxLineSize {
-                idx = int(Utils.translate(
-                    x, 0, sortingVisualizer.graphics.resolution.x, 
-                    0, len(array)
-                ));
+        for x = 0; x < sortingVisualizer.graphics.resolution.x; x += this.auxLineSize {
+            idx = int(Utils.translate(
+                x, 0, sortingVisualizer.graphics.resolution.x, 
+                0, len(array)
+            ));
                     
-                new dynamic item = array[idx], chunk;
+            new dynamic item = array[idx], chunk;
 
-                if item.value < 0 {
-                    chunk = this.auxChunks[0].copy();
-                } else {
-                    chunk = this.auxChunks[int(item.value * this.auxMapFactor)].copy();
-                }
-
-                this.auxGroup.add(Visuals._CustomImageChunk(chunk, (x, 0, this.auxLineSize, this.top)));
+            if item.value < 0 {
+                chunk = this.auxChunks[0].copy();
+            } else {
+                chunk = this.auxChunks[int(item.value * this.auxMapFactor)].copy();
             }
+
+            this.auxGroup.add(Visuals._CustomImageChunk(chunk, (x, 0, this.auxLineSize, this.top)));
         }
 
         this.auxGroup.draw(sortingVisualizer.graphics.screen);
@@ -273,7 +243,7 @@ new class CustomImage: LineVisual {
             pos.x = Utils.translate(
                 idx, 0, len(array), 0, 
                 sortingVisualizer.graphics.resolution.x // this.auxLineSize
-            ) * this.auxLineSize + (this.auxLineSize // 2);
+            ) * this.auxLineSize;
 
             if pos.x in drawn {
                 continue;

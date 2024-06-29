@@ -27,7 +27,7 @@ package functools:   import total_ordering;
 package itertools:   import chain;
 package traceback:   import format_exception;
 package pygame_gui:  import UIManager, elements, windows;
-package pygame:      import Rect, Surface, image, display, sprite;
+package pygame:      import Rect, Surface, image, display, sprite, transform;
 package sf2_loader:  import sf2_loader;
 package pygame.time: import Clock;
 package scipy:       import signal, io;
@@ -90,7 +90,7 @@ new class SortingVisualizer {
         this.__auxArrays   = [];
         this.__baseRefCnts = [];
         this.__nonOrigAuxs = set();
-        this.__verifyArray = None;
+        this.verifyArray   = None;
 
         this.highlights     = [];
         this.highlightsLock = threading.Lock();
@@ -343,6 +343,11 @@ new class SortingVisualizer {
         }
     }
 
+    new method __getVerifyArray() {
+        this.verifyArray = [VerifyValue(x.value, x.stabIdx) for x in this.array];
+        Utils.Iterables.sort(this.verifyArray);
+    }
+
     new method __runDistributionById(id, length, unique) {
         this.array = [None for _ in range(length)];
         this.__currentlyRunning = this.distributions[id].name + " (distribution)";
@@ -355,6 +360,7 @@ new class SortingVisualizer {
             this.array[i].idx     = i;
         }
 
+        this.__getVerifyArray();
         this.__getSizes();
         this.drawFullArray();
     }
@@ -378,6 +384,9 @@ new class SortingVisualizer {
             this.array[i].stabIdx = i;
         }
 
+        this.__getVerifyArray();
+        this.__visual.prepare();
+
         this.clearAllMarks();
         this.__resetAux();
         this.resetAdaptAux();
@@ -389,9 +398,6 @@ new class SortingVisualizer {
         } else {
             $call update
         }
-
-        this.__verifyArray = [x.value for x in this.array];
-        Utils.Iterables.fastSort(this.__verifyArray);
     }
 
     new method runShuffle(id = None, name = None) {
@@ -558,7 +564,7 @@ new class SortingVisualizer {
 
         new int eq = len(this.array) - 1;
         for i in range(len(this.array)) {
-            if this.array[i].value != this.__verifyArray[i] {
+            if this.array[i].value != this.verifyArray[i].value {
                 eq = i - 1;
                 break;
             }
