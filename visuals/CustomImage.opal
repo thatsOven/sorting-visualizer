@@ -147,7 +147,12 @@ new class CustomImage: LineVisual {
             this.auxChunks.append(this.image.subsurface((x, yStart, this.auxLineSize, this.top)));
         }
 
-        this.auxMapFactor = len(this.auxChunks) / sortingVisualizer.auxMax;
+        if len(this.auxChunks) == 0 {
+            this.auxChunks.append(this.image.subsurface(0, yStart, sortingVisualizer.graphics.resolution.x, this.top));
+            this.auxMapFactor = 0;
+        } else {
+            this.auxMapFactor = len(this.auxChunks) / sortingVisualizer.auxMax;
+        }        
     }
 
     new method onAuxOff() {
