@@ -139,11 +139,11 @@ new class CustomImage: LineVisual {
         new dynamic ySize  = sortingVisualizer.graphics.resolution.y - this.top, 
                     yStart = sortingVisualizer.graphics.resolution.y // 2 - ySize // 2;
 
-        static: new int length = len(sortingVisualizer.array), i;
-        this.chunks = [None for _ in range(length)];
+        static: new int mainLength = len(sortingVisualizer.array), i;
+        this.chunks = [None for _ in range(mainLength)];
 
-        for i = 0; i < length; i++ {
-            new dynamic x = int(Utils.translate(i, 0, length, 0, sortingVisualizer.graphics.resolution.x - this.lineSize));
+        for i = 0; i < mainLength; i++ {
+            new dynamic x = int(Utils.translate(i, 0, mainLength, 0, sortingVisualizer.graphics.resolution.x - this.lineSize));
             
             this.chunks[sortingVisualizer.verifyArray[i].stabIdx] = this.image.subsurface(
                 (x, yStart, this.lineSize, ySize)
