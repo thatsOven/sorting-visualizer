@@ -64,7 +64,7 @@ new class ScatterPlot: DotsVisual {
         }
     }
 
-    new method fastDraw(array, indices) {
+    new method selectiveDraw(array, indices) {
         new dynamic drawn   = {},
                     vec     = Vector(this.lineSize, this.lineSize),
                     delLine = Vector(0, 0);

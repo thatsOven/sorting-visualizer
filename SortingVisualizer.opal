@@ -17,7 +17,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.6.28";
+new str VERSION = "2024.6.29";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -985,7 +985,7 @@ new class SortingVisualizer {
 
         static {
             new int  length;
-            new bint doFast = (
+            new bint doSelective = (
                 this.__lastTextIndex == 0 && 
                 len(hList) < min(this.graphics.resolution.x, len(this.array))
             ) && !this.__parallel, aux;
@@ -1006,15 +1006,15 @@ new class SortingVisualizer {
                     hList = this.__partitionIndices(hList)[0];
                 }
 
-                if doFast {
-                    if this.__visual.fastDraw(this.array, hList) {
-                        doFast = False;
+                if doSelective {
+                    if this.__visual.selectiveDraw(this.array, hList) {
+                        doSelective = False;
                         this.graphics.fill((0, 0, 0));
-                        this.__visual.draw(this.array, hList);
+                        this.__visual.fastDraw(this.array, hList);
                     }
                 } else {
                     this.graphics.fill((0, 0, 0));
-                    this.__visual.draw(this.array, hList);
+                    this.__visual.fastDraw(this.array, hList);
                 }
 
                 if aux {   
@@ -1025,12 +1025,12 @@ new class SortingVisualizer {
 
                 $call update
                 
-                if doFast {
+                if doSelective {
                     for highlight in hList {
                         hList[highlight] = None;
                     }
 
-                    this.__visual.fastDraw(this.array, hList);
+                    this.__visual.selectiveDraw(this.array, hList);
                 }
                 
                 this.__soundSample = this.__currSample;
@@ -1048,7 +1048,7 @@ new class SortingVisualizer {
                     hList[highlight] = None;
                 }
 
-                this.__visual.fastDraw(this.array, hList);
+                this.__visual.selectiveDraw(this.array, hList);
             }
         } elif this.__speedCounter >= this.__speed {
             this.__speedCounter = 0;
@@ -1192,12 +1192,12 @@ new class SortingVisualizer {
 
         static {
             new int  length;
-            new bint doFast = (
+            new bint doSelective = (
                 this.__lastTextIndex == 0 && 
                 len(hList) < min(this.graphics.resolution.x, len(this.array))
             );
 
-            new bint lazy = this.settings["lazy-render"] && doFast && !this.__parallel, aux;
+            new bint trySelective = this.settings["lazy-render"] && !this.__parallel, aux;
         }
 
         if len(hList) != 0 {
@@ -1224,19 +1224,24 @@ new class SortingVisualizer {
                     hList = this.__partitionIndices(hList)[0];
                 }
 
-                if lazy {
-                    if this.__visual.fastDraw(this.array, hList) {
-                        doFast = False;
+                if trySelective && doSelective {
+                    if this.__visual.selectiveDraw(this.array, hList) {
+                        doSelective = False;
                         this.graphics.fill((0, 0, 0));
-                        this.__visual.draw(this.array, hList);
+                        this.__visual.fastDraw(this.array, hList);
                     }
                 } else {
                     this.graphics.fill((0, 0, 0));
-                    this.__visual.draw(this.array, hList);
+
+                    if trySelective {
+                        this.__visual.fastDraw(this.array, hList);
+                    } else {
+                        this.__visual.draw(this.array, hList);
+                    }
                 }
                 
                 if aux {
-                    if lazy {
+                    if trySelective {
                         this.__visual.fastDrawAux(adapted, auxList);
                     } else {
                         this.__visual.drawAux(adapted, auxList);
@@ -1255,23 +1260,23 @@ new class SortingVisualizer {
 
                 $call checkCompress
                 
-                if lazy {
+                if trySelective && doSelective {
                     for highlight in hList {
                         hList[highlight] = None;
                     }
 
-                    this.__visual.fastDraw(this.array, hList);
+                    this.__visual.selectiveDraw(this.array, hList);
                 }
                 
                 this.__tmpSleep = 0;
-            } elif lazy {
+            } elif trySelective {
                 hList = this.__partitionIndices(hList)[0];
 
                 for highlight in hList {
                     hList[highlight] = None;
                 }
 
-                this.__visual.fastDraw(this.array, hList);
+                this.__visual.selectiveDraw(this.array, hList);
             }
         } elif this.__speedCounter >= this.__speed {
             this.__speedCounter = 0;
@@ -1431,7 +1436,7 @@ new class SortingVisualizer {
         this.renderStats();
         this.__checking = True;
 
-        static: new bint doFast = True;
+        static: new bint doSelective = True;
 
         this.setSpeed(len(this.array) / 128.0);
         new dynamic sleep = max(this.__sleep, MIN_SLEEP);
@@ -1440,9 +1445,9 @@ new class SortingVisualizer {
         for i = a; i < b; i++ {
             new dynamic sTime = default_timer();
 
-            if doFast {
-                if this.__visual.fastDraw(this.array, {i: color}) {
-                    doFast = False;
+            if doSelective {
+                if this.__visual.selectiveDraw(this.array, {i: color}) {
+                    doSelective = False;
                     hList[i] = color;
                 }
             } else {
@@ -1454,12 +1459,12 @@ new class SortingVisualizer {
 
                 this.graphics.playWaveforms([this.__getWaveformFromIdx(HighlightInfo(i, None, color), None)]);
 
-                if doFast {
+                if doSelective {
                     if i <= this.__lastTextIndex {
                         this.renderStats();
                     }
                 } else {
-                    this.__visual.draw(this.array, hList);
+                    this.__visual.fastDraw(this.array, hList);
                     this.renderStats();
                 }
             
@@ -1488,8 +1493,9 @@ new class SortingVisualizer {
         this.setSpeed(len(this.array) / 128.0);
 
         static {
-            new bint   lazy   = this.settings["lazy-render"];
-            new double tSleep = max(INV_RENDER_FRAMES, this.__sleep);
+            new bint   lazy    = this.settings["lazy-render"],
+                       tryLazy = lazy;
+            new double tSleep  = max(INV_RENDER_FRAMES, this.__sleep);
         }
         
         this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
@@ -1500,7 +1506,7 @@ new class SortingVisualizer {
             new dynamic hInfo = HighlightInfo(i, None, color);
             
             if lazy {
-                if this.__visual.fastDraw(this.array, {i: color}) {
+                if this.__visual.selectiveDraw(this.array, {i: color}) {
                     lazy = False;
                     hList[i] = color;
                 }
@@ -1519,7 +1525,12 @@ new class SortingVisualizer {
                         this.renderStats();
                     }
                 } else {
-                    this.__visual.draw(this.array, hList);
+                    if tryLazy {
+                        this.__visual.fastDraw(this.array, hList);
+                    } else {
+                        this.__visual.draw(this.array, hList);
+                    }
+                    
                     this.renderStats();
                 }
 

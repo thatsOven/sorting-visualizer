@@ -35,7 +35,7 @@ If set to `True`, the visualizer will generate videos instead of visualizing alg
 ### Lazy auxiliary visualization
 The visualizer checks if the auxiliary array changed in size, or its maximum element changed, in specific scenarios, so that the visual can re-compute its data accordingly. If lazy auxiliary visualization is set to `False`, these checks are disabled, that is, the visualizer will assume the maximum element of the auxiliary array and its length are constant.
 ### Lazy rendering
-Real-time visualization will try to use `fast` variants of the given visual style for performance reasons in favorable scenarios, while render mode always uses standard variants, which are higher quality, but slower in those same scenarios. If lazy rendering is set to `True`, the visualizer will try to use `fast` variants of visual styles for render mode too. This does not result in quality loss in certain cases, and can be used for quick videos.
+Real-time visualization will try to use `fast` or `selective` variants of the given visual style for performance reasons in favorable scenarios, while render mode always uses standard variants, which are higher quality, but slower in those same scenarios. If lazy rendering is set to `True`, the visualizer will try to use `fast` or `selective` variants of visual styles for render mode too. This does not result in quality loss in certain cases, and can be used for quick videos.
 ### Render bitrate (kbps)
 Sets the output video bitrate (in kbps) for videos generated through render mode.
 ### Render profile
@@ -256,8 +256,8 @@ new class MyVisual: Visual {
 }
 ```
 - `highlightColor`: a tuple containing 3 values (0, 255) in the RGB format. By default, it's set to (255, 0, 0);
-- `refreshMode`: can either be `RefreshMode.LINES` for line-like visuals that intersect with the text or `RefreshMode.NOREFRESH` for visuals that don't need forced indices reloading. By default, it's set to `RefreshMode.NOREFRESH`. Note that this is only relevant for visuals that implement `fastDraw`;
-- `outOfText`: a boolean that indicates whether the visual draws over text. If it doesn't (True), the visualizer will draw a black rectangle under the text, to refresh it. By default, it's set to `False`. This also only relevant for visuals that implement `fastDraw`.
+- `refreshMode`: can either be `RefreshMode.LINES` for line-like visuals that intersect with the text or `RefreshMode.NOREFRESH` for visuals that don't need forced indices reloading. By default, it's set to `RefreshMode.NOREFRESH`. Note that this is only relevant for visuals that implement `selectiveDraw`;
+- `outOfText`: a boolean that indicates whether the visual draws over text. If it doesn't (True), the visualizer will draw a black rectangle under the text, to refresh it. By default, it's set to `False`. This also only relevant for visuals that implement `selectiveDraw`.
 
 The `Visual` class contains two abstract methods: 
 - `draw(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: draws the main array. `indices` contains the list of highlighted indices, each mapped to a color. If the mapped color is `None` the visual should draw those indices like they're not highlighted;
@@ -269,7 +269,8 @@ The class also provides three methods that get called in specific scenarios and 
 - `onAuxOn(length)`: gets called when aux is turned on or constants are to recompute. Useful to prepare data;
 - `onAuxOff()`: gets called when aux mode is turned off. Useful to restore old values.
 - `fastDraw(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: like `draw`, but it can contain a lower quality version of the visual style which is less expensive to compute. By default, it just calls `draw`.
-- `fastDrawAux(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: like `fastDraw`, but draws the aux array. By default, it just calls `drawAux`
+- `fastDrawAux(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: like `fastDraw`, but draws the aux array. By default, it just calls `drawAux`.
+- `selectiveDraw(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: like `draw`, but it assumes only the highlighted indices are changed, working in a selective manner.
 
 The `graphicsUtils.opal` file contains some presets for common visual styles.
 ## Adding sound systems

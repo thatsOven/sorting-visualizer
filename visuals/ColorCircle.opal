@@ -53,7 +53,7 @@ new class ColorCircle: CircleVisual {
         del drawn;
     }
     
-    new method fastDraw(array, indices) {
+    new method selectiveDraw(array, indices) {
         new dynamic drawn = {}, angle, pos, posEnd; 
 
         for idx in indices {

@@ -99,8 +99,12 @@ abstract: new class Visual {
     abstract: new method draw(array, indices);    # draws the visual style 
     abstract: new method drawAux(array, indices); # draws the aux array in that visual style 
 
-    new method fastDraw(array, indices) {
+    new method selectiveDraw(array, indices) {
         return True;
+    }
+
+    new method fastDraw(array, indices) {
+        this.draw(array, indices);
     }
 
     new method fastDrawAux(array, indices) {

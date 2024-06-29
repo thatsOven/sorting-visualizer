@@ -76,7 +76,7 @@ new class ScrambledRainbowBarGraph: LineVisual {
         }
     }
 
-    new method fastDraw(array, indices) {
+    new method selectiveDraw(array, indices) {
         new dynamic drawn = {};
 
         for idx in indices {
