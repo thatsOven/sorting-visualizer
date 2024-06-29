@@ -14,7 +14,7 @@ new set _SUPPORTED_IMAGE_FORMATS = {
     "pnm", "svg", "tga", "tiff", "png", 
     "xpm"
 };
-_SUPPORTED_IMAGE_FORMATS |= set(x.upper() for x in _SUPPORTED_IMAGE_FORMATS);
+Visuals._SUPPORTED_IMAGE_FORMATS |= set(x.upper() for x in Visuals._SUPPORTED_IMAGE_FORMATS);
 
 new class CustomImage: LineVisual {
     new method __init__() {
