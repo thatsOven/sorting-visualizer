@@ -118,7 +118,7 @@ Queued highlights are stored in a list (`sortingVisualizer.highlights`) that can
 
 ## Working with auxiliary arrays
 To create a new array, the visualizer provides  `sortingVisualizer.createValueArray(length: int) -> list[Value]`, which is pre-filled with already configured `Value`s. This also automatically shows the array in the visualizer. To remove an array from visualization, you can use `sortingVisualizer.removeAux(array: list)`. In case the `createValueArray` function is not used to create an array, but you still want to visualize it, you can use `sortingVisualizer.addAux(array: list)` and, if it's not an array of values, you can provide adaptation functions using `sortingVisualizer.setAdaptAux(fn, idxFn = None)`: 
-- `fn(arrays: list[list]) -> list[Value]`: set this function to properly convert your array in a list of `Value`s that the visualizer can work with;
+- `fn(arrays: list[list]) -> list[Value]`: set this function to properly convert all the auxiliary arrays in a list of `Value`s that the visualizer can work with;
 - `idxFn(idx: int, aux: list) -> int`: this function can be set to adapt the highlighted indices to the resulting `list[Value]` for visualization purposes.
 
 You can mark arrays as not containing elements from the original array by using `sortingVisualizer.setNonOrigAux(*arrays)`, this will allow for better visualizations. Note that this method automatically marks the algorithm as [using dynamic aux](#adding-new-shuffles) since this requires dynamic computations.
@@ -263,7 +263,7 @@ The `Visual` class contains two abstract methods:
 - `draw(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: draws the main array. `indices` contains the list of highlighted indices, each mapped to a color. If the mapped color is `None` the visual should draw those indices like they're not highlighted;
 - `drawAux(array: list[Value], indices: dict[int, Optional[tuple[int, int, int]]])`: like `draw`, but draws the aux array.
 
-The class also provides three methods that get called in specific scenarios and can be overridden. By default, they do nothing:
+The class also provides seven methods that get called in specific scenarios and can be overridden. By default, they do nothing:
 - `init()`: gets called when the graphic system is re-initialized (usually when the resolution is changed). Useful to change data that relies on the resolution.
 - `prepare()`: precomputes data for the visual style;
 - `onAuxOn(length)`: gets called when aux is turned on or constants are to recompute. Useful to prepare data;
@@ -286,4 +286,4 @@ The `Sound` class contains an abstract method:
 - `play(value: int | float, max_: int | float, sample: numpy.array) -> numpy.array`: generates the sound sample to be played based on the array value. The original sample should be left untouched.
 
 The class also provides a method:
-- `prepare()`: it gets called when the visualizer has to prepare the sound system. Usually used to requests or load settings if it needs any, or precompute data. By default, it does nothing.
+- `prepare()`: it gets called when the visualizer has to prepare the sound system. Usually used to request or load settings if it needs any, or precompute data. By default, it does nothing.
