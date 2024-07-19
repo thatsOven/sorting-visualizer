@@ -47,7 +47,17 @@ To do Python development for the visualizer, it's recommended to create its Pyth
 opal pycompile SortingVisualizer.opal
 ```
 
-And then add these lines on top of your Python code:
+When adding modules to the visualizer dynamically (through the `external` folder), you can use the pycompiled version like this:
+```py
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from SortingVisualizer import *
+```
+
+This way, your IDE will be able to typecheck the program and give you proper hints, while not executing the import when the code is actually ran.
+
+Instead, if you are writing code that will be embedded in the compiled visualizer, add these lines on top of your Python code:
 ```py
 #opal$if False
 from SortingVisualizer import *

@@ -17,7 +17,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.6.29";
+new str VERSION = "2024.7.19";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -2137,6 +2137,20 @@ main {
     $includeDirectory os.path.join(HOME_DIR, "rotations")
     $includeDirectory os.path.join(HOME_DIR, "shuffles")
     $includeDirectory os.path.join(HOME_DIR, "sorts")
+
+    try {
+        new dynamic externalMods = os.path.join(HOME_DIR, "external");
+        for module in os.listdir(externalMods) {
+            if module.endswith(".py") {
+                with open(os.path.join(externalMods, module), "r", encoding = "utf-8") as f {
+                    use f; exec(f.read());
+                }
+            }
+        }
+    } catch Exception as e {
+        IO.out("An error occurred while importing external modules. Exception:\n{formatException(e)}");
+        sys.exit(1);
+    }
 
     sortingVisualizer.run();
 }
