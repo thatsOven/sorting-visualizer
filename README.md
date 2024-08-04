@@ -3,7 +3,7 @@
 
 to run from source, open or compile `SortingVisualizer.opal` using the opal compiler.
 
-to build a release, use `opal release build.iproj`.
+to build a release, use `opal release build.iproj` or `opal release build_dev.iproj` depending on which version you want to build.
 
 here you can find a video about the program: https://youtu.be/iZjOP4Htz3c
 
@@ -42,12 +42,9 @@ Sets the output video bitrate (in kbps) for videos generated through render mode
 Allows the user to select one of the different encoding profiles to be used with ffmpeg in render mode. Such profiles are found in the `profiles` folder, and can be added and customized dynamically. Note that some of these profiles are platform or hardware dependent, so they're not guaranteed to work. In case an incompatible profile or invalid options have been provided through the selected profile, or something went wrong during the rendering process, the visualizer will report that ffmpeg exited with a nonzero return code.
 
 # Creating Python extensions
-To do Python development for the visualizer, it's recommended to create its Python compiled version first, so that your IDE can give you hints and highlights for the visualizer's methods and utilities. To do this, it's sufficient to compile `SortingVisualizer.opal` in Python mode, like this:
-```
-opal pycompile SortingVisualizer.opal
-```
+To do Python development to add modules for the visualizer, it's sufficient do download a release version and add your modules in the `external` folder. Development releases (marked as `dev`) are available and provide Python definitions for the program's API.
 
-When adding modules to the visualizer dynamically (through the `external` folder), you can use the pycompiled version like this:
+When adding modules to the visualizer dynamically (through the `external` folder), you can use the Python definitions like this:
 ```py
 from typing import TYPE_CHECKING
 
@@ -57,7 +54,25 @@ if TYPE_CHECKING:
 
 This way, your IDE will be able to typecheck the program and give you proper hints, while not executing the import when the code is actually ran.
 
-Instead, if you are writing code that will be embedded in the compiled visualizer, add these lines on top of your Python code:
+If you're working directly with the source code, you can create the Python definitions yourself. To do this, it's sufficient to compile `SortingVisualizer.opal` in Python mode, like this:
+```
+opal pycompile SortingVisualizer.opal
+```
+
+Note that all visual styles and sound systems added through the `external` folder have to be marked as `@SortingVisualizer.external` for them to be recognized. For example:
+```py
+@SortingVisualizer.external
+class MyVisual(Visual):
+	...
+
+@SortingVisualizer.external
+class MySound(Sound):
+	...
+```
+
+Other types of extensions don't require this. 
+
+If you are writing code that will be embedded in the compiled visualizer (that is, not through the `external` folder), add these lines on top of your Python code:
 ```py
 #opal$if False
 from SortingVisualizer import *

@@ -17,7 +17,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.7.19";
+new str VERSION = "2024.8.4";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -1983,6 +1983,11 @@ new class SortingVisualizer {
         IO.out(f"{len(attr)} {group} loaded.\n");
     }
 
+    new staticmethod external(cls) {
+        cls._EXT_ = True;
+        return cls;
+    }
+
     new method run() {
         this.__prepare("distributions");
         this.__prepare("shuffles");
@@ -2145,6 +2150,18 @@ main {
                 with open(os.path.join(externalMods, module), "r", encoding = "utf-8") as f {
                     use f; exec(f.read());
                 }
+            }
+        }
+
+        for visual in Visual.__subclasses__() {
+            if visual._EXT_ {
+                visual();
+            }
+        }
+
+        for sound in Sound.__subclasses__() {
+            if sound._EXT_ {
+                sound();
             }
         }
     } catch Exception as e {

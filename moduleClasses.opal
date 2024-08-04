@@ -82,6 +82,8 @@ new class Distribution {
 
 @total_ordering;
 abstract: new class Visual {
+    new dynamic _EXT_ = False;
+
     new method __init__(name, highlightColor = (255, 0, 0), refreshMode = RefreshMode.NOREFRESH, outOfText = False) {
         this.name           = name;
         this.highlightColor = highlightColor;
@@ -202,6 +204,8 @@ new class Rotation {
 
 @total_ordering;
 abstract: new class Sound {
+    new dynamic _EXT_ = False;
+    
     new method __init__(name) {
         this.name = name;
         sortingVisualizer.addSound(this);
