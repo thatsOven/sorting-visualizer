@@ -1,9 +1,10 @@
 new class HighlightInfo {
-    new method __init__(idx, aux = None, color = None, silent = False) {
-        this.idx    = idx;
-        this.aux    = aux;
-        this.color  = color;
-        this.silent = silent;
+    new method __init__(idx, aux = None, color = None, silent = False, isWrite = False) {
+        this.idx     = idx;
+        this.aux     = aux;
+        this.color   = color;
+        this.silent  = silent;
+        this.isWrite = isWrite;
     }
 
     new method __eq__(other) {
@@ -63,8 +64,8 @@ new class Value {
         this.aux = val;
     }
 
-    new method getHighlightInfo() {
-        return HighlightInfo(this.idx, this.aux, None);
+    new method getHighlightInfo(isWrite = False) {
+        return HighlightInfo(this.idx, this.aux, None, isWrite = isWrite);
     }
 
     new method readDigit(d, base) {
@@ -275,13 +276,13 @@ new class Value {
             sortingVisualizer.timer(sTime);
 
             this.stabIdx = other.stabIdx;
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value = other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
     }
 
@@ -296,7 +297,7 @@ new class Value {
             sortingVisualizer.timer(sTime);
 
             this.stabIdx = other.stabIdx;
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value = other;
@@ -304,7 +305,7 @@ new class Value {
 
             this.idx = idx;
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
     }
 
@@ -319,7 +320,7 @@ new class Value {
             unchecked: this.stabIdx, other.stabIdx = other.stabIdx, this.stabIdx;
             unchecked:     this.aux,     other.aux =     other.aux,     this.aux;
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         }
     }
 
@@ -503,13 +504,13 @@ new class Value {
             this.value += other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value += other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;
@@ -523,13 +524,13 @@ new class Value {
             this.value -= other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value -= other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;
@@ -543,13 +544,13 @@ new class Value {
             this.value *= other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value *= other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;
@@ -563,13 +564,13 @@ new class Value {
             this.value /= other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value /= other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;
@@ -583,13 +584,13 @@ new class Value {
             this.value //= other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value //= other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;
@@ -603,13 +604,13 @@ new class Value {
             this.value %= other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value %= other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;
@@ -623,13 +624,13 @@ new class Value {
             this.value **= other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value **= other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;
@@ -643,13 +644,13 @@ new class Value {
             this.value <<= other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value <<= other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;
@@ -663,13 +664,13 @@ new class Value {
             this.value >>= other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value >>= other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;
@@ -683,13 +684,13 @@ new class Value {
             this.value &= other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value &= other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;
@@ -703,13 +704,13 @@ new class Value {
             this.value ^= other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value ^= other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;
@@ -723,13 +724,13 @@ new class Value {
             this.value |= other.value;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(), other.getHighlightInfo()]);
+            sortingVisualizer.multiHighlightAdvanced([this.getHighlightInfo(True), other.getHighlightInfo(True)]);
         } elif type(other) in [int, float] {
             new dynamic sTime = default_timer();
             this.value |= other;
             sortingVisualizer.timer(sTime);
 
-            sortingVisualizer.highlightAdvanced(this.getHighlightInfo());
+            sortingVisualizer.highlightAdvanced(this.getHighlightInfo(True));
         }
 
         return this;

@@ -17,7 +17,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.8.4";
+new str VERSION = "2024.9.25";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -31,6 +31,7 @@ package pygame:      import Rect, Surface, image, display, sprite, transform;
 package sf2_loader:  import sf2_loader;
 package pygame.time: import Clock;
 package scipy:       import signal, io;
+package matplotlib:  import colormaps;
 use exec, getattr, eval;
 
 $define FRAME_NAME os.path.join(SortingVisualizer.IMAGE_BUF, str(this.__currFrame).zfill(FRAME_DIGS) + ".jpg")
@@ -91,6 +92,9 @@ new class SortingVisualizer {
         this.__baseRefCnts = [];
         this.__nonOrigAuxs = set();
         this.verifyArray   = None;
+
+        this.__heatMap    = {};
+        this.__auxHeatMap = {};
 
         this.highlights     = [];
         this.highlightsLock = threading.Lock();
@@ -469,6 +473,11 @@ new class SortingVisualizer {
         this.__prepared = False;
     }
 
+    new method resetHeatMaps() {
+        this.__heatMap.clear();
+        this.__auxHeatMap.clear();
+    }
+
     new method __runSortById(category, id) {
         this.resetStats();
         this.__dynamicAux       = this.sorts[category][id].dynAux;
@@ -476,11 +485,7 @@ new class SortingVisualizer {
         this.__currentlyRunning = this.sorts[category][id].name;
         this.__currentCategory  = category;
 
-        if this.settings["render"] {
-            this.__renderedSleep(1.25);
-        } else {
-            time.sleep(1.25);
-        }
+        this.__wait(1.25);
 
         this.drawFullArray();
 
@@ -491,6 +496,7 @@ new class SortingVisualizer {
         this.resetAdaptAux();
 
         this.printArrayState();
+        this.resetHeatMaps();
     }
 
     new method runSort(category, id = None, name = None) {
@@ -653,13 +659,9 @@ new class SortingVisualizer {
 
         this.drawFullArray();
         this.renderStats();
-        
-        if this.settings["render"] {
-            this.__renderedSleep(1.25);
-        } else {
-            $call update
-            time.sleep(1.25);
-        }
+
+        $call update
+        this.__wait(1.25);
     }
 
     new method addDistribution(distribution) {
@@ -914,6 +916,30 @@ new class SortingVisualizer {
         }
     $end
 
+    new method __accessHeatMap(heatMap, idx) {
+        if idx not in heatMap {
+            heatMap[idx] = HeatMap.BASE_HEAT;
+        }
+
+        heatMap[idx] = min(HeatMap.MAX_HEAT, max(HeatMap.BASE_HEAT, heatMap[idx] * HeatMap.HEAT_RATE));
+    }
+
+    $macro __getHeatMapNormalizedValue(heatMap, idx)
+        if idx not in heatMap {
+            heatMap[idx] = HeatMap.BASE_HEAT;
+        }
+
+        return Utils.translate(heatMap[idx], HeatMap.BASE_HEAT, HeatMap.MAX_HEAT, HeatMap.MIN_OUTPUT_VAL, 1);
+    $end
+
+    new method getHeatMapNormalizedValue(idx, aux = None) {
+        if aux is None {
+            $call __getHeatMapNormalizedValue(this.__heatMap, idx)
+        } else {
+            $call __getHeatMapNormalizedValue(this.__auxHeatMap, idx)
+        }
+    }
+
     $macro prepareHighlights
         hList = [x for x in hList if x is not None && x.idx is not None];
 
@@ -931,6 +957,16 @@ new class SortingVisualizer {
                 }
 
                 hList.append(highlight);
+            }
+        }
+
+        for highlight in set(hList) {
+            if highlight.isWrite {
+                if highlight.aux is None {
+                    this.__accessHeatMap(this.__heatMap, highlight.idx);
+                } else {
+                    this.__accessHeatMap(this.__auxHeatMap, this.__adaptIdx(highlight.idx, highlight.aux));
+                }
             }
         }
 
@@ -977,6 +1013,18 @@ new class SortingVisualizer {
         }
     $end
 
+    $macro tickHeatmap
+        for key in this.__heatMap.keys() {
+            this.__heatMap[key] = max(HeatMap.BASE_HEAT, this.__heatMap[key] * HeatMap.COOLING_MLT);
+        }
+    $end
+
+    $macro tickAuxHeatmap
+        for key in this.__auxHeatMap.keys() {
+            this.__auxHeatMap[key] = max(HeatMap.BASE_HEAT, this.__auxHeatMap[key] * HeatMap.COOLING_MLT);
+        }
+    $end
+
     new method multiHighlightAdvanced(hList) {
         $call handleThreadedHighlightAndSkip
 
@@ -991,67 +1039,67 @@ new class SortingVisualizer {
             ) && !this.__parallel, aux;
         }
 
-        if len(hList) != 0 {
-            if this.__speedCounter >= this.__speed {
-                this.__speedCounter = 0;
+        if this.__speedCounter >= this.__speed {
+            this.__speedCounter = 0;
                 
-                $call prepareAuxAndGC
-                $call adaptIndices
-                $call playSound(hList, adapted)
+            $call prepareAuxAndGC
+            $call adaptIndices
+            $call playSound(hList, adapted)
 
-                if aux {
-                    new dynamic auxList;
-                    hList, auxList = this.__partitionIndices(hList);
-                } else {
-                    hList = this.__partitionIndices(hList)[0];
-                }
+            if aux {
+                new dynamic auxList;
+                hList, auxList = this.__partitionIndices(hList);
+            } else {
+                hList = this.__partitionIndices(hList)[0];
+            }
 
-                if doSelective {
-                    if this.__visual.selectiveDraw(this.array, hList) {
-                        doSelective = False;
-                        this.graphics.fill((0, 0, 0));
-                        this.__visual.fastDraw(this.array, hList);
-                    }
-                } else {
+            if doSelective {
+                if this.__visual.selectiveDraw(this.array, hList) {
+                    doSelective = False;
                     this.graphics.fill((0, 0, 0));
                     this.__visual.fastDraw(this.array, hList);
                 }
+            } else {
+                this.graphics.fill((0, 0, 0));
+                this.__visual.fastDraw(this.array, hList);
+            }
 
-                if aux {   
-                    this.__visual.fastDrawAux(adapted, auxList);
-                }
+            $call tickHeatmap
 
-                this.renderStats();
+            if aux {   
+                this.__visual.fastDrawAux(adapted, auxList);
 
-                $call update
+                $call tickAuxHeatmap
+            }
+
+            this.renderStats();
+
+            $call update
                 
-                if doSelective {
-                    for highlight in hList {
-                        hList[highlight] = None;
-                    }
-
-                    this.__visual.selectiveDraw(this.array, hList);
-                }
-                
-                this.__soundSample = this.__currSample;
-
-                new dynamic tTime = max(this.__sleep + this.__tmpSleep, MIN_SLEEP) - default_timer() + sTime;
-                if tTime > 0 {
-                    time.sleep(tTime);
-                }
-                
-                this.__tmpSleep = 0;
-            } elif !this.__parallel {
-                hList = this.__partitionIndices(hList)[0];
-
+            if doSelective {
                 for highlight in hList {
                     hList[highlight] = None;
                 }
 
                 this.__visual.selectiveDraw(this.array, hList);
             }
-        } elif this.__speedCounter >= this.__speed {
-            this.__speedCounter = 0;
+                
+            this.__soundSample = this.__currSample;
+
+            new dynamic tTime = max(this.__sleep + this.__tmpSleep, MIN_SLEEP) - default_timer() + sTime;
+            if tTime > 0 {
+                time.sleep(tTime);
+            }
+                
+            this.__tmpSleep = 0;
+        } elif !this.__parallel {
+            hList = this.__partitionIndices(hList)[0];
+
+            for highlight in hList {
+                hList[highlight] = None;
+            }
+
+            this.__visual.selectiveDraw(this.array, hList);
         }
 
         this.__speedCounter++;
@@ -1166,22 +1214,30 @@ new class SortingVisualizer {
         this.__audioPtr += t * FREQUENCY_SAMPLE;
     $end
 
-    new method __renderedSleep(t) {
-        new dynamic currWave = numpy.zeros(round(t * FREQUENCY_SAMPLE));
+    new method __wait(t) {
+        static: new float oldSpeed    = this.__speed,
+                          oldSleep    = this.__sleep,
+                          oldTmpSleep = this.__tmpSleep;
 
-        if this.__audioChs > 1 {
-            currWave = numpy.repeat(currWave.reshape(currWave.size, 1), this.__audioChs, axis = 1).astype(numpy.int16);
+        this.__speed = 0;
+        this.__sleep = 0;
+        this.__tmpSleep = 0;
+
+        if this.settings["render"] {
+            for i = INV_RENDER_FRAMES; i < t; i += INV_RENDER_FRAMES {
+                this.multiHighlightAdvanced([]);
+            }
         } else {
-            currWave = currWave.astype(numpy.int16);
+            while t > 0 {
+                new dynamic st = default_timer();
+                this.multiHighlightAdvanced([]);
+                t -= default_timer() - st;
+            }
         }
 
-        $call mixAudio(t)
-
-        for i = 0; i < t; i += INV_RENDER_FRAMES {
-            $call imgSave
-        }
-
-        $call checkCompress
+        this.__speed    = oldSpeed;
+        this.__sleep    = oldSleep;
+        this.__tmpSleep = oldTmpSleep;
     }
 
     new method __renderedHighlight(hList) {
@@ -1200,86 +1256,98 @@ new class SortingVisualizer {
             new bint trySelective = this.settings["lazy-render"] && !this.__parallel, aux;
         }
 
-        if len(hList) != 0 {
-            if this.__speedCounter >= this.__speed {
-                this.__speedCounter = 0;
-                
-                $call prepareAuxAndGC
-                $call adaptIndices
+        if this.__speedCounter >= this.__speed {
+            this.__speedCounter = 0;
+            
+            $call prepareAuxAndGC
+            $call adaptIndices
 
-                new dynamic tSleep = max(INV_RENDER_FRAMES, this.__sleep + this.__tmpSleep);
-                this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
-                
-                new dynamic currWave = this.__getWaveformFromIdx(hList[0], adapted);
+            new dynamic tSleep = max(INV_RENDER_FRAMES, this.__sleep + this.__tmpSleep);
+            this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
+            
+            new dynamic currWave;
+
+            if len(hList) == 0 {
+                currWave = numpy.zeros(round(tSleep * FREQUENCY_SAMPLE));
+
+                if this.__audioChs > 1 {
+                    currWave = numpy.repeat(currWave.reshape(currWave.size, 1), this.__audioChs, axis = 1).astype(numpy.int16);
+                } else {
+                    currWave = currWave.astype(numpy.int16);
+                }
+            } else {
+                currWave = this.__getWaveformFromIdx(hList[0], adapted);
                 for h in [x for x in hList if not x.silent][:min(len(hList), POLYPHONY_LIMIT)] {
                     currWave += this.__getWaveformFromIdx(h, adapted);
                 }
+            }
 
-                $call mixAudio(tSleep)
+            $call mixAudio(tSleep)
 
-                if aux {
-                    new dynamic auxList;
-                    hList, auxList = this.__partitionIndices(hList);
-                } else {
-                    hList = this.__partitionIndices(hList)[0];
-                }
-
-                if trySelective && doSelective {
-                    if this.__visual.selectiveDraw(this.array, hList) {
-                        doSelective = False;
-                        this.graphics.fill((0, 0, 0));
-                        this.__visual.fastDraw(this.array, hList);
-                    }
-                } else {
-                    this.graphics.fill((0, 0, 0));
-
-                    if trySelective {
-                        this.__visual.fastDraw(this.array, hList);
-                    } else {
-                        this.__visual.draw(this.array, hList);
-                    }
-                }
-                
-                if aux {
-                    if trySelective {
-                        this.__visual.fastDrawAux(adapted, auxList);
-                    } else {
-                        this.__visual.drawAux(adapted, auxList);
-                    }
-                }
-
-                this.renderStats();
-
-                if this.__currFrame % PREVIEW_MOD == 0 {
-                    $call update
-                }
-
-                for i = 0; i < tSleep; i += INV_RENDER_FRAMES {
-                    $call imgSave
-                }
-
-                $call checkCompress
-                
-                if trySelective && doSelective {
-                    for highlight in hList {
-                        hList[highlight] = None;
-                    }
-
-                    this.__visual.selectiveDraw(this.array, hList);
-                }
-                
-                this.__tmpSleep = 0;
-            } elif trySelective {
+            if aux {
+                new dynamic auxList;
+                hList, auxList = this.__partitionIndices(hList);
+            } else {
                 hList = this.__partitionIndices(hList)[0];
+            }
 
+            if trySelective && doSelective {
+                if this.__visual.selectiveDraw(this.array, hList) {
+                    doSelective = False;
+                    this.graphics.fill((0, 0, 0));
+                    this.__visual.fastDraw(this.array, hList);
+                }
+            } else {
+                this.graphics.fill((0, 0, 0));
+
+                if trySelective {
+                    this.__visual.fastDraw(this.array, hList);
+                } else {
+                    this.__visual.draw(this.array, hList);
+                }
+            }
+
+            $call tickHeatmap
+                
+            if aux {
+                if trySelective {
+                    this.__visual.fastDrawAux(adapted, auxList);
+                } else {
+                    this.__visual.drawAux(adapted, auxList);
+                }
+
+                $call tickAuxHeatmap
+            }
+
+            this.renderStats();
+
+            if this.__currFrame % PREVIEW_MOD == 0 {
+                $call update
+            }
+
+            for i = 0; i < tSleep; i += INV_RENDER_FRAMES {
+                $call imgSave
+            }
+
+            $call checkCompress
+                
+            if trySelective && doSelective {
                 for highlight in hList {
                     hList[highlight] = None;
                 }
 
                 this.__visual.selectiveDraw(this.array, hList);
             }
-        } elif this.__speedCounter >= this.__speed {
-            this.__speedCounter = 0;
+                
+            this.__tmpSleep = 0;
+        } elif trySelective {
+            hList = this.__partitionIndices(hList)[0];
+
+            for highlight in hList {
+                hList[highlight] = None;
+            }
+
+            this.__visual.selectiveDraw(this.array, hList);
         }
 
         this.__speedCounter++;
@@ -1445,6 +1513,8 @@ new class SortingVisualizer {
         for i = a; i < b; i++ {
             new dynamic sTime = default_timer();
 
+            this.__heatMap[i] = HeatMap.MAX_HEAT;
+
             if doSelective {
                 if this.__visual.selectiveDraw(this.array, {i: color}) {
                     doSelective = False;
@@ -1467,7 +1537,8 @@ new class SortingVisualizer {
                     this.__visual.fastDraw(this.array, hList);
                     this.renderStats();
                 }
-            
+
+                $call tickHeatmap
                 $call update
 
                 new dynamic tTime = sleep - default_timer() + sTime;
@@ -1503,9 +1574,10 @@ new class SortingVisualizer {
         for i = a; i < b; i++ {
             this.graphics.updateEvents();
 
+            this.__heatMap[i] = HeatMap.MAX_HEAT;
             new dynamic hInfo = HighlightInfo(i, None, color);
             
-            if lazy {
+            if lazy { 
                 if this.__visual.selectiveDraw(this.array, {i: color}) {
                     lazy = False;
                     hList[i] = color;
@@ -1534,6 +1606,8 @@ new class SortingVisualizer {
                     this.renderStats();
                 }
 
+                $call tickHeatmap
+                
                 if this.__currFrame % PREVIEW_MOD == 0 {
                     $call update
                 }
@@ -1690,6 +1764,7 @@ new class SortingVisualizer {
         this.__resetAux();
         this.resetAdaptAux();
         this.drawFullArray();
+        this.resetHeatMaps();
         this.renderStats();
         this.__gui.saveBackground();
         this.__gui.userWarn("Done", "Algorithm stopped.");

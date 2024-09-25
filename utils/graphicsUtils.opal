@@ -9,6 +9,15 @@ new set SUPPORTED_IMAGE_FORMATS = {
 };
 SUPPORTED_IMAGE_FORMATS |= set(x.upper() for x in SUPPORTED_IMAGE_FORMATS);
 
+namespace HeatMap {
+    new int MAX_HEAT  = 10_000,
+            BASE_HEAT =  3_000;
+    
+    new float HEAT_RATE      = 1.2,
+              COOLING_MLT    = 0.9925,
+              MIN_OUTPUT_VAL = 0.1;
+}
+
 new function hsvToRgb(h, s = 1, v = 1) {
     return tuple(round(i * 255) for i in hsv_to_rgb(h, s, v));
 }
