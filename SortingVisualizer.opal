@@ -17,7 +17,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.9.25";
+new str VERSION = "2024.10.7";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -1025,11 +1025,24 @@ new class SortingVisualizer {
         }
     $end
 
+    # removes some rough pauses that create crackling sounds when visualizing parallel algorithms
+    $macro skipEmptyParallelFrames
+        if this.__parallel && len(hList) == 0 {
+            if this.__speedCounter >= this.__speed {
+                this.__speedCounter = 1;
+            }
+            
+            this.highlights.clear();
+            return;
+        }
+    $end
+
     new method multiHighlightAdvanced(hList) {
         $call handleThreadedHighlightAndSkip
 
         new dynamic sTime = default_timer();
         $call prepareHighlights
+        $call skipEmptyParallelFrames
 
         static {
             new int  length;
@@ -1243,6 +1256,7 @@ new class SortingVisualizer {
     new method __renderedHighlight(hList) {
         $call handleThreadedHighlightAndSkip
         $call prepareHighlights
+        $call skipEmptyParallelFrames
 
         this.graphics.updateEvents();
 
