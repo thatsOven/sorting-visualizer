@@ -924,19 +924,19 @@ new class SortingVisualizer {
         heatMap[idx] = min(HeatMap.MAX_HEAT, max(HeatMap.BASE_HEAT, heatMap[idx] * HeatMap.HEAT_RATE));
     }
 
-    $macro __getHeatMapNormalizedValue(heatMap, idx)
+    $macro __getHeatMapNormalizedValue(heatMap, minOutput, idx)
         if idx not in heatMap {
             heatMap[idx] = HeatMap.BASE_HEAT;
         }
 
-        return Utils.translate(heatMap[idx], HeatMap.BASE_HEAT, HeatMap.MAX_HEAT, HeatMap.MIN_OUTPUT_VAL, 1);
+        return Utils.translate(heatMap[idx], HeatMap.BASE_HEAT, HeatMap.MAX_HEAT, minOutput, 1);
     $end
 
-    new method getHeatMapNormalizedValue(idx, aux = None) {
+    new method getHeatMapNormalizedValue(idx, minOutput, aux = None) {
         if aux is None {
-            $call __getHeatMapNormalizedValue(this.__heatMap, idx)
+            $call __getHeatMapNormalizedValue(this.__heatMap, minOutput, idx)
         } else {
-            $call __getHeatMapNormalizedValue(this.__auxHeatMap, idx)
+            $call __getHeatMapNormalizedValue(this.__auxHeatMap, minOutput, idx)
         }
     }
 

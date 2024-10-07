@@ -232,3 +232,24 @@ new class BaseDataTrace: LineVisual {
         ));
     }
 }
+
+new class HeatVisual: LineVisual {
+    new method __init__(*args, **kwargs) {
+        if "minOutput" in kwargs {
+            this.minOutput = kwargs["minOutput"];
+            del kwargs["minOutput"];
+        } else {
+            this.minOutput = HeatMap.MIN_OUTPUT_VAL;
+        }
+
+        Visual.__init__(this, *args, **kwargs);
+        this.colorMap = colormaps["magma"];
+    }
+
+    new method _getColorFromIdx(idx, aux = None) {
+        return tuple(
+            int(x * 255) 
+            for x in this.colorMap(sortingVisualizer.getHeatMapNormalizedValue(idx, this.minOutput, aux))
+        );
+    }
+}
