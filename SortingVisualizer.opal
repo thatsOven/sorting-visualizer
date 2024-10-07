@@ -479,13 +479,13 @@ new class SortingVisualizer {
     }
 
     new method __runSortById(category, id) {
+        this.__wait(1.25);
+
         this.resetStats();
         this.__dynamicAux       = this.sorts[category][id].dynAux;
         this.__usesDynamicAux   = this.__dynamicAux;
         this.__currentlyRunning = this.sorts[category][id].name;
         this.__currentCategory  = category;
-
-        this.__wait(1.25);
 
         this.drawFullArray();
 
