@@ -5,7 +5,7 @@ new function quickSortAdversary(array) {
     }
 }
 
-use reverse, shuffleRandom, shift;
+use reverse, shuffleRandom, shuffleSort, shift;
 
 new class GrailSortAdversary {
     new method __init__() {

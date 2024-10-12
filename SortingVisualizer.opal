@@ -866,7 +866,7 @@ new class SortingVisualizer {
         new dynamic waves  = [];
         new dynamic values = set();
 
-        static: new int i = 0;
+        new dynamic i = 0;
         for highlight in hList {
             if highlight.silent {
                 continue;
