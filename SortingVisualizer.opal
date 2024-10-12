@@ -1335,7 +1335,7 @@ new class SortingVisualizer {
                 currWave = this.__getWaveformFromHighlight(hList[0], adapted);
                 values.add(this.__getValueFromHighlight(hList[0], adapted));
 
-                static: new int i = 1;
+                new dynamic i = 1;
                 for highlight in hList {
                     if highlight.silent {
                         continue;
