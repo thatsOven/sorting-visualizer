@@ -220,12 +220,13 @@ runAllSort(1024, "Pache Sort",              5, speedScale = NLOGN_SCALE);
 
 
 ct = "Distribution Sorts";
-runAllSort(2048, "Counting Sort",      8);
-runAllSort(2048, "LSD Radix Sort",     8, 4);
-runAllSort(2048, "MSD Radix Sort",     8, 4);
-runAllSort(2048, "American Flag Sort", 8, 128);
-runAllSort(2048, "Feature Sort",       6);
-runAllSort(2048, "Static Sort",        6);
+runAllSort(2048, "Counting Sort",           8);
+runAllSort(2048, "LSD Radix Sort",          8, 4);
+runAllSort(2048, "In-Place LSD Radix Sort", 2, 10);
+runAllSort(2048, "MSD Radix Sort",          8, 4);
+runAllSort(2048, "American Flag Sort",      8, 128);
+runAllSort(2048, "Feature Sort",            6);
+runAllSort(2048, "Static Sort",             6);
 
 
 ct = "Pancake Sorts";

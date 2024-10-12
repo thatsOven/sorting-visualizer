@@ -1,3 +1,5 @@
+use insertToRight;
+
 new class RadixSort {
     new method __init__(base = None) {
         if base is None {
@@ -146,6 +148,44 @@ new class RadixSort {
             aux[i].clear();
         }
     }
+
+    new method inPlaceLSD(array, length) {
+        # the implementation of this one is very weird, just to make it more memey.
+        # please don't use this as an example for api usage x.x
+
+        new int pos = 0;
+        new list vregs = [0 for _ in range(this.base - 1)];
+        new int maxpower = this.getHighestPower(array, 0, length);
+
+        for p = 0; p <= maxpower; p++ {
+            for i in range(len(vregs)) {
+                sortingVisualizer.write(vregs, i, length - 1);
+            }
+
+            pos = 0;
+
+            for i in range(length) {
+                new int dig = array[pos].readDigit(p, this.base);
+
+                if dig == 0 {
+                    pos++;
+                    sortingVisualizer.markArray(0, pos);
+                } else {
+                    for j in range(len(vregs)) {
+                        sortingVisualizer.markArray(j + 1, vregs[j]);
+                    }
+
+                    for i = pos; i < vregs[dig - 1]; i++ {
+                        sortingVisualizer.swap(array, i, i + 1); # skips highlighting
+                    }
+
+                    for j = dig - 1; j > 0; j-- {
+                        sortingVisualizer.write(vregs, j - 1, vregs[j - 1] - 1);
+                    }
+                }
+            }
+        } 
+    }
 }
 
 @Sort(
@@ -165,4 +205,26 @@ new function LSDRadixSortRun(array) {
 );
 new function MSDRadixSortRun(array) {
     RadixSort().MSD(array, 0, len(array));
+}
+
+@Sort(
+    "Distribution Sorts",
+    "In-Place LSD Radix Sort",
+    "In-Place LSD Radix Sort",
+);
+new function inPlaceLSDRadixSortRun(array) {
+    # in normal contexts, PLEASE don't edit the polyphony limit lmao
+
+    global POLYPHONY_LIMIT;
+    new dynamic oldPolyphonyLimit = POLYPHONY_LIMIT;
+    POLYPHONY_LIMIT = 16;
+
+    try {
+        RadixSort().inPlaceLSD(array, len(array));
+    } catch e {
+        POLYPHONY_LIMIT = oldPolyphonyLimit;
+        throw e;
+    }
+
+    POLYPHONY_LIMIT = oldPolyphonyLimit;
 }

@@ -17,7 +17,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
           N_OVER_R             = NATIVE_FRAMERATE / RENDER_FRAMERATE,
           R_OVER_N             = RENDER_FRAMERATE / NATIVE_FRAMERATE;
 
-new str VERSION = "2024.10.7";
+new str VERSION = "2024.10.12";
 
 import math, random, time, os, numpy, sys, 
        pygame_gui, json, subprocess, shutil,
@@ -711,32 +711,39 @@ new class SortingVisualizer {
             this.graphics.fastRectangle(pos, this.__movingTextSize, (0, 0, 0));
         }
 
+        new dynamic runningText;
+        if this.__currentCategory == "" {
+            runningText = this.__currentlyRunning;
+        } else {
+            runningText = this.__currentCategory + ": " + this.__currentlyRunning;
+        }
+
         if this.settings["internal-info"] {
             this.graphics.drawOutlineText([
-                "Array length: " + str(len(this.array)) + " elements",
-                this.__currentCategory + ": " + this.__currentlyRunning,
+                "Array length: " + "{:,}".format(len(this.array)) + " elements",
+                runningText,
                 "",
                 "Dropped frames: " + this.__dFramesPerc,
                 "Current delay: " + str(round((this.__sleep + this.__tmpSleep) * 1000, 2)) + " ms",
                 "",
-                "Writes: " + str(this.writes),
-                "Swaps: "  + str(this.__swaps),
+                "Writes: " + "{:,}".format(this.writes), 
+                "Swaps: "  + "{:,}".format(this.__swaps),
                 "",
-                "Reads: "  + str(this.reads),
-                "Comparisons: " + str(this.__comps),
+                "Reads: "       + "{:,}".format(this.reads),
+                "Comparisons: " + "{:,}".format(this.__comps),
                 "",
                 ete
             ], pos);
         } else {
             this.graphics.drawOutlineText([
-                "Array length: " + str(len(this.array)) + " elements",
-                this.__currentCategory + ": " + this.__currentlyRunning,
+                "Array length: " + "{:,}".format(len(this.array)) + " elements",
+                runningText,
                 "",
-                "Writes: " + str(this.writes),
-                "Swaps: "  + str(this.__swaps),
+                "Writes: " + "{:,}".format(this.writes), 
+                "Swaps: "  + "{:,}".format(this.__swaps),
                 "",
-                "Reads: "  + str(this.reads),
-                "Comparisons: " + str(this.__comps),
+                "Reads: "       + "{:,}".format(this.reads),
+                "Comparisons: " + "{:,}".format(this.__comps),
                 "",
                 ete
             ], pos);
@@ -831,7 +838,15 @@ new class SortingVisualizer {
         this.__adaptIdx = this.__defaultAdaptIdx;
     }
 
-    new method __getWaveformFromIdx(i, adapted) {
+    new method __getValueFromHighlight(i, adapted) {
+        if i.aux is not None && len(this.__auxArrays) != 0 {
+            return adapted[i.idx].value;
+        } else {
+            return this.array[i.idx].value;
+        }
+    }
+
+    new method __getWaveformFromHighlight(i, adapted) {
         new dynamic tmp;
 
         if i.aux is not None && len(this.__auxArrays) != 0 {
@@ -847,8 +862,32 @@ new class SortingVisualizer {
         }
     }
 
-    $macro playSound(hList, adapted)
-        this.graphics.playWaveforms([this.__getWaveformFromIdx(x, adapted) for x in [y for y in hList if not y.silent][:min(len(hList), POLYPHONY_LIMIT)]]);
+    $macro playSound(hList, adapted)    
+        new dynamic waves  = [];
+        new dynamic values = set();
+
+        static: new int i = 0;
+        for highlight in hList {
+            if highlight.silent {
+                continue;
+            }
+
+            new dynamic value = this.__getValueFromHighlight(highlight, adapted);
+            if value in values {
+                continue;
+            }
+
+            values.add(value);
+            waves.append(this.__getWaveformFromHighlight(highlight, adapted));
+            i++;
+
+            if i == POLYPHONY_LIMIT {
+                break;
+            }
+        }
+
+        del values;
+        this.graphics.playWaveforms(waves);
     $end
 
     new method __partitionIndices(hList) {
@@ -1290,10 +1329,33 @@ new class SortingVisualizer {
                     currWave = currWave.astype(numpy.int16);
                 }
             } else {
-                currWave = this.__getWaveformFromIdx(hList[0], adapted);
-                for h in [x for x in hList if not x.silent][:min(len(hList), POLYPHONY_LIMIT)] {
-                    currWave += this.__getWaveformFromIdx(h, adapted);
+                new dynamic waves  = [];
+                new dynamic values = set();
+
+                currWave = this.__getWaveformFromHighlight(hList[0], adapted);
+                values.add(this.__getValueFromHighlight(hList[0], adapted));
+
+                static: new int i = 1;
+                for highlight in hList {
+                    if highlight.silent {
+                        continue;
+                    }
+
+                    new dynamic value = this.__getValueFromHighlight(highlight, adapted);
+                    if value in values {
+                        continue;
+                    }
+
+                    values.add(value);
+                    currWave += this.__getWaveformFromHighlight(highlight, adapted);
+                    i++;
+
+                    if i == POLYPHONY_LIMIT {
+                        break;
+                    }
                 }
+
+                del values;
             }
 
             $call mixAudio(tSleep)
@@ -1541,7 +1603,7 @@ new class SortingVisualizer {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
 
-                this.graphics.playWaveforms([this.__getWaveformFromIdx(HighlightInfo(i, None, color), None)]);
+                this.graphics.playWaveforms([this.__getWaveformFromHighlight(HighlightInfo(i, None, color), None)]);
 
                 if doSelective {
                     if i <= this.__lastTextIndex {
@@ -1603,7 +1665,7 @@ new class SortingVisualizer {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 0;
 
-                new dynamic currWave = this.__getWaveformFromIdx(hInfo, None);
+                new dynamic currWave = this.__getWaveformFromHighlight(hInfo, None);
                 $call mixAudio(tSleep)
                 
                 if lazy {

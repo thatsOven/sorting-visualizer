@@ -435,3 +435,15 @@ new function javaNumberOfTrailingZeros(i) {
 
     return n + (i >> 1);
 }
+
+new function shift(array, pos, to) {
+    if to - pos > 0 {
+        for i = pos; i < to; i++ {
+            array[i].swap(array[i + 1]);
+        }
+    } else {
+        for i = pos; i > to; i-- {
+            array[i].swap(array[i - 1]);
+        }
+    }
+}
