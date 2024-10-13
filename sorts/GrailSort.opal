@@ -564,7 +564,7 @@ namespace GrailSort {
         this.currBlockOrigin = this.grailGetSubarray(array, firstKey, medianKey);
 
         for keyIndex = 1; keyIndex < blockCount; keyIndex++, nextBlock += blockLen {
-            new int currBlock  = nextBlock - this.currBlockLen, nextBlockOrigin;
+            new dynamic currBlock = nextBlock - this.currBlockLen, nextBlockOrigin;
             nextBlockOrigin = this.grailGetSubarray(array, firstKey + keyIndex, medianKey);
 
             if nextBlockOrigin == this.currBlockOrigin {
