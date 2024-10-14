@@ -1881,7 +1881,7 @@ new class SortingVisualizer {
         }
 
         $if CY_COMPILING
-            this.__addAux(result, 1);
+            this.__addAux(result, 0);
         $else
             this.__addAux(result, 2);
         $end
