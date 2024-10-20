@@ -98,27 +98,32 @@ runAllSort(512,  "Tree Sort",        5, speedScale = C_NLOGN_SCALE, killers = {
     "Linear": [
         "Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", 
         "Few Random", "Final Merge Pass", "Real Final Merge", "Noisy",
-        "Scrambled Tail", "Scrambled Head", "Sorted"
+        "Scrambled Tail", "Scrambled Head", "Sorted", "Quicksort Adversary",
+        "Grailsort Adversary"
     ],
     "Quadratic": [
         "Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", 
         "Few Random", "Final Merge Pass", "Real Final Merge", "Noisy",
-        "Scrambled Tail", "Scrambled Head", "Sorted"
+        "Scrambled Tail", "Scrambled Head", "Sorted", "Quicksort Adversary",
+        "Grailsort Adversary"
     ],
     "Quintic":   [
         "Random", "Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", 
         "Few Random", "Final Merge Pass", "Real Final Merge", "Noisy",
-        "Scrambled Tail", "Scrambled Head", "Sorted"
+        "Scrambled Tail", "Scrambled Head", "Sorted", "Quicksort Adversary",
+        "Grailsort Adversary"
     ],
     "Sine Wave": [
         "Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", 
         "Few Random", "Final Merge Pass", "Real Final Merge", "Noisy",
-        "Scrambled Tail", "Scrambled Head", "Sorted"
+        "Scrambled Tail", "Scrambled Head", "Sorted", "Quicksort Adversary",
+        "Grailsort Adversary"
     ],
     "Perlin Noise": [
         "Reversed", "Reversed Sawtooth", "No Shuffle", "Sawtooth", 
         "Few Random", "Final Merge Pass", "Real Final Merge", "Noisy",
-        "Scrambled Tail", "Scrambled Head", "Sorted"
+        "Scrambled Tail", "Scrambled Head", "Sorted", "Quicksort Adversary",
+        "Grailsort Adversary"
     ],
 });
 runAllSort(2048, "Max Heap Sort",   15, speedScale = NLOGN_SCALE);
@@ -147,9 +152,9 @@ runAllSort(2048, "Odd Even Merge (Parallel)", 1);
 ct = "Quick Sorts";
 
 new dict centerKillers = {
-    "Linear":    ["Reversed Sawtooth"], 
+    "Linear":    ["Reversed Sawtooth", "Quicksort Adversary"], 
     "Quadratic": ["Reversed Sawtooth", "Sawtooth"], 
-    "Quintic":   ["Reversed Sawtooth", "Sawtooth"]
+    "Quintic":   ["Reversed Sawtooth", "Sawtooth", "Quicksort Adversary"]
 };
 
 new dict firstKillers = {

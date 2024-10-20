@@ -26,7 +26,9 @@ new class FeatureSort {
     new method __adaptIdx(idx, aux) {
         static: new int out;
         for out = 0; idx >= 0; idx-- {
-            out += len(this.aux[idx]);
+            if idx < len(this.aux) {
+                out += len(this.aux[idx]);
+            }
         }
 
         return out - 1;
