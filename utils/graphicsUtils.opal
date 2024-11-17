@@ -10,8 +10,9 @@ new set SUPPORTED_IMAGE_FORMATS = {
 SUPPORTED_IMAGE_FORMATS |= set(x.upper() for x in SUPPORTED_IMAGE_FORMATS);
 
 namespace HeatMap {
-    new int MAX_HEAT  = 10_000,
-            BASE_HEAT =  3_000;
+    new int MAX_HEAT   = 10_000,
+            BASE_HEAT  =  3_000,
+            SWEEP_HEAT = int(MAX_HEAT * 1);
     
     new float HEAT_RATE      = 1.2,
               COOLING_MLT    = 0.9925,

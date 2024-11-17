@@ -1589,7 +1589,7 @@ new class SortingVisualizer {
         for i = a; i < b; i++ {
             new dynamic sTime = default_timer();
 
-            this.__heatMap[i] = HeatMap.MAX_HEAT;
+            this.__heatMap[i] = HeatMap.SWEEP_HEAT;
 
             if doSelective {
                 if this.__visual.selectiveDraw(this.array, {i: color}) {
@@ -1650,7 +1650,7 @@ new class SortingVisualizer {
         for i = a; i < b; i++ {
             this.graphics.updateEvents();
 
-            this.__heatMap[i] = HeatMap.MAX_HEAT;
+            this.__heatMap[i] = HeatMap.SWEEP_HEAT;
             new dynamic hInfo = HighlightInfo(i, None, color);
             
             if lazy { 
