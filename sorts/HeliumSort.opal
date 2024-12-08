@@ -1,5 +1,5 @@
-# Copyright (c) 2020 thatsOven
-# 
+# Copyright (c) 2020 Amari Calipso
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -8,7 +8,7 @@
 # copies of the Software, and to permit persons to whom the
 # Software is furnished to do so, subject to the following
 # conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
@@ -22,47 +22,47 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 # Helium Sort
-# 
+#
 # A block merge sorting algorithm inspired by GrailSort and focused on adaptivity.
-# 
+#
 # Time complexity:
 #  - Best case: O(n)
 #  - Average case: O(n log n)
 #  - Worst case: O(n log n)
 # Space complexity is variable.
-# 
+#
 # The algorithm extends the concept of adaptivity to memory,
 # by using different strategies based on the amount
-# of memory given to it. 
-# 
+# of memory given to it.
+#
 # Major strategies are:
 # "Uranium": merge sort, requires n / 2 memory.
 #            The code refers to it as "Strategy 1".
-# 
+#
 # "Hydrogen": block merge sort, requires "x" memory with sqrt(n) + 2n / sqrt(n) <= x < n / 2.
-#             Hydrogen mode can be modified to run with sqrt(n) + n / sqrt(n) memory using 
-#             an internal key buffer, but benchmarking has shown that this variant, in practice, 
+#             Hydrogen mode can be modified to run with sqrt(n) + n / sqrt(n) memory using
+#             an internal key buffer, but benchmarking has shown that this variant, in practice,
 #             is slower than strategy 3A. This mode is referred to as "Strategy 2".
-# 
+#
 # "Helium": block merge sort, requires "x" memory with 0 <= x < sqrt(n) + n / sqrt(n).
-#           Helium mode uses five strategies, referred to as: "3A", "3B", "3C", "4A", 
+#           Helium mode uses five strategies, referred to as: "3A", "3B", "3C", "4A",
 #           and "4B". Optimal amounts of memory are:
 #              - sqrt(n) + n / sqrt(n): will use strategy 3A;
 #              - sqrt(n): will use strategy 3B or 4A;
 #              - 0: will use strategy 3C or 4B.
-# 
-# When a very low amount of distinct values is found or the array size is less or equal than 256, 
+#
+# When a very low amount of distinct values is found or the array size is less or equal than 256,
 # the sort uses an adaptive in-place merge sort referred to as "Strategy 5".
-# 
+#
 # Special thanks to the members of The Holy Grail Sort Project, for the creation of Rewritten GrailSort,
 # which has been a great reference during the development of this algorithm,
 # and thanks to aphitorite, a great sorting mind which inspired the creation of this algorithm,
 # alongside being very helpful for me to understand some of the workings of block merge sorting algorithms,
-# and for part of the code used in this algorithm itself: "smarter block selection", 
-# the algorithm used in the "blockSelectInPlace" and "blockSelectOOP" routines, and the 
+# and for part of the code used in this algorithm itself: "smarter block selection",
+# the algorithm used in the "blockSelectInPlace" and "blockSelectOOP" routines, and the
 # code used in the "mergeBlocks" routine.
 
-use reverse, arrayCopy, blockSwap, backwardBlockSwap, 
+use reverse, arrayCopy, blockSwap, backwardBlockSwap,
     compareValues, compareIntToValue, insertToLeft,
     checkMergeBounds, lrBinarySearch, binaryInsertionSort,
     bidirArrayCopy;
@@ -145,8 +145,8 @@ new class HeliumSort {
 
         if min == 1 || rl <= 1 || ll <= 1 {
             return;
-        }            
-        
+        }
+
         if this.rotateInPlace {
             if rl < ll {
                 backwardBlockSwap(array, m, this.bufPos, rl);
@@ -198,7 +198,7 @@ new class HeliumSort {
     new method findKeysSorted(array, a, b, q) {
         new int n = 1,
                 p = b - 1;
-        
+
         for i = p; i > a && n < q; i-- {
             if array[i - 1] != array[i] {
                 this.rotate(array, i, p, p + n);
@@ -208,7 +208,7 @@ new class HeliumSort {
         }
 
         if n == q {
-            this.rotate(array, p, p + n, b);            
+            this.rotate(array, p, p + n, b);
         } else {
             this.rotate(array, a, p, p + n);
         }
@@ -501,8 +501,8 @@ new class HeliumSort {
                 o = 0;
 
         for ; l < m && r < b; o++ {
-            if array[a + (l + 1) * blockLen - 1] <= 
-               array[a + (r + 1) * blockLen - 1] 
+            if array[a + (l + 1) * blockLen - 1] <=
+               array[a + (r + 1) * blockLen - 1]
             {
                 this.indices[o].write(l);
                 l++;
@@ -551,14 +551,14 @@ new class HeliumSort {
                 tb = tm + rightBlocks;
 
         while k < j1 && j1 < tb {
-            if array[a + (i1 - stKey + 1) * blockLen - 1] <= 
-               array[a + (j1 - stKey + 1) * blockLen - 1] 
+            if array[a + (i1 - stKey + 1) * blockLen - 1] <=
+               array[a + (j1 - stKey + 1) * blockLen - 1]
             {
                 if i1 > k {
                     blockSwap(
-                        array, 
-                        a + (k - stKey) * blockLen, 
-                        a + (i1 - stKey) * blockLen, 
+                        array,
+                        a + (k - stKey) * blockLen,
+                        a + (i1 - stKey) * blockLen,
                         blockLen
                     );
                 }
@@ -574,9 +574,9 @@ new class HeliumSort {
                 }
             } else {
                 blockSwap(
-                    array, 
-                    a + (k - stKey) * blockLen, 
-                    a + (j1 - stKey) * blockLen, 
+                    array,
+                    a + (k - stKey) * blockLen,
+                    a + (j1 - stKey) * blockLen,
                     blockLen
                 );
 
@@ -593,9 +593,9 @@ new class HeliumSort {
         while k < j1 - 1 {
             if i1 > k {
                 blockSwap(
-                    array, 
-                    a + (k - stKey) * blockLen, 
-                    a + (i1 - stKey) * blockLen, 
+                    array,
+                    a + (k - stKey) * blockLen,
+                    a + (i1 - stKey) * blockLen,
                     blockLen
                 );
             }
@@ -620,14 +620,14 @@ new class HeliumSort {
                 tb = tm + rightBlocks;
 
         while k < j1 && j1 < tb {
-            if array[a + (i1 + 1) * blockLen - 1] <= 
-               array[a + (j1 + 1) * blockLen - 1] 
+            if array[a + (i1 + 1) * blockLen - 1] <=
+               array[a + (j1 + 1) * blockLen - 1]
             {
                 if i1 > k {
                     blockSwap(
-                        array, 
-                        a + k * blockLen, 
-                        a + i1 * blockLen, 
+                        array,
+                        a + k * blockLen,
+                        a + i1 * blockLen,
                         blockLen
                     );
                 }
@@ -643,9 +643,9 @@ new class HeliumSort {
                 }
             } else {
                 blockSwap(
-                    array, 
-                    a + k * blockLen, 
-                    a + j1 * blockLen, 
+                    array,
+                    a + k * blockLen,
+                    a + j1 * blockLen,
                     blockLen
                 );
 
@@ -662,9 +662,9 @@ new class HeliumSort {
         while k < j1 - 1 {
             if i1 > k {
                 blockSwap(
-                    array, 
-                    a + k * blockLen, 
-                    a + i1 * blockLen, 
+                    array,
+                    a + k * blockLen,
+                    a + i1 * blockLen,
                     blockLen
                 );
             }
@@ -692,7 +692,7 @@ new class HeliumSort {
     new method mergeBlocks(array, a, midKey, blockQty, blockLen, lastLen, stKey, keys) {
         new int f = a;
         new bool left = keys[stKey] < midKey;
-        
+
         for i = 1; i < blockQty; i++ {
             if left ^ (keys[stKey + i] < midKey) {
                 new int next    = a + i * blockLen,
@@ -966,7 +966,7 @@ new class HeliumSort {
             if p == a {
                 return;
             }
-            
+
             this.sortRuns(array, a, b, p);
             this.buffer = sortingVisualizer.createValueArray(mem);
             this.uraniumLoop(array, a, b);
@@ -990,14 +990,14 @@ new class HeliumSort {
             if p == a {
                 return;
             }
-            
+
             this.sortRuns(array, a, b, p);
 
             this.buffer  = sortingVisualizer.createValueArray(mem - 2 * keySize);
             this.indices = sortingVisualizer.createValueArray(keySize);
             this.keys    = sortingVisualizer.createValueArray(keySize);
             sortingVisualizer.setNonOrigAux(this.indices, this.keys);
-            
+
             this.blockLen = sqrtn;
 
             this.hydrogenLoop(array, a, b);

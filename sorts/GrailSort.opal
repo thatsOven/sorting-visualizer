@@ -39,7 +39,7 @@
  #                       MP
  #                       phoenixbound
  #                       Spex_guy
- #                       thatsOven
+ #                       Amari Calipso
  #                       _fluffyy
  #
  #
@@ -52,7 +52,7 @@
 #
 # ** Written and maintained by The Holy Grail Sort Project
 #
-# Primary author: thatsOven
+# Primary author: Amari Calipso
 #
 # Current status: Working (Passing all tests) + Stable
 

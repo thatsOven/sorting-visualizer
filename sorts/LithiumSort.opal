@@ -1,5 +1,5 @@
-# Copyright (c) 2023 thatsOven
-# 
+# Copyright (c) 2023 Amari Calipso
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -8,7 +8,7 @@
 # copies of the Software, and to permit persons to whom the
 # Software is furnished to do so, subject to the following
 # conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
@@ -22,24 +22,24 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 # Lithium Sort
-# 
+#
 # A conceptually optimal in-place block merge sorting algorithm.
-# This algorithm introduces some ideas, that in conjunction with code optimizations and 
-# other tricks (like the ones in Holy GrailSort), minimizes moves and comparisons for 
+# This algorithm introduces some ideas, that in conjunction with code optimizations and
+# other tricks (like the ones in Holy GrailSort), minimizes moves and comparisons for
 # every step of the in-place block merge sorting procedure.
-# 
+#
 # Time complexity: O(n log n) best/average/worst
 # Space complexity: O(1)
 # Stable: Yes
-# 
+#
 # Special thanks to aphitorite for creating the kota merging algorithm, which enables
 # strategy 1's block merging routine to be optimal; the dualMerge routine, which simplifies
-# the rest of the code as well as improving performance; the buffer redistribution algorithm, 
+# the rest of the code as well as improving performance; the buffer redistribution algorithm,
 # found in Adaptive Grailsort; the smarter block selection algorithm, used in the blockSelect
 # routine, and part of the code for some of the other routines.
- 
+
 use blockSwap, backwardBlockSwap, compareValues,
-    compareIntToValue, insertToRight, lrBinarySearch, 
+    compareIntToValue, insertToRight, lrBinarySearch,
     binaryInsertionSort, log2, BufMerge2, BitArray;
 
 new class LithiumSort {
@@ -87,8 +87,8 @@ new class LithiumSort {
 
         if min == 1 || rl <= 1 || ll <= 1 {
             return;
-        }            
-        
+        }
+
         if rl < ll {
             backwardBlockSwap(array, m, this.bufPos, rl);
 
@@ -390,7 +390,7 @@ new class LithiumSort {
     new method mergeBlocksLazy(array, a, midKey, blockQty, blockLen, lastLen, bits) {
         new int f = a;
         new bool left = this.compareMidKey(array, bits, 0, midKey);
-        
+
         for i = 1; i < blockQty; i++ {
             if left ^ this.compareMidKey(array, bits, i, midKey) {
                 new int next    = a + i * blockLen,
@@ -421,12 +421,12 @@ new class LithiumSort {
                     j = k;
                     k = bits.get(k);
                 } while k != i;
-            
+
                 bits.set(j, j);
             }
         }
     }
-    
+
     new method kotaMerge(array, a, m, b1, blockLen, bits) {
         new int i = a,
                 j = m,
@@ -697,14 +697,14 @@ new class LithiumSort {
             new int mN = a + ((m - a) // this.blockLen) * this.blockLen,
                     bN = b - (m - mN);
 
-            # a [ - A0 - ] mN [frag] m [ - A1 - ] b 
+            # a [ - A0 - ] mN [frag] m [ - A1 - ] b
 
             frag = mN != m;
             if frag {
                 this.rotate(array, mN, m, b);
             }
 
-            # a [ - A0 - ] mN [ - A1 - ] b [frag] bN  
+            # a [ - A0 - ] mN [ - A1 - ] b [frag] bN
 
             m = mN;
             b = bN;
@@ -739,7 +739,7 @@ new class LithiumSort {
             a, m, b, frag = this.adjust(array, a, m, b, aSub);
 
             new BitArray bits    = BitArray(array, bA       , bB - size * 2, nW, w),
-                         indices = BitArray(array, bA + size, bB - size    , nW, w); 
+                         indices = BitArray(array, bA + size, bB - size    , nW, w);
 
             this.combine(array, a, m, b, bits, indices, lazy);
 
@@ -919,7 +919,7 @@ new class LithiumSort {
             this.mergeInPlaceBW(array, a, b, e, True);
             return;
         }
-        
+
         r = lrBinarySearch(array, a, b, array[e - 1], False);
         this.rotate(array, r, b, e);
 

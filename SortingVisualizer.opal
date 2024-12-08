@@ -19,7 +19,7 @@ new float UNIT_SAMPLE_DURATION = 1.0 / 30.0,
 
 new str VERSION = "2024.10.12";
 
-import math, random, time, os, numpy, sys, 
+import math, random, time, os, numpy, sys,
        pygame_gui, json, subprocess, shutil,
        builtins, threading;
 package timeit:      import default_timer;
@@ -127,7 +127,7 @@ new class SortingVisualizer {
         this.__adaptAux       = this.__defaultAdaptAux;
         this.__adaptIdx       = this.__defaultAdaptIdx;
         this.__oldAuxLen      = 0;
-        
+
         this.__tmpSleep   = 0;
         this.__unitSample = this.__makeSample(UNIT_SAMPLE_DURATION);
         this.resetSpeed();
@@ -143,7 +143,7 @@ new class SortingVisualizer {
         this.__shufThread     = None;
 
         this.__lastTextIndex = 0;
-        
+
         this.__rtHighlightFn = this.multiHighlightAdvanced;
         this.__rtSweepFn     = this.sweep;
         this.__currFrame     = 0;
@@ -157,7 +157,7 @@ new class SortingVisualizer {
         this.__videoGenFlagLock = threading.Lock();
 
         this.__loadSettings();
-        
+
         this._loadProfile();
         this.__initGraphics();
         this.__gui = GUI();
@@ -166,7 +166,7 @@ new class SortingVisualizer {
             this.__movingTextSize = Vector(0, this.__fontSize * 20);
         } else {
             this.__movingTextSize = Vector(0, this.__fontSize * 15);
-        }    
+        }
     }
 
     new method __keyDown(event) {
@@ -186,8 +186,8 @@ new class SortingVisualizer {
         this.__fontSize = round(((res.x / 1280.0) + (res.y / 720.0)) * 11);
 
         this.graphics = Graphics(
-            res, caption = "thatsOven's Sorting Visualizer", 
-            font = "Times New Roman", fontSize = this.__fontSize, 
+            res, caption = "opal Sorting Visualizer",
+            font = "Times New Roman", fontSize = this.__fontSize,
             frequencySample = FREQUENCY_SAMPLE
         );
 
@@ -274,7 +274,7 @@ new class SortingVisualizer {
         } else {
             this.__soundSample = this.__unitSample;
         }
-        
+
         this.__tmpSleep = max(s, 0);
     }
 
@@ -300,7 +300,7 @@ new class SortingVisualizer {
         this.getMax();
         this.__visual.prepare();
         this.__prepared = True;
-        
+
         this.__lastTextIndex = 0;
 
         new int worstCaseTextWidth;
@@ -433,7 +433,7 @@ new class SortingVisualizer {
             new int a = 0,
                     b = len(array),
                     id, cmp;
-    
+
             while a < b {
                 id = a + (b - a) // 2;
 
@@ -593,15 +593,15 @@ new class SortingVisualizer {
 
             for unique in stabilityCheck {
                 if this.checkSorted(stabilityCheck[unique], lambda x : x.stabIdx) != len(stabilityCheck[unique]) - 1 {
-                    this.sweep(0, currentIdx, (0, 0, 255), 
+                    this.sweep(0, currentIdx, (0, 0, 255),
                         hList = {x: (0, 255, 0) for x in range(len(this.array))}
                     );
 
-                    this.sweep(currentIdx, len(this.array), (255, 255, 0), 
+                    this.sweep(currentIdx, len(this.array), (255, 255, 0),
                         hList = (
-                            {x: (0, 0, 255) for x in range(currentIdx)} | 
+                            {x: (0, 0, 255) for x in range(currentIdx)} |
                             {x: (0, 255, 0) for x in range(currentIdx, len(this.array))}
-                        ) 
+                        )
                     );
 
                     return ArrayState.SORTED;
@@ -610,7 +610,7 @@ new class SortingVisualizer {
                 currentIdx += len(stabilityCheck[unique]);
             }
 
-            this.sweep(0, len(this.array), (0, 0, 255), 
+            this.sweep(0, len(this.array), (0, 0, 255),
                 hList = {x: (0, 255, 0) for x in range(len(this.array))}
             );
 
@@ -619,13 +619,13 @@ new class SortingVisualizer {
         } else {
             new int p = min(sUntil, eq);
             this.sweep(0,               p, (0, 255, 0));
-            this.sweep(p, len(this.array), (255, 0, 0), 
+            this.sweep(p, len(this.array), (255, 0, 0),
                 hList = {x: (0, 255, 0) for x in range(p)}
             );
 
             if sUntil != len(this.array) - 1 {
                 return ArrayState.UNSORTED;
-            } else {    
+            } else {
                 return ArrayState.CONTENTS_CHANGED;
             }
         }
@@ -726,7 +726,7 @@ new class SortingVisualizer {
                 "Dropped frames: " + this.__dFramesPerc,
                 "Current delay: " + str(round((this.__sleep + this.__tmpSleep) * 1000, 2)) + " ms",
                 "",
-                "Writes: " + "{:,}".format(this.writes), 
+                "Writes: " + "{:,}".format(this.writes),
                 "Swaps: "  + "{:,}".format(this.__swaps),
                 "",
                 "Reads: "       + "{:,}".format(this.reads),
@@ -739,7 +739,7 @@ new class SortingVisualizer {
                 "Array length: " + "{:,}".format(len(this.array)) + " elements",
                 runningText,
                 "",
-                "Writes: " + "{:,}".format(this.writes), 
+                "Writes: " + "{:,}".format(this.writes),
                 "Swaps: "  + "{:,}".format(this.__swaps),
                 "",
                 "Reads: "       + "{:,}".format(this.reads),
@@ -762,7 +762,7 @@ new class SortingVisualizer {
             result = list(chain.from_iterable(arrays));
         } else {
             result = [];
-            
+
             for array in arrays {
                 if id(array) in this.__nonOrigAuxs {
                     max_ = array[0].value;
@@ -786,7 +786,7 @@ new class SortingVisualizer {
                         } else {
                             val.value *= mlt;
                         }
-                        
+
                         result.append(val);
                     }
                 } else {
@@ -862,7 +862,7 @@ new class SortingVisualizer {
         }
     }
 
-    $macro playSound(hList, adapted)    
+    $macro playSound(hList, adapted)
         new dynamic waves  = [];
         new dynamic values = set();
 
@@ -1035,7 +1035,7 @@ new class SortingVisualizer {
                     length = len(adapted);
 
                     new dynamic oldMax = this.auxMax;
-                    this.getAuxMax(adapted);    
+                    this.getAuxMax(adapted);
 
                     if this.__oldAuxLen != length {
                         this.__visual.onAuxOn(length);
@@ -1070,7 +1070,7 @@ new class SortingVisualizer {
             if this.__speedCounter >= this.__speed {
                 this.__speedCounter = 1;
             }
-            
+
             this.highlights.clear();
             return;
         }
@@ -1086,14 +1086,14 @@ new class SortingVisualizer {
         static {
             new int  length;
             new bint doSelective = (
-                this.__lastTextIndex == 0 && 
+                this.__lastTextIndex == 0 &&
                 len(hList) < min(this.graphics.resolution.x, len(this.array))
             ) && !this.__parallel, aux;
         }
 
         if this.__speedCounter >= this.__speed {
             this.__speedCounter = 0;
-                
+
             $call prepareAuxAndGC
             $call adaptIndices
             $call playSound(hList, adapted)
@@ -1118,7 +1118,7 @@ new class SortingVisualizer {
 
             $call tickHeatmap
 
-            if aux {   
+            if aux {
                 this.__visual.fastDrawAux(adapted, auxList);
 
                 $call tickAuxHeatmap
@@ -1127,7 +1127,7 @@ new class SortingVisualizer {
             this.renderStats();
 
             $call update
-                
+
             if doSelective {
                 for highlight in hList {
                     hList[highlight] = None;
@@ -1135,14 +1135,14 @@ new class SortingVisualizer {
 
                 this.__visual.selectiveDraw(this.array, hList);
             }
-                
+
             this.__soundSample = this.__currSample;
 
             new dynamic tTime = max(this.__sleep + this.__tmpSleep, MIN_SLEEP) - default_timer() + sTime;
             if tTime > 0 {
                 time.sleep(tTime);
             }
-                
+
             this.__tmpSleep = 0;
         } elif !this.__parallel {
             hList = this.__partitionIndices(hList)[0];
@@ -1181,13 +1181,13 @@ new class SortingVisualizer {
         this.__gui.renderScreen(subprocess.Popen([
             "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt",
             "-b:v",       str(this.settings["bitrate"]) + "k",
-            "-c:v",       this.__renderProfile["codec"], 
+            "-c:v",       this.__renderProfile["codec"],
             "-profile:v", this.__renderProfile["profile"],
-            "-pix_fmt",   this.__renderProfile["pix_fmt"], 
+            "-pix_fmt",   this.__renderProfile["pix_fmt"],
             "-preset",    this.__renderProfile["preset"],
             "tmp.mp4"
         ]), "Compressing frames...");
-        
+
         new dynamic rounded = round(this.__audioPtr);
         io.wavfile.write("audio.wav", FREQUENCY_SAMPLE, this.__audio[:rounded]);
 
@@ -1207,7 +1207,7 @@ new class SortingVisualizer {
                 this.__videoGenFlag = False;
             }
         }
-        
+
         return cwd;
     }
 
@@ -1302,7 +1302,7 @@ new class SortingVisualizer {
         static {
             new int  length;
             new bint doSelective = (
-                this.__lastTextIndex == 0 && 
+                this.__lastTextIndex == 0 &&
                 len(hList) < min(this.graphics.resolution.x, len(this.array))
             );
 
@@ -1311,13 +1311,13 @@ new class SortingVisualizer {
 
         if this.__speedCounter >= this.__speed {
             this.__speedCounter = 0;
-            
+
             $call prepareAuxAndGC
             $call adaptIndices
 
             new dynamic tSleep = max(INV_RENDER_FRAMES, this.__sleep + this.__tmpSleep);
             this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
-            
+
             new dynamic currWave;
 
             if len(hList) == 0 {
@@ -1384,7 +1384,7 @@ new class SortingVisualizer {
             }
 
             $call tickHeatmap
-                
+
             if aux {
                 if trySelective {
                     this.__visual.fastDrawAux(adapted, auxList);
@@ -1406,7 +1406,7 @@ new class SortingVisualizer {
             }
 
             $call checkCompress
-                
+
             if trySelective && doSelective {
                 for highlight in hList {
                     hList[highlight] = None;
@@ -1414,7 +1414,7 @@ new class SortingVisualizer {
 
                 this.__visual.selectiveDraw(this.array, hList);
             }
-                
+
             this.__tmpSleep = 0;
         } elif trySelective {
             hList = this.__partitionIndices(hList)[0];
@@ -1500,7 +1500,7 @@ new class SortingVisualizer {
         }
 
         static: new int origBits, origN, perColor, bits;
-        for origBits = 1, origN = n; origN > 0; origN >>= 1, origBits++ {} 
+        for origBits = 1, origN = n; origN > 0; origN >>= 1, origBits++ {}
         for bits = 3, perColor = 1; bits < origBits; bits += 3, perColor++ {}
 
         static: new int mask = ~(COLOR_MASK << perColor);
@@ -1539,12 +1539,12 @@ new class SortingVisualizer {
 
             try {
                 fn(*args, **kwargs);
-            } 
-            ignore StopAlgorithm; 
+            }
+            ignore StopAlgorithm;
             catch Exception as e {
                 exception = e;
             }
-                
+
             running = False;
         }
 
@@ -1562,7 +1562,7 @@ new class SortingVisualizer {
         } catch StopAlgorithm {
             this.__stopAlgorithm();
         }
-        
+
         t.join();
 
         if exception is not None {
@@ -1585,7 +1585,7 @@ new class SortingVisualizer {
         this.setSpeed(len(this.array) / 128.0);
         new dynamic sleep = max(this.__sleep, MIN_SLEEP);
         this.__soundSample = this.__currSample;
-        
+
         for i = a; i < b; i++ {
             new dynamic sTime = default_timer();
 
@@ -1620,7 +1620,7 @@ new class SortingVisualizer {
                 new dynamic tTime = sleep - default_timer() + sTime;
                 if tTime > 0 {
                     time.sleep(tTime);
-                }    
+                }
             }
 
             this.__speedCounter++;
@@ -1644,7 +1644,7 @@ new class SortingVisualizer {
                        tryLazy = lazy;
             new double tSleep  = max(INV_RENDER_FRAMES, this.__sleep);
         }
-        
+
         this.__soundSample = this.__makeSample(max(tSleep, UNIT_SAMPLE_DURATION));
 
         for i = a; i < b; i++ {
@@ -1652,8 +1652,8 @@ new class SortingVisualizer {
 
             this.__heatMap[i] = HeatMap.SWEEP_HEAT;
             new dynamic hInfo = HighlightInfo(i, None, color);
-            
-            if lazy { 
+
+            if lazy {
                 if this.__visual.selectiveDraw(this.array, {i: color}) {
                     lazy = False;
                     hList[i] = color;
@@ -1667,9 +1667,9 @@ new class SortingVisualizer {
 
                 new dynamic currWave = this.__getWaveformFromHighlight(hInfo, None);
                 $call mixAudio(tSleep)
-                
+
                 if lazy {
-                    if i <= this.__lastTextIndex { 
+                    if i <= this.__lastTextIndex {
                         this.renderStats();
                     }
                 } else {
@@ -1678,12 +1678,12 @@ new class SortingVisualizer {
                     } else {
                         this.__visual.draw(this.array, hList);
                     }
-                    
+
                     this.renderStats();
                 }
 
                 $call tickHeatmap
-                
+
                 if this.__currFrame % PREVIEW_MOD == 0 {
                     $call update
                 }
@@ -1772,7 +1772,7 @@ new class SortingVisualizer {
         if this.__autoUserValues.isEmpty() {
             this.__gui.saveBackground();
             new dynamic res = this.__gui.userInputDialog(this.__currentlyRunning, message, type_, default);
-            
+
             if this.__prepared {
                 this.drawFullArray();
                 this.renderStats();
@@ -1788,12 +1788,12 @@ new class SortingVisualizer {
         if this.__autoUserValues.isEmpty() {
             this.__gui.saveBackground();
             new dynamic res = this.__gui.selection(this.__currentlyRunning, message, content);
-            
+
             if this.__prepared {
                 this.drawFullArray();
                 this.renderStats();
             }
-            
+
             return res;
         } else {
             return this.popAutoValue();
@@ -1861,12 +1861,12 @@ new class SortingVisualizer {
             }
 
             this.runSort(categoryName, name = sortName);
-            this.resetSpeed();  
+            this.resetSpeed();
         } catch StopAlgorithm {
             this.__stopAlgorithm();
         } catch Exception as e {
             this.__reportException(e);
-        }   
+        }
     }
 
     new method createValueArray(length) {
@@ -1885,7 +1885,7 @@ new class SortingVisualizer {
         $else
             this.__addAux(result, 2);
         $end
-        
+
         return result;
     }
 
@@ -2091,9 +2091,9 @@ new class SortingVisualizer {
             this.__gui.renderScreen(subprocess.Popen([
                 "ffmpeg", "-y", "-r", str(RENDER_FRAMERATE), "-f", "concat", "-i", "input.txt",
                 "-b:v",       str(this.settings["bitrate"]) + "k",
-                "-c:v",       this.__renderProfile["codec"], 
+                "-c:v",       this.__renderProfile["codec"],
                 "-profile:v", this.__renderProfile["profile"],
-                "-pix_fmt",   this.__renderProfile["pix_fmt"], 
+                "-pix_fmt",   this.__renderProfile["pix_fmt"],
                 "-preset",    this.__renderProfile["preset"],
                 "output.mp4"
             ]), "Merging videos...");
@@ -2148,7 +2148,7 @@ new class SortingVisualizer {
         this.__prepare("sounds");
 
         Utils.Iterables.sort(this.categories);
-        
+
         static: new int tot = 0;
         for list_ in this.sorts {
             Utils.Iterables.sort(this.sorts[list_]);
@@ -2200,7 +2200,7 @@ new class SortingVisualizer {
                             this.__stopAlgorithm();
                         } catch Exception as e {
                             this.__reportException(e);
-                        } 
+                        }
 
                         this.__resetShufThread();
                         this.__wrappedFinalizeRender();
