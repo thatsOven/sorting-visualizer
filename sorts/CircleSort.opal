@@ -26,8 +26,8 @@ namespace CircleSort {
 
         new int m = a + ((b - a) // 2);
 
-        l = this.sorter(array, a, m);
-        r = this.sorter(array, m, b);
+        l = this.sorter(array,     a, m);
+        r = this.sorter(array, m + 1, b);
 
         return s or l or r;
     }
